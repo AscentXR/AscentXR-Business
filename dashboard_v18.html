@@ -1225,6 +1225,10 @@ let agentData = null;
 let taskQueue = [];
 let coordinationMetrics = {};
 const agentMessages = [];
+
+// Interval storage for cleanup
+const activeIntervals = {};
+
 const liveUpdates = [
         { id: 1, type: 'success', message: 'Dashboard v16 deployed - cache fixes applied', time: 'Just now', icon: '🚀' },
         { id: 2, type: 'info', message: 'JavaScript errors fixed - renderLiveUpdates working', time: '2 minutes ago', icon: '🐛' },
