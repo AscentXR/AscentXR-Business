@@ -8,6 +8,8 @@ require('dotenv').config();
 
 // Initialize Express app
 const app = express();
+
+// Railway deployment fix - build timestamp: 2026-02-03T21:13:00
 const PORT = process.env.PORT || 3000;
 
 // Middleware
