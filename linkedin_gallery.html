@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ascent XR - LinkedIn Content Gallery</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --primary: #0052cc;
+            --secondary: #007bff;
+            --success: #DC1625;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #475569;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #60a5fa;
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .post-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .post-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+        }
+        
+        .post-image {
+            width: 100%;
+            height: 200px;
+            background: #2d3748;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .post-content {
+            padding: 25px;
+        }
+        
+        .post-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+        
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .post-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        
+        .hashtags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .hashtag {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .post-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .schedule-info {
+            background: rgba(14, 165, 233, 0.1);
+            border-left: 4px solid var(--secondary);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-ready {
+            background: rgba(16, 185, 129, 0.2);
+            color: #DC1625;
+        }
+        
+        .status-scheduled {
+            background: rgba(59, 130, 246, 0.2);
+            color: #0052cc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 LinkedIn Content Gallery</h1>
+            <div class="subtitle">Week 1 Launch Posts - Ready for Scheduling</div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Posts Ready</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">Content Complete</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">26</div>
+                    <div class="stat-label">Total Hashtags</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Custom Images</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="posts-grid">
+            <!-- POST 1 -->
+            <div class="post-card">
+                <div class="post-image">
+                    <img src="food-web-engagement-gap.png" alt="Food Web Engagement Gap" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px 8px 0 0;">
+                </div>
+                <div class="post-content">
+                    <div class="post-title">The Engagement Gap</div>
+                    <div class="post-meta">
+                        <span>📅 Feb 3, 8:30 AM EST</span>
+                        <span class="status-badge status-ready">READY</span>
+                    </div>
+                    <div class="post-text">
+                        Traditional worksheets vs. immersive experiences - which would your students choose? We're seeing 300%+ engagement increases when students interact with 3D spatial content vs. traditional 2D materials.
+                    </div>
+                    <div class="hashtags">
+                        <span class="hashtag">#EdTech</span>
+                        <span class="hashtag">#K12</span>
+                        <span class="hashtag">#SpatialLearning</span>
+                        <span class="hashtag">#StudentEngagement</span>
+                        <span class="hashtag">#VRinEducation</span>
+                    </div>
+                    <div class="schedule-info">
+                        <strong>Image:</strong> food-web-engagement-gap.png<br>
+                        <strong>CTA:</strong> learningtimevr.com/platform
+                    </div>
+                </div>
+            </div>
+            
+            <!-- POST 2 -->
+            <div class="post-card">
+                <div class="post-image">
+                    <img src="ai-spatial-learning.png" alt="AI + Spatial Learning" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px 8px 0 0;">
+                </div>
+                <div class="post-content">
+                    <div class="post-title">AI + Spatial Learning = ❤️</div>
+                    <div class="post-meta">
+                        <span>📅 Feb 5, 11:30 AM EST</span>
+                        <span class="status-badge status-ready">READY</span>
+                    </div>
+                    <div class="post-text">
+                        Teachers spend 7+ hours weekly creating supplemental materials. What if AI could generate immersive lessons in minutes? Our AI-powered system delivers custom spatial lessons in one week, not one month.
+                    </div>
+                    <div class="hashtags">
+                        <span class="hashtag">#AI</span>
+                        <span class="hashtag">#EdTech</span>
+                        <span class="hashtag">#TeacherTools</span>
+                        <span class="hashtag">#LessonPlanning</span>
+                        <span class="hashtag">#ArtificialIntelligence</span>
+                    </div>
+                    <div class="schedule-info">
+                        <strong>Image:</strong> ai-spatial-learning.png<br>
+                        <strong>CTA:</strong> learningtimevr.com/ai-demo
+                    </div>
+                </div>
+            </div>
+            
+            <!-- POST 3 -->
+            <div class="post-card">
+                <div class="post-image">
+                    <img src="superintendent-dilemma.png" alt="Superintendent's Dilemma" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px 8px 0 0;">
+                </div>
+                <div class="post-content">
+                    <div class="post-title">The Superintendent's Dilemma</div>
+                    <div class="post-meta">
+                        <span>📅 Feb 7, 3:30 PM EST</span>
+                        <span class="status-badge status-ready">READY</span>
+                    </div>
+                    <div class="post-text">
+                        To my 250+ superintendent connections: You're constantly balancing innovation with budget constraints. How do you evaluate ROI on new educational technology? We've developed a framework that measures engagement, standards coverage, and learning outcomes.
+                    </div>
+                    <div class="hashtags">
+                        <span class="hashtag">#Leadership</span>
+                        <span class="hashtag">#K12Leadership</span>
+                        <span class="hashtag">#SchoolAdministration</span>
+                        <span class="hashtag">#EdTech</span>
+                        <span class="hashtag">#BudgetPlanning</span>
+                    </div>
+                    <div class="schedule-info">
+                        <strong>Image:</strong> superintendent-dilemma.png<br>
+                        <strong>CTA:</strong> learningtimevr.com/roi-template
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

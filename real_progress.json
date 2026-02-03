@@ -1,0 +1,92 @@
+{
+  "agents": [],
+  "total_agents": 0,
+  "active_agents": 0,
+  "completed_work": [
+    {
+      "file": ".htaccess",
+      "modified": "2026-02-02T04:40:10.365349",
+      "size": 269
+    },
+    {
+      "file": "real_agent_tracker.py",
+      "modified": "2026-02-02T04:55:42.795349",
+      "size": 5323
+    },
+    {
+      "file": "htpasswd-generator.py",
+      "modified": "2026-02-02T04:41:15.565349",
+      "size": 1923
+    },
+    {
+      "file": "start_tunnel.sh",
+      "modified": "2026-02-02T04:20:40.225349",
+      "size": 1669
+    },
+    {
+      "file": ".htpasswd",
+      "modified": "2026-02-02T04:47:36.725349",
+      "size": 84
+    },
+    {
+      "file": "tunnel_server.py",
+      "modified": "2026-02-02T01:04:00.035349",
+      "size": 1725
+    },
+    {
+      "file": "public_server.py",
+      "modified": "2026-02-02T04:19:45.005349",
+      "size": 3124
+    },
+    {
+      "file": "index.html",
+      "modified": "2026-02-02T04:48:20.755349",
+      "size": 121088
+    },
+    {
+      "file": "server.py",
+      "modified": "2026-02-02T00:59:08.605349",
+      "size": 1688
+    }
+  ],
+  "real_progress": {
+    "dashboard": 0,
+    "crm": 0,
+    "linkedin": 0,
+    "marketing": 0,
+    "sales": 0,
+    "deployment": 0,
+    "qa": 0,
+    "total_files_created": 9
+  },
+  "last_updated": "2026-02-02T04:55:48.110042Z",
+  "analysis_source": "real_session_files",
+  "active_sessions": 12,
+  "recent_sessions": [
+    {
+      "file": "20abae90-0416-4f1c-9198-83dac5404635.jsonl",
+      "modified": "2026-02-02T04:55:48.065349",
+      "size": 7895590
+    },
+    {
+      "file": "2e6be997-74db-4984-8c53-ae2757ba4dac-topic-1769989223.267849.jsonl",
+      "modified": "2026-02-01T23:41:34.825349",
+      "size": 10212
+    },
+    {
+      "file": "1324a16d-9d39-4ffa-88a7-cdb7eb0d6f07-topic-1769893199.060109.jsonl",
+      "modified": "2026-02-01T23:41:02.025349",
+      "size": 54246
+    },
+    {
+      "file": "2ef421cc-0ec1-485c-b46c-e8c912cc9480-topic-1769910327.132999.jsonl",
+      "modified": "2026-02-01T01:46:05.245349",
+      "size": 10132
+    },
+    {
+      "file": "ec3407c7-2a2c-4527-8c3a-05321102f0db.jsonl",
+      "modified": "2026-01-31T22:53:22.565349",
+      "size": 518920
+    }
+  ]
+}

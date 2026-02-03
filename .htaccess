@@ -1,0 +1,53 @@
+# Deny access to .md files
+<FilesMatch "\.md$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Also block backup files
+<FilesMatch "\.(bak|backup|old)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Redirect .md requests to 404 or dashboard
+RewriteEngine On
+RewriteRule \.md$ /unified_dashboard.html [R=301,L]
+
+# AGGRESSIVE CACHE BUSTING - Added Feb 3, 2026
+# Disable caching for HTML files
+<FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+</FilesMatch>
+
+# Disable caching for CSS and JS
+<FilesMatch "\.(css|js)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+</FilesMatch>
+
+# Enable mod_headers for cache control
+<IfModule mod_headers.c>
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>
+
+# Redirect dashboard.html to latest version
+RewriteRule ^dashboard\.html$ /unified_dashboard.html [R=301,L]
+
+# Set index.html as default directory index
+DirectoryIndex index.html
+
+# Redirect root to index.html with cache busting
+RewriteRule ^$ /index.html [L]
+
+# Redirect requests for old master dashboard to new unified dashboard
+RewriteRule ^ascent_xr_master_dashboard\.html$ /index.html [R=301,L]
+
+# If specific file requested, use cache-busted version
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^dashboard\.html$ /unified_dashboard.html [L]

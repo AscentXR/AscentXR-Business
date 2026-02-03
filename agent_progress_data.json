@@ -1,0 +1,120 @@
+{
+  "agents": [
+    {
+      "id": "main",
+      "name": "Main Agent",
+      "status": "active",
+      "progress": 47,
+      "eta": "2 hours",
+      "active_since": "18:00 UTC",
+      "quality_score": 85,
+      "tests_passed": 3,
+      "bugs_found": 2,
+      "code_quality": 88,
+      "task": "Coordination & integration",
+      "recent_work": [
+        "ascent_xr_master_dashboard.html",
+        "ascent_xr_master_dashboard_backup.html",
+        "index.html"
+      ]
+    },
+    {
+      "id": "dashboard",
+      "name": "Dashboard Agent",
+      "status": "active",
+      "progress": 100,
+      "eta": "1 hour",
+      "active_since": "17:30 UTC",
+      "quality_score": 90,
+      "tests_passed": 5,
+      "bugs_found": 1,
+      "code_quality": 92,
+      "task": "Dashboard visualization improvements",
+      "recent_work": [
+        "ascent_xr_master_dashboard.html",
+        "ascent_xr_master_dashboard_backup.html",
+        "index.html"
+      ]
+    },
+    {
+      "id": "developer",
+      "name": "Developer Agent",
+      "status": "active",
+      "progress": 40,
+      "eta": "3 hours",
+      "active_since": "17:00 UTC",
+      "quality_score": 80,
+      "tests_passed": 4,
+      "bugs_found": 3,
+      "code_quality": 85,
+      "task": "CRM & LinkedIn API development",
+      "recent_work": [
+        "crm_test_results.json",
+        "test_crm_connection.js"
+      ]
+    },
+    {
+      "id": "qa",
+      "name": "QA Agent",
+      "status": "active",
+      "progress": 100,
+      "eta": "30 minutes",
+      "active_since": "17:45 UTC",
+      "quality_score": 95,
+      "tests_passed": 8,
+      "bugs_found": 5,
+      "code_quality": 90,
+      "task": "Quality assurance & testing",
+      "recent_work": [
+        "crm_test_results.json",
+        "qa_report.md",
+        "test_crm_connection.js"
+      ]
+    },
+    {
+      "id": "deployment",
+      "name": "Deployment Agent",
+      "status": "active",
+      "progress": 0,
+      "eta": "4 hours",
+      "active_since": "17:15 UTC",
+      "quality_score": 75,
+      "tests_passed": 2,
+      "bugs_found": 4,
+      "code_quality": 80,
+      "task": "Deployment configuration",
+      "recent_work": []
+    }
+  ],
+  "total_agents": 5,
+  "active_agents": 5,
+  "average_progress": 57,
+  "alerts": [
+    {
+      "agent": "Deployment Agent",
+      "type": "progress_issue",
+      "message": "Deployment Agent progress slow (0%)"
+    }
+  ],
+  "last_updated": "2026-02-01T18:08:22.123Z",
+  "sources": [
+    "workspace_file_analysis",
+    "progress_simulation"
+  ],
+  "metrics": {
+    "totalFiles": 17,
+    "categorizedCounts": {
+      "dashboard": 4,
+      "crm": 2,
+      "linkedin": 0,
+      "content": 0,
+      "deployment": 0,
+      "qa": 3
+    },
+    "dashboardProgress": 100,
+    "crmProgress": 40,
+    "linkedinProgress": 0,
+    "deploymentProgress": 0,
+    "qaProgress": 100
+  }
+}

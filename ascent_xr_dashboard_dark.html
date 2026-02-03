@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCENT XR Dashboard - Dark Mode</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e2e8f0;
+        }
+        
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #1e293b;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #60a5fa;
+        }
+        
+        .header .subtitle {
+            opacity: 0.9;
+            font-size: 1.2rem;
+            color: #94a3b8;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #1e293b;
+        }
+        
+        .stat-card {
+            background: #0f172a;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #334155;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+        
+        .charts-section {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+        
+        .chart-container {
+            background: #0f172a;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid #334155;
+        }
+        
+        .chart-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #f8fafc;
+            text-align: center;
+        }
+        
+        .tasks-section {
+            padding: 30px;
+            background: #1e293b;
+        }
+        
+        .task-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .task-list {
+            background: #0f172a;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid #334155;
+        }
+        
+        .task-list h3 {
+            color: #60a5fa;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #334155;
+        }
+        
+        .task-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #1e293b;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid #334155;
+        }
+        
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #60a5fa;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #0f172a;
+        }
+        
+        .task-checkbox.checked {
+            background: #60a5fa;
+            position: relative;
+        }
+        
+        .task-checkbox.checked::after {
+            content: '✓';
+            color: #0f172a;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+        }
+        
+        .task-content {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-weight: 600;
+            color: #f8fafc;
+        }
+        
+        .task-due {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+        
+        .task-owner {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #1e40af;
+            color: #60a5fa;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .risk-section {
+            padding: 30px;
+        }
+        
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .risk-card {
+            background: #0f172a;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid #334155;
+        }
+        
+        .risk-card.high {
+            border-left: 5px solid #ef4444;
+        }
+        
+        .risk-card.medium {
+            border-left: 5px solid #f59e0b;
+        }
+        
+        .risk-card.low {
+            border-left: 5px solid #10b981;
+        }
+        
+        .risk-title {
+            font-size: 1.2rem;
+            color: #f8fafc;
+            margin-bottom: 10px;
+        }
+        
+        .risk-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .risk-probability, .risk-impact {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .risk-probability.high { background: #ef4444; color: #0f172a; }
+        .risk-probability.medium { background: #f59e0b; color: #0f172a; }
+        .risk-probability.low { background: #10b981; color: #0f172a; }
+        
+        .risk-impact.high { background: #ef4444; color: #0f172a; }
+        .risk-impact.medium { background: #f59e0b; color: #0f172a; }
+        .risk-impact.low { background: #10b981; color: #0f172a; }
+        
+        .risk-mitigation {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            border-top: 1px solid #334155;
+            background: #0f172a;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Dark mode chart styling */
+        .chartjs-render-monitor {
+            filter: brightness(0.9) contrast(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>ASCENT XR ACTION DASHBOARD</h1>
+            <div class="subtitle">Last Updated: January 31, 2026 | Next Review: February 7, 2026</div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">$300K</div>
+                <div class="stat-label">Revenue Target by June 30</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">5 Months</div>
+                <div class="stat-label">Timeline Remaining</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">Week 1</div>
+                <div class="stat-label">Current Focus (Feb 1-7)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3 Tracks</div>
+                <div class="stat-label">Revenue Strategy</div>
+            </div>
+        </div>
+        
+        <div class="charts-section">
+            <div class="chart-container">
+                <div class="chart-title">Revenue Pipeline Breakdown</div>
+                <canvas id="revenueChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Week 1 Task Completion</div>
+                <canvas id="taskChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="tasks-section">
+            <h2 style="color: #60a5fa; text-align: center; margin-bottom: 10px;">Week 1 Tasks (Feb 1-7)</h2>
+            <div class="task-columns">
+                <div class="task-list">
+                    <h3>Jim's Tasks</h3>
+                    <div class="task-item">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-title">Complete client management CRM system</div>
+                            <div class="task-due">Due: Feb 7</div>
+                            <span class="task-owner">Jim</span>
+                        </div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-title">Document all existing school relationships</div>
+                            <div class="task-due">Due: Feb 7</div>
+                            <span class="task-owner">Jim</span>
+                        </div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-title">Identify 5 WebXR experiences for tablet adaptation</div>
+                            <div class="task-due">Due: Feb 7</div>
+                            <span class="task-owner">Jim</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="task-list">
+                    <h3>Nick's Tasks</h3>
+                    <div class="task-item">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-title">Continue food web experience development</div>
+                            <div class="task-due">Ongoing</div>
+                            <span class="task-owner">Nick</span>
+                        </div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-title">Continue co-signs project</div>
+                            <div class="task-due">Ongoing</div>
+                            <span class="task-owner">Nick</span>
+                        </div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-title">Continue restorative model project</div>
+                            <div class="task-due">Ongoing</div>
+                            <span class="task-owner">Nick</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="task-list">
+                    <h3>Joint Tasks</h3>
+                    <div class="task-item">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-title">Schedule calls with Kevin (Geo) and Anita</div>
+                            <div class="task-due">Due: Feb 7</div>
+                            <span class="task-owner">Both</span>
+                        </div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-title">Draft first 3 LinkedIn posts</div>
+                            <div class="task-due">Due: Feb 7</div>
+                            <span class="task-owner">Both</span>
+                        </div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-checkbox"></div>
+                        <div class="task-content">
+                            <div class="task-title">Create target list of 10 potential clients</div>
+                            <div class="task-due">Due: Feb 7</div>
+                            <span class="task-owner">Both</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="risk-section">
+            <h2 style="color: #60a5fa; text-align: center; margin-bottom: 10px;">Risk Register</h2>
+            <div class="risk-grid">
+                <div class="risk-card high">
+                    <div class="risk-title">School budget cycles delay decisions</div>
+                    <div class="risk-meta">
+                        <div class="risk-probability high">High Probability</div>
+                        <div class="risk-impact high">High Impact</div>
+                    </div>
+                    <div class="risk-mitigation">
+                        Target districts with remaining FY funds; offer pilot pricing
+                        <div style="margin-top: 10px; color: #60a5fa; font-weight: 600;">Owner: Jim</div>
+                    </div>
+                </div>
+                
+                <div class="risk-card medium">
+                    <div class="risk-title">Custom projects take longer than expected</div>
+                    <div class="risk-meta">
+                        <div class="risk-probability medium">Medium Probability</div>
+                        <div class="risk-impact medium">Medium Impact</div>
+                    </div>
+                    <div class="risk-mitigation">
+                        Create template workflows; collect 50% upfront
+                        <div style="margin-top: 10px; color: #60a5fa; font-weight: 600;">Owner: Nick</div>
+                    </div>
+                </div>
+                
+                <div class="risk-card medium">
+                    <div class="risk-title">Existing clients don't renew</div>
+                    <div class="risk-meta">
+                        <div class="risk-probability medium">Medium Probability</div>
+                        <div class="risk-impact high">High Impact</div>
+                    </div>
+                    <div class="risk-mitigation">
+                        Proactive engagement; deliver new content weekly; ROI documentation
+                        <div style="margin-top: 10px; color: #60a5fa; font-weight: 600;">Owner: Both</div>
+                    </div>
+                </div>
+                
+                <div class="risk-card low">
+                    <div class="risk-title">LinkedIn outreach feels spammy</div>
+                    <div class="risk-meta">
+                        <div class="risk-probability medium">Medium Probability</div>
+                        <div class="risk-impact low">Low Impact</div>
+                    </div>
+                    <div class="risk-mitigation">
+                        Lead with value; personalize messages; share useful content
+                        <div style="margin-top: 10px; color: #60a5fa; font-weight: 600;">Owner: Jim</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            Dashboard created by Ascent Assistant | Next Update: February 7, 2026
+        </div>
+    </div>
+
+    <script>
+        // Revenue Pipeline Chart with dark mode colors
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revenueCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['District Licensing', 'Custom Experiences', 'AI Lesson Generation'],
+                datasets: [{
+                    data: [150, 75, 50],
+                    backgroundColor: ['#60a5fa', '#3b82f6', '#1d4ed8'],
+                    borderWidth: 1,
+                    borderColor: '#334155'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#e2e8f0',
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleColor: '#f8fafc',
+                        bodyColor: '#e2e8f0',
+                        borderColor: '#334155',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                const label = context.label;
+                                return `${label}: $${value}K potential`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Task Completion Chart with dark mode colors
+        const taskCtx = document.getElementById('taskChart').getContext('2d');
+        new Chart(taskCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jim\'s Tasks', 'Nick\'s Tasks', 'Joint Tasks'],
+                datasets: [{
+                    label: 'Total Tasks',
+                    data: [3, 3, 3],
+                    backgroundColor: '#3b82f6',
+                    borderWidth: 1,
+                    borderColor: '#334155'
+                }, {
+                    label: 'Completed',
+                    data: [0, 0, 0],
+                    backgroundColor: '#10b981',
+                    borderWidth: 1,
+                    borderColor: '#334155'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        stacked: false,
+                        ticks: {
+                            color: '#e2e8f0'
+                        },
+                        grid: {
+                            color: '#334155'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        max: 5,
+                        ticks: {
+                            stepSize: 1,
+                            color: '#e2e8f0'
+                        },
+                        grid: {
+                            color: '#334155'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: '#e2e8f0'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Task checkbox functionality
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                this.classList.toggle('checked');
+                updateTaskChart();
+            });
+        });
+        
+        function updateTaskChart() {
+            const jimsTasks = document.querySelectorAll('.task-list:nth-child(1) .task-checkbox.checked').length;
+            const nicksTasks = document.querySelectorAll('.task-list:nth-child(2) .task-checkbox.checked').length;
+            const jointTasks = document.querySelectorAll('.task-list:nth-child(3) .task-checkbox.checked').length;
+            
+            taskChart.data.datasets[1].data = [jimsTasks, nicksTasks, jointTasks];
+            taskChart.update();
+        }
+        
+        // Make chart variables accessible
+        window.revenueChart = revenueCtx.chart;
+        window.taskChart = taskCtx.chart;
+
+        // Dark mode theme for all charts
+        Chart.defaults.color = '#e2e8f0';
+        Chart.defaults.borderColor = '#334155';
+    </script>
+</body>
+</html>

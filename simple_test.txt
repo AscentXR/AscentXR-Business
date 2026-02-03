@@ -1,0 +1,3 @@
+Test file for Slack upload debugging.
+Simple text content.
+Minimal size for testing.

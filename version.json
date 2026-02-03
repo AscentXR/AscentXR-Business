@@ -1,0 +1,18 @@
+{
+  "version": "v18.0",
+  "buildDate": "2026-02-03T13:25:00Z",
+  "buildTimestamp": 1706969100,
+  "file": "unified_dashboard.html",
+  "changelog": [
+    "Fixed JavaScript errors (logout function, orphaned code)",
+    "Added visible version indicator",
+    "Implemented cache-busting strategy",
+    "Updated .htaccess for aggressive cache control",
+    "Added meta no-cache headers"
+  ],
+  "cacheBusting": {
+    "enabled": true,
+    "queryParam": "t",
+    "filenameVersioning": true
+  }
+}

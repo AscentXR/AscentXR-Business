@@ -1,0 +1,38 @@
+{
+  "timestamp": "2026-02-01T18:08:22.123Z",
+  "overall_progress": 57,
+  "active_agents": 5,
+  "agent_summary": [
+    {
+      "name": "Main Agent",
+      "progress": 47,
+      "status": "active",
+      "quality": 85
+    },
+    {
+      "name": "Dashboard Agent",
+      "progress": 100,
+      "status": "active",
+      "quality": 90
+    },
+    {
+      "name": "Developer Agent",
+      "progress": 40,
+      "status": "active",
+      "quality": 80
+    },
+    {
+      "name": "QA Agent",
+      "progress": 100,
+      "status": "active",
+      "quality": 95
+    },
+    {
+      "name": "Deployment Agent",
+      "progress": 0,
+      "status": "active",
+      "quality": 75
+    }
+  ],
+  "alerts_count": 1
+}

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ascent XR - LinkedIn Week 1 Performance Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .week-info {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f2f5;
+            padding-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .metric {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .metric-target {
+            font-size: 1rem;
+            color: #718096;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .post-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+        
+        .post-1 { border-left-color: #4299e1; }
+        .post-2 { border-left-color: #48bb78; }
+        .post-3 { border-left-color: #ed8936; }
+        
+        .post-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-ready { background-color: #c6f6d5; color: #22543d; }
+        .status-scheduled { background-color: #bee3f8; color: #2a4365; }
+        .status-pending { background-color: #fed7d7; color: #742a2a; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        th {
+            background-color: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .positive { color: #48bb78; }
+        .negative { color: #f56565; }
+        .neutral { color: #a0aec0; }
+        
+        .engagement-log {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            padding: 10px 0;
+            border-bottom: 1px solid #edf2f7;
+        }
+        
+        .log-time {
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .log-activity {
+            color: #718096;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Ascent XR LinkedIn Performance Dashboard</h1>
+            <p class="subtitle">Week 1 Execution: February 1-7, 2026</p>
+            <div class="week-info">
+                <div>
+                    <strong>Objective:</strong> Implement complete LinkedIn strategy for superintendent outreach
+                </div>
+                <div>
+                    <strong>Status:</strong> <span class="status-ready post-status">READY FOR EXECUTION</span>
+                </div>
+            </div>
+        </header>
+        
+        <div class="dashboard-grid">
+            <!-- Post Performance Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Post Performance</h2>
+                    <span class="status-ready post-status">3 POSTS READY</span>
+                </div>
+                
+                <div class="post-card post-1">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Post 1: The Engagement Gap</h3>
+                        <span class="status-scheduled post-status">Feb 3, 8:30 AM</span>
+                    </div>
+                    <p>Video + Text | #EdTech #K12 #SpatialLearning</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%; background-color: #4299e1;"></div>
+                    </div>
+                    <div class="metric-target">Target: 50+ likes, 15+ comments</div>
+                </div>
+                
+                <div class="post-card post-2">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Post 2: AI + Spatial Learning</h3>
+                        <span class="status-scheduled post-status">Feb 5, 11:30 AM</span>
+                    </div>
+                    <p>Screenshot + Text | #AI #EdTech #TeacherTools</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%; background-color: #48bb78;"></div>
+                    </div>
+                    <div class="metric-target">Target: 50+ likes, 15+ comments</div>
+                </div>
+                
+                <div class="post-card post-3">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Post 3: Superintendent's Dilemma</h3>
+                        <span class="status-scheduled post-status">Feb 7, 3:30 PM</span>
+                    </div>
+                    <p>Infographic + Text | #Leadership #K12Leadership</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%; background-color: #ed8936;"></div>
+                    </div>
+                    <div class="metric-target">Target: 75+ likes, 20+ comments</div>
+                </div>
+            </div>
+            
+            <!-- Key Metrics Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Key Metrics</h2>
+                    <span class="status-ready post-status">WEEK 1 TARGETS</span>
+                </div>
+                
+                <div style="margin-bottom: 25px;">
+                    <div class="metric">20+</div>
+                    <div class="metric-target">New Superintendent Connections</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%; background-color: #9f7aea;"></div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 25px;">
+                    <div class="metric">200+</div>
+                    <div class="metric-target">Profile Views Increase</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%; background-color: #4299e1;"></div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 25px;">
+                    <div class="metric">3+</div>
+                    <div class="metric-target">Demo Requests from LinkedIn</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%; background-color: #48bb78;"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="metric">150+</div>
+                    <div class="metric-target">Total Post Engagements</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%; background-color: #ed8936;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Daily Engagement Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Daily Engagement Plan</h2>
+                    <span class="status-ready post-status">21 ACTIVITIES</span>
+                </div>
+                
+                <div class="engagement-log">
+                    <div class="log-entry">
+                        <div class="log-time">8:00 AM Daily</div>
+                        <div class="log-activity">Check notifications, respond to comments</div>
+                    </div>
+                    
+                    <div class="log-entry">
+                        <div class="log-time">12:00 PM Daily</div>
+                        <div class="log-activity">Engage with 5 superintendent posts</div>
+                    </div>
+                    
+                    <div class="log-entry">
+                        <div class="log-time">4:00 PM Daily</div>
+                        <div class="log-activity">Share 1-2 valuable EdTech articles</div>
+                    </div>
+                    
+                    <div class="log-entry">
+                        <div class="log-time">Feb 3, 8:30 AM</div>
+                        <div class="log-activity"><strong>POST 1:</strong> The Engagement Gap</div>
+                    </div>
+                    
+                    <div class="log-entry">
+                        <div class="log-time">Feb 5, 11:30 AM</div>
+                        <div class="log-activity"><strong>POST 2:</strong> AI + Spatial Learning</div>
+                    </div>
+                    
+                    <div class="log-entry">
+                        <div class="log-time">Feb 7, 3:30 PM</div>
+                        <div class="log-activity"><strong>POST 3:</strong> Superintendent's Dilemma</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background-color: #f7fafc; border-radius: 8px;">
+                    <strong>Completion Rate:</strong> <span id="completionRate">0%</span>
+                    <div class="progress-bar" style="margin-top: 10px;">
+                        <div class="progress-fill" id="completionBar" style="width: 0%; background-color: #48bb78;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Outreach & Conversion Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Outreach & Conversion</h2>
+                    <span class="status-ready post-status">6 TEMPLATES READY</span>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Template</th>
+                            <th>Use Case</th>
+                            <th>Expected Response</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>After Post Engagement</td>
+                            <td>When someone comments</td>
+                            <td class="positive">40-50%</td>
+                        </tr>
+                        <tr>
+                            <td>Direct Superintendent</td>
+                            <td>No prior engagement</td>
+                            <td class="neutral">20-30%</td>
+                        </tr>
+                        <tr>
+                            <td>Connection Follow-up</td>
+                            <td>After connection accepted</td>
+                            <td class="positive">30-40%</td>
+                        </tr>
+                        <tr>
+                            <td>Demo Response</td>
+                            <td>Demo inquiry received</td>
+                            <td class="positive">80-90%</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div style="margin-top: 20px;">
+                    <div class="metric">0</div>
+                    <div class="metric-target">Demo Requests Generated (Target: 3+)</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="demoProgress" style="width: 0%; background-color: #4299e1;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Assets & Files Section -->
+        <div class="card" style="margin-top: 30px;">
+            <div class="card-header">
+                <h2 class="card-title">Assets & Files Ready</h2>
+                <span class="status-ready post-status">ALL COMPLETE</span>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 20px;">
+                <div style="padding: 15px; background-color: #f7fafc; border-radius: 8px;">
+                    <h3>📋 Post Assets</h3>
+                    <ul style="margin-top: 10px; padding-left: 20px; color: #4a5568;">
+                        <li>Post 1: Video clip ready</li>
+                        <li>Post 2: Screenshot ready</li>
+                        <li>Post 3: Infographic ready</li>
+                        <li>All text finalized</li>
+                    </ul>
+                </div>
+                
+                <div style="padding: 15px; background-color: #f7fafc; border-radius: 8px;">
+                    <h3>🗓️ Scheduling System</h3>
+                    <ul style="margin-top: 10px; padding-left: 20px; color: #4a5568;">
+                        <li>Calendar events set</li>
+                        <li>Daily reminders configured</li>
+                        <li>Contingency plans ready</li>
+                    </ul>
+                </div>
+                
+                <div style="padding: 15px; background-color: #f7fafc; border-radius: 8px;">
+                    <h3>📊 Tracking System</h3>
+                    <ul style="margin-top: 10px; padding-left: 20px; color: #4a5568;">
+                        <li>Engagement spreadsheet</li>
+                        <li>Performance metrics</li>
+                        <li>Connection tracking</li>
+                    </ul>
+                </div>
+                
+                <div style="padding: 15px; background-color: #f7fafc; border-radius: 8px;">
+                    <h3>✉️ Outreach Templates</h3>
+                    <ul style="margin-top: 10px; padding-left: 20px; color: #4a5568;">
+                        <li>6 template variations</li>
+                        <li>Usage guidelines</li>
+                        <li>Response rate targets</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Ascent XR LinkedIn Week 1 Strategy | Execution Period: February 1-7, 2026</p>
+            <p>Next Review: February 8, 2026 | Dashboard Version: 1.0</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Simple animation for progress bars
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                if (bar.style.width === '0%') {
+                    // For demo purposes, show small initial progress
+                    bar.style.width = '5%';
+                }
+            });
+            
+            // Update completion rate (mock data for now)
+            document.getElementById('completionRate').textContent = '5%';
+            document.getElementById('completionBar').style.width = '5%';
+            document.getElementById('demoProgress').style.width = '0%';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ascent XR LinkedIn Schedule</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --primary: #0052cc;
+            --secondary: #007bff;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            border: 1px solid #334155;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #60a5fa;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            margin: 25px 0 15px;
+            color: var(--primary);
+            border-bottom: 2px solid #334155;
+            padding-bottom: 8px;
+        }
+        
+        .content-section {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #334155;
+        }
+        
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .schedule-table th {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--primary);
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #334155;
+        }
+        
+        .schedule-table td {
+            padding: 12px;
+            border: 1px solid #334155;
+            color: var(--text-secondary);
+        }
+        
+        .schedule-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .day-header {
+            background: rgba(6, 182, 212, 0.1);
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .post-scheduled {
+            color: #DC1625;
+        }
+        
+        .post-pending {
+            color: #f59e0b;
+        }
+        
+        .post-draft {
+            color: var(--text-muted);
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+        
+        .responsibility-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .responsibility-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .responsibility-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background: rgba(16, 185, 129, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #DC1625;
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #DC1625;
+        }
+        
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="unified_dashboard.html" class="back-link">
+            ← Back to Unified Dashboard
+        </a>
+        
+        <header>
+            <h1>📅 LINKEDIN SCHEDULE - WEEK 1</h1>
+            <p style="color: var(--text-secondary);">Week 1 execution schedule with posting times, responsibilities, and performance tracking</p>
+        </header>
+        
+        <div class="content-section">
+            <h2>Week 1 Posting Schedule</h2>
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Post Title</th>
+                        <th>Time (EST)</th>
+                        <th>Status</th>
+                        <th>Image Ready</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="day-header">
+                        <td colspan="5">Monday - February 3, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Monday</td>
+                        <td><strong>Post 1: The Engagement Gap</strong><br>Traditional worksheets vs. immersive experiences</td>
+                        <td>8:30 AM EST</td>
+                        <td class="post-scheduled">✅ SCHEDULED</td>
+                        <td>✅ Image Created</td>
+                    </tr>
+                    <tr>
+                        <td>Monday</td>
+                        <td>Engagement: Respond to comments, engage with 20 superintendent posts</td>
+                        <td>10:00 AM - 12:00 PM</td>
+                        <td class="post-pending">🔄 PENDING</td>
+                        <td>N/A</td>
+                    </tr>
+                    
+                    <tr class="day-header">
+                        <td colspan="5">Tuesday - February 4, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Tuesday</td>
+                        <td>Daily Engagement: Respond to Monday comments, engage with 10 relevant posts</td>
+                        <td>9:00 AM - 10:00 AM</td>
+                        <td class="post-pending">🔄 PENDING</td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr>
+                        <td>Tuesday</td>
+                        <td>Outreach: Send 5 personalized connection requests to superintendents</td>
+                        <td>1:00 PM - 2:00 PM</td>
+                        <td class="post-pending">🔄 PENDING</td>
+                        <td>N/A</td>
+                    </tr>
+                    
+                    <tr class="day-header">
+                        <td colspan="5">Wednesday - February 5, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Wednesday</td>
+                        <td><strong>Post 2: AI + Spatial Learning = ❤️</strong><br>Teacher time savings with AI lesson generation</td>
+                        <td>11:30 AM EST</td>
+                        <td class="post-scheduled">✅ SCHEDULED</td>
+                        <td>✅ Image Created</td>
+                    </tr>
+                    <tr>
+                        <td>Wednesday</td>
+                        <td>Engagement: Respond to comments, share relevant EdTech articles</td>
+                        <td>1:00 PM - 2:00 PM</td>
+                        <td class="post-pending">🔄 PENDING</td>
+                        <td>N/A</td>
+                    </tr>
+                    
+                    <tr class="day-header">
+                        <td colspan="5">Thursday - February 6, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Thursday</td>
+                        <td>Daily Engagement: Monitor Post 2 performance, respond to comments</td>
+                        <td>9:00 AM - 10:00 AM</td>
+                        <td class="post-pending">🔄 PENDING</td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr>
+                        <td>Thursday</td>
+                        <td>Outreach: Send 5 more personalized connection requests</td>
+                        <td>3:00 PM - 4:00 PM</td>
+                        <td class="post-pending">🔄 PENDING</td>
+                        <td>N/A</td>
+                    </tr>
+                    
+                    <tr class="day-header">
+                        <td colspan="5">Friday - February 7, 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Friday</td>
+                        <td><strong>Post 3: The Superintendent's Dilemma</strong><br>ROI evaluation framework for district technology</td>
+                        <td>3:00 PM EST</td>
+                        <td class="post-scheduled">✅ SCHEDULED</td>
+                        <td>✅ Image Created</td>
+                    </tr>
+                    <tr>
+                        <td>Friday</td>
+                        <td>Weekend Planning: Analyze week performance, plan Week 2 content</td>
+                        <td>4:00 PM - 5:00 PM</td>
+                        <td class="post-pending">🔄 PENDING</td>
+                        <td>N/A</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="content-section">
+            <h2>Responsibilities</h2>
+            <div class="responsibility-grid">
+                <div class="responsibility-card">
+                    <div class="responsibility-title">Jim (CEO)</div>
+                    <ul style="color: var(--text-secondary); margin-top: 10px; font-size: 0.9rem;">
+                        <li>Post content creation and editing</li>
+                        <li>Comment response and engagement</li>
+                        <li>Superintendent outreach</li>
+                        <li>Performance analysis</li>
+                    </ul>
+                </div>
+                
+                <div class="responsibility-card">
+                    <div class="responsibility-title">AI Assistant</div>
+                    <ul style="color: var(--text-secondary); margin-top: 10px; font-size: 0.9rem;">
+                        <li>Content research and suggestions</li>
+                        <li>Image generation support</li>
+                        <li>Performance tracking</li>
+                        <li>Schedule reminders</li>
+                    </ul>
+                </div>
+                
+                <div class="responsibility-card">
+                    <div class="responsibility-title">Dashboard System</div>
+                    <ul style="color: var(--text-secondary); margin-top: 10px; font-size: 0.9rem;">
+                        <li>Automated schedule tracking</li>
+                        <li>Performance metrics collection</li>
+                        <li>Reminder notifications</li>
+                        <li>Progress visualization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2>Target Metrics - Week 1</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">3</div>
+                    <div class="metric-label">Posts Published</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">20+</div>
+                    <div class="metric-label">Engaged Posts</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">10</div>
+                    <div class="metric-label">Outreach Messages</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">5+</div>
+                    <div class="metric-label">New Connections</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">1</div>
+                    <div class="metric-label">Demo Request</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2>LinkedIn Gallery</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                All 3 post images have been created and are available in the LinkedIn Gallery.
+            </p>
+            <a href="linkedin_gallery.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">
+                View LinkedIn Gallery with Images →
+            </a>
+        </div>
+    </div>
+</body>
+</html>

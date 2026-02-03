@@ -1,0 +1,4 @@
+# Placeholder for AI interface screenshot
+# This would be a PNG screenshot showing the AI lesson generator UI
+# Actual file: ai_interface_screenshot.png
+# Content: AI generating 3D content with Indiana standards alignment

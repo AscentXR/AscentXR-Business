@@ -1,0 +1,50 @@
+{
+  "requesting_agent": "dashboard",
+  "task_id": "code_crm_integration_003",
+  "created_at": "2026-02-01T10:40:00Z",
+  "task_description": "Add CRM integration features to the AscentXR master dashboard",
+  "task_type": "code",
+  "requirements": [
+    "Integrate with existing CRM schema",
+    "Add client management section",
+    "Include lead tracking functionality",
+    "Implement data import/export features",
+    "Maintain responsive design"
+  ],
+  "deadline": "2026-02-04T18:00:00Z",
+  "priority": "high",
+  "required_assets": [
+    {
+      "type": "file",
+      "path": "/home/jim/openclaw/shared_assets/code/crm/schema.json",
+      "description": "CRM database schema"
+    },
+    {
+      "type": "file",
+      "path": "/home/jim/openclaw/ascent_xr_master_dashboard.html",
+      "description": "Current master dashboard"
+    },
+    {
+      "type": "file",
+      "path": "/home/jim/openclaw/CRM_FEATURE_RECOMMENDATIONS.md",
+      "description": "CRM feature recommendations"
+    }
+  ],
+  "expected_outputs": {
+    "deliverables": [
+      "ascent_xr_dashboard_with_crm.html",
+      "crm_integration_guide.md",
+      "client_management_module.js",
+      "lead_tracking_module.js",
+      "test_data_sample.json"
+    ],
+    "format": "HTML/CSS/JS with documentation",
+    "location": "/home/jim/openclaw/shared_assets/code/dashboard/crm_integration/"
+  },
+  "accepting_agent": "",
+  "accepted_at": "",
+  "status": "pending",
+  "progress_percentage": 0,
+  "completion_notes": "",
+  "completed_at": ""
+}

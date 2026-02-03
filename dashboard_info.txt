@@ -1,0 +1,33 @@
+ASCENT XR DASHBOARD - ACCESS INSTRUCTIONS
+
+Dashboard File: ascent_xr_dashboard.html
+Server Status: Running on WSL2 port 8087
+
+TO ACCESS FROM WINDOWS:
+1. Open Windows browser
+2. Go to: http://localhost:8087/ascent_xr_dashboard.html
+
+TO ACCESS FROM OTHER COMPUTERS ON NETWORK:
+Option A (If Windows firewall allows):
+1. Find Windows IP: Open Command Prompt -> type "ipconfig"
+2. Look for IPv4 Address (likely 192.168.x.x)
+3. Go to: http://[WINDOWS_IP]:8087/ascent_xr_dashboard.html
+
+Option B (Run Windows-native server):
+1. Double-click "start_dashboard.bat" on Windows
+2. It will start Python HTTP server on Windows
+3. Access via: http://[COMPUTER_NAME]:8087/ascent_xr_dashboard.html
+
+Option C (Port forwarding from WSL2):
+Run in Windows PowerShell (Admin):
+netsh interface portproxy add v4tov4 listenport=8087 listenaddress=0.0.0.0 connectport=8087 connectaddress=172.22.8.76
+
+FEATURES:
+- Interactive revenue charts
+- Clickable task checkboxes
+- Risk assessment cards
+- Mobile responsive
+- Based on 90-day action plan
+
+CREATED: January 31, 2026
+NEXT UPDATE: February 7, 2026

@@ -1,0 +1,4 @@
+# Placeholder for ROI framework infographic
+# This would be a PNG infographic showing the ROI measurement framework
+# Actual file: roi_framework_infographic.png
+# Content: Four quadrants: Student Engagement, Standards Coverage, Teacher Adoption, Learning Outcomes

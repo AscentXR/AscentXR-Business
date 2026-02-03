@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Ascent XR Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a1d45;
+            --primary-dark: #071732;
+            --secondary: #132e5e;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-border: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: var(--dark-card);
+            border-radius: 24px;
+            padding: 50px;
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid var(--dark-border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .login-header h1 {
+            color: var(--text-primary);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 15px 18px;
+            background: var(--dark-bg);
+            border: 2px solid var(--dark-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .form-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        
+        .form-input.with-icon {
+            padding-left: 50px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(10, 29, 69, 0.5);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .error-message.show {
+            display: flex;
+        }
+        
+        .success-message {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .success-message.show {
+            display: flex;
+        }
+        
+        .security-notice {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--dark-bg);
+            border-radius: 12px;
+            border: 1px solid var(--dark-border);
+        }
+        
+        .security-notice h3 {
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .security-notice ul {
+            list-style: none;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        
+        .security-notice li {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .security-notice i {
+            color: var(--success);
+            font-size: 0.8rem;
+        }
+        
+        .loading {
+            display: none;
+        }
+        
+        .loading.show {
+            display: inline-block;
+        }
+        
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .forgot-password a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .forgot-password a:hover {
+            color: var(--text-primary);
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 25px;
+            }
+            
+            .login-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <h1>Ascent XR Dashboard</h1>
+            <p>Secure Admin Access Only</p>
+        </div>
+        
+        <div class="error-message" id="errorMessage">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorText">Invalid credentials</span>
+        </div>
+        
+        <div class="success-message" id="successMessage">
+            <i class="fas fa-check-circle"></i>
+            <span>Login successful! Redirecting...</span>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <div class="input-group">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" class="form-input with-icon" id="username" placeholder="Enter your username" required autocomplete="username">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <div class="input-group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" class="form-input with-icon" id="password" placeholder="Enter your password" required autocomplete="current-password">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn" id="loginBtn">
+                <span class="btn-text">Sign In</span>
+                <span class="loading" id="loadingSpinner">
+                    <div class="spinner"></div>
+                </span>
+            </button>
+        </form>
+        
+        <div class="security-notice">
+            <h3><i class="fas fa-shield-alt"></i> Security Features</h3>
+            <ul>
+                <li><i class="fas fa-check"></i> Encrypted session tokens</li>
+                <li><i class="fas fa-check"></i> Automatic timeout after 30 min</li>
+                <li><i class="fas fa-check"></i> Admin access only (2 users)</li>
+                <li><i class="fas fa-check"></i> Failed login tracking</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Admin credentials (in production, these would be server-side)
+        const ADMIN_USERS = [
+            { username: 'jim', password: 'ascent2026!', name: 'Jim', role: 'CEO' },
+            { username: 'nick', password: 'ascent2026!', name: 'Nick', role: 'CTO' }
+        ];
+        
+        // Check if already logged in
+        function checkExistingSession() {
+            const session = localStorage.getItem('ascent_session');
+            if (session) {
+                try {
+                    const sessionData = JSON.parse(session);
+                    if (sessionData.expires > Date.now()) {
+                        window.location.href = 'unified_dashboard.html';
+                        return;
+                    } else {
+                        localStorage.removeItem('ascent_session');
+                    }
+                } catch (e) {
+                    localStorage.removeItem('ascent_session');
+                }
+            }
+        }
+        
+        // Run check on load
+        checkExistingSession();
+        
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.toLowerCase().trim();
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const loginBtn = document.getElementById('loginBtn');
+            const btnText = loginBtn.querySelector('.btn-text');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            // Hide previous messages
+            errorMessage.classList.remove('show');
+            successMessage.classList.remove('show');
+            
+            // Show loading
+            loginBtn.disabled = true;
+            btnText.style.display = 'none';
+            loadingSpinner.classList.add('show');
+            
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // Validate credentials
+            const user = ADMIN_USERS.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                // Create session
+                const session = {
+                    username: user.username,
+                    name: user.name,
+                    role: user.role,
+                    loginTime: new Date().toISOString(),
+                    expires: Date.now() + (30 * 60 * 1000) // 30 minutes
+                };
+                
+                localStorage.setItem('ascent_session', JSON.stringify(session));
+                
+                // Show success
+                successMessage.classList.add('show');
+                
+                // Redirect after short delay
+                setTimeout(() => {
+                    window.location.href = 'unified_dashboard.html';
+                }, 1000);
+            } else {
+                // Show error
+                errorMessage.classList.add('show');
+                
+                // Reset button
+                loginBtn.disabled = false;
+                btnText.style.display = 'inline';
+                loadingSpinner.classList.remove('show');
+                
+                // Clear password
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+            }
+        });
+        
+        // Clear error on input
+        document.getElementById('username').addEventListener('input', function() {
+            document.getElementById('errorMessage').classList.remove('show');
+        });
+        
+        document.getElementById('password').addEventListener('input', function() {
+            document.getElementById('errorMessage').classList.remove('show');
+        });
+    </script>
+</body>
+</html>

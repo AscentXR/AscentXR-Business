@@ -1,0 +1,141 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent Task Request",
+  "description": "Standard format for agents to request work from other agents",
+  "type": "object",
+  "required": ["requesting_agent", "task_description", "priority"],
+  "properties": {
+    "requesting_agent": {
+      "type": "string",
+      "description": "Unique identifier of the agent making the request"
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Optional unique identifier for tracking this task"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when task was created"
+    },
+    "task_description": {
+      "type": "string",
+      "description": "Clear description of what needs to be done"
+    },
+    "task_type": {
+      "type": "string",
+      "enum": ["design", "content", "code", "documentation", "research", "troubleshooting", "coordination"],
+      "description": "Category of task for routing"
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Specific requirements or constraints"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the task must be completed (optional)"
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low"],
+      "description": "Priority level"
+    },
+    "required_assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["file", "directory", "url", "reference"]
+          },
+          "path": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Assets needed to complete the task"
+    },
+    "expected_outputs": {
+      "type": "object",
+      "properties": {
+        "deliverables": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of concrete deliverables (files, reports, etc.)"
+        },
+        "format": {
+          "type": "string",
+          "description": "Expected format of outputs"
+        },
+        "location": {
+          "type": "string",
+          "description": "Where to place outputs (default: shared_assets/[category]/)"
+        }
+      },
+      "description": "What should be produced"
+    },
+    "accepting_agent": {
+      "type": "string",
+      "description": "Agent that accepted the task (filled when claimed)"
+    },
+    "accepted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When task was accepted"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "in_progress", "completed", "blocked", "cancelled"],
+      "description": "Current task status"
+    },
+    "progress_percentage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "completion_notes": {
+      "type": "string",
+      "description": "Notes upon completion"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When task was completed"
+    }
+  },
+  "examples": [
+    {
+      "requesting_agent": "content_creator",
+      "task_id": "design_logo_001",
+      "created_at": "2026-02-01T10:30:00Z",
+      "task_description": "Create a modern logo for AscentXR using brand colors #00A3E0 and #1A1A2E",
+      "task_type": "design",
+      "requirements": ["SVG format", "Responsive design", "Dark/light variants"],
+      "deadline": "2026-02-03T18:00:00Z",
+      "priority": "high",
+      "required_assets": [
+        {
+          "type": "file",
+          "path": "/home/jim/openclaw/branding/styles/color_palette.md",
+          "description": "Brand color palette"
+        }
+      ],
+      "expected_outputs": {
+        "deliverables": ["ascentxr_logo.svg", "ascentxr_logo_white.svg", "logo_usage_guide.md"],
+        "format": "SVG with documentation",
+        "location": "/home/jim/openclaw/shared_assets/design/logos/"
+      },
+      "status": "pending"
+    }
+  ]
+}

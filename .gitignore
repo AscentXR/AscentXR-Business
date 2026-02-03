@@ -1,0 +1,58 @@
+# Sensitive files - do not commit
+*.key
+*.pem
+*.env
+.env
+.env.local
+.env.*.local
+
+# Credentials and secrets
+*_credentials*
+*password*
+*secret*
+ftp_credentials.txt
+ascentxr_key.pub
+ascentxr_key
+.htpasswd
+
+# API keys
+*api_key*
+*apikey*
+
+# Deployment scripts with credentials
+deploy_to_bluehost.sh
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node modules (if any)
+node_modules/
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Cache
+.cache/
+__pycache__/
+*.pyc
+
+# Large binary files that shouldn't be in git
+*.mp4
+*.mov
+*.avi
+*.zip
+*.tar.gz

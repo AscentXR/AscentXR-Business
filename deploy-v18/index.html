@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Ascent XR Dashboard v18 - Loading...</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #f8fafc;
+        }
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 5px solid rgba(59, 130, 246, 0.2);
+            border-top-color: #3b82f6;
+            border-right-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 30px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        p {
+            margin: 0 0 20px 0;
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+        .version {
+            margin-top: 20px;
+            padding: 15px 30px;
+            background: rgba(59, 130, 246, 0.15);
+            border-radius: 12px;
+            border: 2px solid rgba(59, 130, 246, 0.4);
+            font-size: 1rem;
+            color: #60a5fa;
+            font-weight: 600;
+        }
+        .timestamp {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #64748b;
+            font-family: monospace;
+        }
+        .manual-link {
+            margin-top: 40px;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .manual-link a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .manual-link a:hover {
+            text-decoration: underline;
+        }
+        .cache-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            max-width: 500px;
+            text-align: center;
+        }
+        .cache-info h3 {
+            color: #22c55e;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        .cache-info p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+    </style>
+    <script>
+        // FORCE CACHE BUST - Unique timestamp on every load
+        const CACHE_BUSTER = Date.now();
+        const CURRENT_VERSION = 'v18.0';
+        const BUILD_DATE = '2026-02-03';
+        
+        // Construct the URL with aggressive cache busting
+        const dashboardUrl = `unified_dashboard.html?nocache=${CACHE_BUSTER}&v=${CURRENT_VERSION}&t=${BUILD_DATE}`;
+        
+        // Clear browser cache for this page
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                names.forEach(name => caches.delete(name));
+            });
+        }
+        
+        // Log for debugging
+        console.log('🚀 Ascent XR Dashboard Loader');
+        console.log('Version:', CURRENT_VERSION);
+        console.log('Cache Buster:', CACHE_BUSTER);
+        console.log('Target URL:', dashboardUrl);
+        
+        // Redirect after brief delay
+        setTimeout(() => {
+            window.location.replace(dashboardUrl);
+        }, 2000);
+    </script>
+</head>
+<body>
+    <div class="loader"></div>
+    <h1>Ascent XR Dashboard</h1>
+    <p>Loading latest version with cache bypass...</p>
+    <div class="version">Version v18.0</div>
+    <div class="timestamp" id="timestamp"></div>
+    
+    <div class="cache-info">
+        <h3>🚀 Cache Busting Active</h3>
+        <p>We've detected cache issues. This loader forces a fresh download of v18.</p>
+    </div>
+    
+    <div class="manual-link">
+        <p>Not redirecting? <a id="manualLink" href="#">Click here to force load v18</a></p>
+        <p style="margin-top: 10px; font-size: 0.8rem;">Having issues? Try: Ctrl+Shift+R (hard refresh)</p>
+    </div>
+    
+    <script>
+        // Update timestamp display
+        document.getElementById('timestamp').textContent = 'Build: ' + new Date().toLocaleString();
+        
+        // Set manual link
+        document.getElementById('manualLink').href = dashboardUrl;
+    </script>
+</body>
+</html>

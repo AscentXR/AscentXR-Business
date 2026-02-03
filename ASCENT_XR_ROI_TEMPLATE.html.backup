@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCENT XR ROI Template</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --primary: #3b82f6;
+            --secondary: #0ea5e9;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            border: 1px solid #334155;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #60a5fa;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            margin: 25px 0 15px;
+            color: var(--primary);
+            border-bottom: 2px solid #334155;
+            padding-bottom: 8px;
+        }
+        
+        h3 {
+            font-size: 1.2rem;
+            margin: 20px 0 10px;
+            color: var(--text-primary);
+        }
+        
+        .content-section {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #334155;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--primary);
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #334155;
+        }
+        
+        .comparison-table td {
+            padding: 12px;
+            border: 1px solid #334155;
+            color: var(--text-secondary);
+        }
+        
+        .comparison-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+        
+        .client-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .info-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .info-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="unified_dashboard.html" class="back-link">
+            ← Back to Unified Dashboard
+        </a>
+        
+        <header>
+            <h1>💰 ASCENT XR ROI DOCUMENTATION TEMPLATE</h1>
+            <p style="color: var(--text-secondary);">ROI framework for school districts with metrics, standards alignment, and financial analysis</p>
+        </header>
+        
+        <div class="content-section">
+            <h2>Client Information</h2>
+            <div class="client-info">
+                <div class="info-item">
+                    <div class="info-label">School District</div>
+                    <div class="info-value">[District Name]</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Contract Period</div>
+                    <div class="info-value">[Start Date] - [End Date]</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Primary Contact</div>
+                    <div class="info-value">[Name, Title]</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Report Date</div>
+                    <div class="info-value">[Report Date]</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2>Executive Summary</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                Brief overview of value delivered, engagement metrics, and key outcomes.
+            </p>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">$[Amount]</div>
+                    <div class="metric-label">Total Investment</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">[X]%</div>
+                    <div class="metric-label">ROI Percentage</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">[Renew/Expand]</div>
+                    <div class="metric-label">Recommendation</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">300%+</div>
+                    <div class="metric-label">Engagement Increase</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2>Usage Metrics</h2>
+            <h3>Platform Engagement</h3>
+            <ul style="margin-left: 20px; color: var(--text-secondary);">
+                <li><strong>Total Student Sessions:</strong> [Number]</li>
+                <li><strong>Average Session Duration:</strong> [Minutes]</li>
+                <li><strong>Completion Rate:</strong> [Percentage]</li>
+                <li><strong>Teacher Logins:</strong> [Number]</li>
+                <li><strong>Content Accessed:</strong> [Most popular experiences]</li>
+            </ul>
+            
+            <h3 style="margin-top: 20px;">Comparative Engagement Data</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Traditional Worksheets</th>
+                        <th>Ascent XR Experiences</th>
+                        <th>Improvement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Time-on-Task</td>
+                        <td>[Minutes]</td>
+                        <td>[Minutes]</td>
+                        <td style="color: #10b981;">[+X%]</td>
+                    </tr>
+                    <tr>
+                        <td>Completion Rate</td>
+                        <td>[Percentage]</td>
+                        <td>[Percentage]</td>
+                        <td style="color: #10b981;">[+X%]</td>
+                    </tr>
+                    <tr>
+                        <td>Student Satisfaction</td>
+                        <td>[Rating]</td>
+                        <td>[Rating]</td>
+                        <td style="color: #10b981;">[+X points]</td>
+                    </tr>
+                    <tr>
+                        <td>Teacher Time Saved</td>
+                        <td>[Hours]</td>
+                        <td>[Hours]</td>
+                        <td style="color: #10b981;">[+X hours]</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="content-section">
+            <h2>Standards Alignment</h2>
+            <h3>Indiana Academic Standards Covered</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Standard Code</th>
+                        <th>Standard Description</th>
+                        <th>Ascent XR Experience</th>
+                        <th>Grade Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>[e.g., 5.PS.1]</td>
+                        <td>[Description]</td>
+                        <td>[Experience Name]</td>
+                        <td>[Grade]</td>
+                    </tr>
+                    <tr>
+                        <td>[e.g., 6.LS.1]</td>
+                        <td>[Description]</td>
+                        <td>[Experience Name]</td>
+                        <td>[Grade]</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="color: var(--text-secondary); margin-top: 15px;">
+                <strong>Total Standards Covered:</strong> [Number]<br>
+                <strong>Subject Areas:</strong> [List subjects]
+            </p>
+        </div>
+        
+        <div class="content-section">
+            <h2>Financial Analysis</h2>
+            <h3>Cost Breakdown</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Platform License</td>
+                        <td>$[Amount]</td>
+                    </tr>
+                    <tr>
+                        <td>Professional Development</td>
+                        <td>$[Amount]</td>
+                    </tr>
+                    <tr>
+                        <td>Support & Maintenance</td>
+                        <td>$[Amount]</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total Investment</strong></td>
+                        <td><strong>$[Total]</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 style="margin-top: 20px;">Value Delivered</h3>
+            <ul style="margin-left: 20px; color: var(--text-secondary);">
+                <li><strong>Student Engagement Hours:</strong> [Number] hours × [Value per hour] = $[Calculated Value]</li>
+                <li><strong>Teacher Time Saved:</strong> [Hours] × [$Hourly Rate] = $[Calculated Value]</li>
+                <li><strong>Standards Coverage:</strong> [Number] standards × [$Value per standard] = $[Calculated Value]</li>
+            </ul>
+            
+            <h3 style="margin-top: 20px;">Return on Investment Calculation</h3>
+            <div style="background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                <code style="color: #10b981; font-size: 1.1rem;">
+                    ROI = (Total Value - Total Investment) ÷ Total Investment × 100<br>
+                    ROI = ($[Total Value] - $[Total Investment]) ÷ $[Total Investment] × 100 = [X]%
+                </code>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Ascent XR - VERSION TEST</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #fff;
+            padding: 50px;
+            text-align: center;
+        }
+        .version-box {
+            background: #1e293b;
+            border: 3px solid #3b82f6;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #3b82f6;
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        .version {
+            font-size: 5em;
+            color: #22c55e;
+            font-weight: bold;
+            margin: 30px 0;
+        }
+        .timestamp {
+            color: #94a3b8;
+            font-size: 1.2em;
+        }
+        .success {
+            color: #22c55e;
+            font-size: 1.5em;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="version-box">
+        <h1>🚀 ASCENT XR</h1>
+        <div class="version">v18</div>
+        <div class="timestamp">Deployed: Feb 3, 2026 at 13:35 UTC</div>
+        <div class="success">✅ If you see v18, deployment is working!</div>
+        <p style="margin-top: 30px; color: #64748b;">
+            If you still see v15, the cache hasn't been cleared yet.
+        </p>
+    </div>
+    <script>
+        console.log('Version Test Page Loaded');
+        console.log('Expected: v18');
+        console.log('Timestamp:', new Date().toISOString());
+    </script>
+</body>
+</html>

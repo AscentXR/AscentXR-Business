@@ -1,0 +1,73 @@
+{
+  "timestamp": "2026-02-01T18:07:17.721Z",
+  "target": "https://web-production-f0ae1.up.railway.app/",
+  "tests": [
+    {
+      "name": "Root Endpoint",
+      "url": "https://web-production-f0ae1.up.railway.app/",
+      "status": 200,
+      "success": true,
+      "headers": {
+        "accept-ranges": "bytes",
+        "content-disposition": "inline; filename=\"index.html\"",
+        "content-length": "653",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Sun, 01 Feb 2026 18:07:14 GMT",
+        "etag": "\"4946ce7b48566cdff4b07edfac9d48408d518065\"",
+        "server": "railway-edge",
+        "vary": "Accept-Encoding",
+        "x-railway-edge": "railway/us-east4-eqdc4a",
+        "x-railway-request-id": "9UVXbihcS8utrBoi8u2xcg"
+      },
+      "data": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/vite.svg\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n    <meta http-equiv=\"Pragma\" content=\"no-cache\" />\n    <meta http-equiv=\"Expires\" content=\"0\" />\n    <title>LTVR Client Management</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-DjUTbOCX.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-DJY0Pic9.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
+      "error": null
+    },
+    {
+      "name": "Health Check",
+      "url": "https://web-production-f0ae1.up.railway.app/api/health",
+      "status": 200,
+      "success": true,
+      "headers": {
+        "accept-ranges": "bytes",
+        "content-disposition": "inline; filename=\"index.html\"",
+        "content-length": "653",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Sun, 01 Feb 2026 18:07:14 GMT",
+        "etag": "\"4946ce7b48566cdff4b07edfac9d48408d518065\"",
+        "server": "railway-edge",
+        "vary": "Accept-Encoding",
+        "x-railway-edge": "railway/us-east4-eqdc4a",
+        "x-railway-request-id": "61Y1fqWiSMKo6hD48u2xcg"
+      },
+      "data": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/vite.svg\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n    <meta http-equiv=\"Pragma\" content=\"no-cache\" />\n    <meta http-equiv=\"Expires\" content=\"0\" />\n    <title>LTVR Client Management</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-DjUTbOCX.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-DJY0Pic9.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
+      "error": null
+    },
+    {
+      "name": "CRM Connect",
+      "url": "https://web-production-f0ae1.up.railway.app/api/crm/connect",
+      "status": 200,
+      "success": true,
+      "headers": {
+        "accept-ranges": "bytes",
+        "content-disposition": "inline; filename=\"index.html\"",
+        "content-length": "653",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Sun, 01 Feb 2026 18:07:14 GMT",
+        "etag": "\"4946ce7b48566cdff4b07edfac9d48408d518065\"",
+        "server": "railway-edge",
+        "vary": "Accept-Encoding",
+        "x-railway-edge": "railway/us-east4-eqdc4a",
+        "x-railway-request-id": "qmKHPrCaQsyQQjob8u2xcg"
+      },
+      "data": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/vite.svg\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n    <meta http-equiv=\"Pragma\" content=\"no-cache\" />\n    <meta http-equiv=\"Expires\" content=\"0\" />\n    <title>LTVR Client Management</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-DjUTbOCX.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-DJY0Pic9.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
+      "error": null
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "timeouts": 0,
+    "overall": "PASS"
+  }
+}

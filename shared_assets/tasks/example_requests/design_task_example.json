@@ -1,0 +1,45 @@
+{
+  "requesting_agent": "content_creator",
+  "task_id": "design_logo_001",
+  "created_at": "2026-02-01T10:30:00Z",
+  "task_description": "Create a modern logo for AscentXR using brand colors #00A3E0 and #1A1A2E",
+  "task_type": "design",
+  "requirements": [
+    "SVG format for scalability",
+    "Responsive design for web and print",
+    "Dark and light variants",
+    "Square and horizontal layout options",
+    "Include simplified icon version"
+  ],
+  "deadline": "2026-02-03T18:00:00Z",
+  "priority": "high",
+  "required_assets": [
+    {
+      "type": "file",
+      "path": "/home/jim/openclaw/shared_assets/design/branding/color_palette.md",
+      "description": "Brand color palette and guidelines"
+    },
+    {
+      "type": "directory",
+      "path": "/home/jim/openclaw/branding/logos/",
+      "description": "Existing logo references if any"
+    }
+  ],
+  "expected_outputs": {
+    "deliverables": [
+      "ascentxr_logo_primary.svg",
+      "ascentxr_logo_white.svg",
+      "ascentxr_icon.svg",
+      "logo_usage_guide.md",
+      "logo_variants_preview.png"
+    ],
+    "format": "SVG files with PNG previews and documentation",
+    "location": "/home/jim/openclaw/shared_assets/design/logos/"
+  },
+  "accepting_agent": "",
+  "accepted_at": "",
+  "status": "pending",
+  "progress_percentage": 0,
+  "completion_notes": "",
+  "completed_at": ""
+}

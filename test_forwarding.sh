@@ -1,0 +1,10 @@
+#!/bin/bash
+echo "Testing WSL2 port forwarding..."
+echo "If you can access http://localhost:8087/ from Windows, port forwarding is working."
+echo "If not, we need to set up WSL2 port proxy."
+echo ""
+echo "Running PowerShell command to add port proxy (Windows-side):"
+echo "Run this in Windows PowerShell (not WSL):"
+echo "netsh interface portproxy add v4tov4 listenport=8087 listenaddress=0.0.0.0 connectport=8087 connectaddress=$(hostname -I | awk '{print $1}')"
+echo ""
+echo "Or simpler: Let me install and use a Windows-native HTTP server..."

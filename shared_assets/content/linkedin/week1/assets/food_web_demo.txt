@@ -1,0 +1,4 @@
+# Placeholder for food web video clip
+# This would be a 30-second MP4 video showing the food web interaction
+# Actual file: food_web_demo.mp4
+# Content: Students interacting with predator-prey relationships in 3D

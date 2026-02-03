@@ -1,0 +1,102 @@
+{
+  "version": "1.0",
+  "created": "2026-02-01",
+  "description": "Ascent XR CRM Schema for School Relationships",
+  
+  "school_districts": {
+    "fields": [
+      {"name": "id", "type": "string", "required": true, "description": "Unique identifier"},
+      {"name": "name", "type": "string", "required": true, "description": "School district name"},
+      {"name": "state", "type": "string", "required": true, "description": "State abbreviation"},
+      {"name": "city", "type": "string", "required": true, "description": "City"},
+      {"name": "total_students", "type": "number", "required": true, "description": "Total student population"},
+      {"name": "total_schools", "type": "number", "required": false, "description": "Number of schools in district"},
+      {"name": "budget_range", "type": "string", "required": false, "description": "Annual budget range"},
+      {"name": "free_reduced_lunch_percent", "type": "number", "required": false, "description": "Percentage of students on free/reduced lunch"},
+      {"name": "title_i_status", "type": "boolean", "required": false, "description": "Whether district is Title I"},
+      {"name": "current_curriculum", "type": "string", "required": false, "description": "Current curriculum used"},
+      {"name": "technology_inventory", "type": "string", "required": false, "description": "Available devices (tablets, computers, etc.)"},
+      {"name": "created_at", "type": "timestamp", "required": true, "description": "Record creation timestamp"},
+      {"name": "updated_at", "type": "timestamp", "required": true, "description": "Last update timestamp"}
+    ],
+    "indexes": ["id", "state", "name"]
+  },
+  
+  "contacts": {
+    "fields": [
+      {"name": "id", "type": "string", "required": true, "description": "Unique identifier"},
+      {"name": "school_district_id", "type": "string", "required": true, "description": "Reference to school district"},
+      {"name": "first_name", "type": "string", "required": true, "description": "First name"},
+      {"name": "last_name", "type": "string", "required": true, "description": "Last name"},
+      {"name": "title", "type": "string", "required": true, "description": "Position/title (Superintendent, Principal, Teacher, etc.)"},
+      {"name": "email", "type": "string", "required": true, "description": "Email address"},
+      {"name": "phone", "type": "string", "required": false, "description": "Phone number"},
+      {"name": "linkedin_url", "type": "string", "required": false, "description": "LinkedIn profile URL"},
+      {"name": "is_primary", "type": "boolean", "required": true, "description": "Whether this is the primary contact"},
+      {"name": "is_decision_maker", "type": "boolean", "required": true, "description": "Whether this person can make purchasing decisions"},
+      {"name": "notes", "type": "text", "required": false, "description": "Additional notes"},
+      {"name": "created_at", "type": "timestamp", "required": true, "description": "Record creation timestamp"},
+      {"name": "updated_at", "type": "timestamp", "required": true, "description": "Last update timestamp"}
+    ],
+    "indexes": ["id", "school_district_id", "title", "is_decision_maker"]
+  },
+  
+  "relationships": {
+    "fields": [
+      {"name": "id", "type": "string", "required": true, "description": "Unique identifier"},
+      {"name": "school_district_id", "type": "string", "required": true, "description": "Reference to school district"},
+      {"name": "status", "type": "string", "required": true, "description": "Relationship status: prospect, pilot, active, renewal_pending, churned"},
+      {"name": "implementation_status", "type": "string", "required": true, "description": "Implementation stage: discovery, needs_assessment, proposal, demo, pilot, implementation, active"},
+      {"name": "start_date", "type": "date", "required": false, "description": "Relationship start date"},
+      {"name": "renewal_date", "type": "date", "required": false, "description": "Contract renewal date"},
+      {"name": "license_count", "type": "number", "required": false, "description": "Number of student licenses"},
+      {"name": "teacher_adoption_rate", "type": "number", "required": false, "description": "Percentage of teachers using platform"},
+      {"name": "avg_session_duration", "type": "number", "required": false, "description": "Average session duration in minutes"},
+      {"name": "most_used_experiences", "type": "array", "required": false, "description": "Array of most frequently used experiences"},
+      {"name": "monthly_usage_trend", "type": "object", "required": false, "description": "Monthly usage data"},
+      {"name": "roi_metrics", "type": "object", "required": false, "description": "ROI calculation data"},
+      {"name": "created_at", "type": "timestamp", "required": true, "description": "Record creation timestamp"},
+      {"name": "updated_at", "type": "timestamp", "required": true, "description": "Last update timestamp"}
+    ],
+    "indexes": ["id", "school_district_id", "status", "renewal_date"]
+  },
+  
+  "communications": {
+    "fields": [
+      {"name": "id", "type": "string", "required": true, "description": "Unique identifier"},
+      {"name": "school_district_id", "type": "string", "required": true, "description": "Reference to school district"},
+      {"name": "contact_id", "type": "string", "required": false, "description": "Reference to specific contact"},
+      {"name": "type", "type": "string", "required": true, "description": "Communication type: email, call, meeting, linkedin, demo"},
+      {"name": "direction", "type": "string", "required": true, "description": "Direction: inbound, outbound"},
+      {"name": "subject", "type": "string", "required": true, "description": "Subject/topic"},
+      {"name": "content", "type": "text", "required": true, "description": "Content/details"},
+      {"name": "date", "type": "timestamp", "required": true, "description": "Communication date/time"},
+      {"name": "follow_up_date", "type": "date", "required": false, "description": "Follow-up date if needed"},
+      {"name": "follow_up_notes", "type": "text", "required": false, "description": "Follow-up notes"},
+      {"name": "created_at", "type": "timestamp", "required": true, "description": "Record creation timestamp"},
+      {"name": "updated_at", "type": "timestamp", "required": true, "description": "Last update timestamp"}
+    ],
+    "indexes": ["id", "school_district_id", "contact_id", "date", "type"]
+  },
+  
+  "pipeline": {
+    "fields": [
+      {"name": "id", "type": "string", "required": true, "description": "Unique identifier"},
+      {"name": "school_district_id", "type": "string", "required": true, "description": "Reference to school district"},
+      {"name": "stage", "type": "string", "required": true, "description": "Pipeline stage: discovery, needs_assessment, proposal_sent, demo_scheduled, pilot_negotiation, contract_review, implementation"},
+      {"name": "probability", "type": "number", "required": true, "description": "Probability percentage (10-100)"},
+      {"name": "opportunity_value", "type": "number", "required": true, "description": "Potential contract value"},
+      {"name": "budget_availability", "type": "number", "required": true, "description": "Budget availability score 1-10"},
+      {"name": "decision_timeline", "type": "number", "required": true, "description": "Decision timeline score 1-10"},
+      {"name": "champion_strength", "type": "number", "required": true, "description": "Champion strength score 1-10"},
+      {"name": "fit_score", "type": "number", "required": true, "description": "Fit with Ascent XR score 1-10"},
+      {"name": "total_score", "type": "number", "required": true, "description": "Total opportunity score"},
+      {"name": "next_action", "type": "string", "required": true, "description": "Next action required"},
+      {"name": "next_action_date", "type": "date", "required": true, "description": "Date for next action"},
+      {"name": "notes", "type": "text", "required": false, "description": "Additional notes"},
+      {"name": "created_at", "type": "timestamp", "required": true, "description": "Record creation timestamp"},
+      {"name": "updated_at", "type": "timestamp", "required": true, "description": "Last update timestamp"}
+    ],
+    "indexes": ["id", "school_district_id", "stage", "probability", "next_action_date"]
+  }
+}

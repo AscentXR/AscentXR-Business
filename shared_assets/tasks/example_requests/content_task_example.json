@@ -1,0 +1,50 @@
+{
+  "requesting_agent": "main",
+  "task_id": "content_linkedin_002",
+  "created_at": "2026-02-01T10:35:00Z",
+  "task_description": "Create 3 LinkedIn posts about AscentXR's ROI framework for enterprise clients",
+  "task_type": "content",
+  "requirements": [
+    "Target enterprise decision-makers",
+    "Include data visualization references",
+    "Use ROI framework infographic as visual",
+    "Include call-to-action for demo requests",
+    "Follow LinkedIn best practices for engagement"
+  ],
+  "deadline": "2026-02-02T12:00:00Z",
+  "priority": "medium",
+  "required_assets": [
+    {
+      "type": "file",
+      "path": "/home/jim/openclaw/shared_assets/content/linkedin/week1/assets/roi_framework_infographic.txt",
+      "description": "ROI framework infographic text"
+    },
+    {
+      "type": "file",
+      "path": "/home/jim/openclaw/ASCENT_XR_ROI_TEMPLATE.md",
+      "description": "ROI template documentation"
+    },
+    {
+      "type": "file",
+      "path": "/home/jim/openclaw/LINKEDIN_POST_TEMPLATES.md",
+      "description": "LinkedIn posting templates"
+    }
+  ],
+  "expected_outputs": {
+    "deliverables": [
+      "linkedin_roi_post_1.md",
+      "linkedin_roi_post_2.md",
+      "linkedin_roi_post_3.md",
+      "posting_schedule_suggestions.md",
+      "engagement_metrics_tracking.md"
+    ],
+    "format": "Markdown files with metadata headers",
+    "location": "/home/jim/openclaw/shared_assets/content/linkedin/roi_posts/"
+  },
+  "accepting_agent": "",
+  "accepted_at": "",
+  "status": "pending",
+  "progress_percentage": 0,
+  "completion_notes": "",
+  "completed_at": ""
+}

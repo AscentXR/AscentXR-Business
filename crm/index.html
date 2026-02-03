@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ascent XR CRM - School Relationship Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <h1><i class="fas fa-graduation-cap"></i> Ascent XR CRM</h1>
+                <p class="subtitle">School Relationship & Pipeline Management</p>
+            </div>
+            <div class="header-actions">
+                <div class="search-box">
+                    <input type="text" id="globalSearch" placeholder="Search schools, contacts, or notes...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <button class="btn btn-primary" id="addSchoolBtn">
+                    <i class="fas fa-plus"></i> Add School
+                </button>
+                <button class="btn btn-secondary" id="refreshDataBtn">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Stats -->
+        <section class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #4CAF50;">
+                    <i class="fas fa-school"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalSchools">0</h3>
+                    <p>Total Schools</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #2196F3;">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalContacts">0</h3>
+                    <p>Contacts</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #FF9800;">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="pipelineValue">$0</h3>
+                    <p>Pipeline Value</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #F44336;">
+                    <i class="fas fa-calendar-exclamation"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="renewalsDue">0</h3>
+                    <p>Renewals Due</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Sidebar - Navigation -->
+            <aside class="sidebar">
+                <nav class="nav-menu">
+                    <a href="#" class="nav-item active" data-view="dashboard">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="#" class="nav-item" data-view="schools">
+                        <i class="fas fa-school"></i> Schools
+                    </a>
+                    <a href="#" class="nav-item" data-view="contacts">
+                        <i class="fas fa-address-book"></i> Contacts
+                    </a>
+                    <a href="#" class="nav-item" data-view="pipeline">
+                        <i class="fas fa-project-diagram"></i> Pipeline
+                    </a>
+                    <a href="#" class="nav-item" data-view="communications">
+                        <i class="fas fa-comments"></i> Communications
+                    </a>
+                    <a href="#" class="nav-item" data-view="reports">
+                        <i class="fas fa-chart-bar"></i> Reports
+                    </a>
+                    <a href="#" class="nav-item" data-view="alerts">
+                        <i class="fas fa-bell"></i> Alerts
+                    </a>
+                </nav>
+
+                <!-- Quick Stats -->
+                <div class="quick-stats">
+                    <h4>Quick Stats</h4>
+                    <div class="stat-item">
+                        <span>Active Schools</span>
+                        <span class="stat-value" id="quickActive">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Pipeline Stages</span>
+                        <span class="stat-value" id="quickPipeline">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Next 30 Days</span>
+                        <span class="stat-value" id="quickNext30">0</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main View Area -->
+            <main class="view-area">
+                <!-- Dashboard View (Default) -->
+                <div id="dashboardView" class="view active">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
+                    
+                    <!-- Charts Row -->
+                    <div class="charts-row">
+                        <div class="chart-container">
+                            <h3>Pipeline by Stage</h3>
+                            <canvas id="pipelineChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Renewals Timeline</h3>
+                            <canvas id="renewalsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="recent-activity">
+                        <h3>Recent Activity</h3>
+                        <div class="activity-list" id="activityList">
+                            <!-- Will be populated by JavaScript -->
+                            <div class="activity-item">
+                                <i class="fas fa-info-circle"></i>
+                                <p>No recent activity found. Add your first school to get started.</p>
+                                <span class="activity-time">Just now</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Tasks -->
+                    <div class="upcoming-tasks">
+                        <h3>Upcoming Tasks <span class="badge" id="taskCount">0</span></h3>
+                        <div class="task-list" id="taskList">
+                            <!-- Will be populated by JavaScript -->
+                            <div class="task-item">
+                                <i class="fas fa-tasks"></i>
+                                <p>No upcoming tasks. Add follow-up reminders to schools.</p>
+                                <span class="task-date">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schools View -->
+                <div id="schoolsView" class="view">
+                    <h2><i class="fas fa-school"></i> School Management</h2>
+                    <div class="view-header">
+                        <div class="view-filters">
+                            <select id="schoolFilter" class="filter-select">
+                                <option value="all">All Schools</option>
+                                <option value="active">Active</option>
+                                <option value="prospect">Prospect</option>
+                                <option value="pilot">Pilot</option>
+                                <option value="renewal_pending">Renewal Pending</option>
+                            </select>
+                            <select id="stateFilter" class="filter-select">
+                                <option value="all">All States</option>
+                                <!-- States will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" id="addNewSchoolBtn">
+                            <i class="fas fa-plus"></i> Add New School
+                        </button>
+                    </div>
+                    <div class="schools-table-container">
+                        <table class="data-table" id="schoolsTable">
+                            <thead>
+                                <tr>
+                                    <th>School District</th>
+                                    <th>Location</th>
+                                    <th>Students</th>
+                                    <th>Status</th>
+                                    <th>Renewal Date</th>
+                                    <th>Contacts</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="schoolsTableBody">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Contacts View -->
+                <div id="contactsView" class="view">
+                    <h2><i class="fas fa-address-book"></i> Contact Management</h2>
+                    <div class="view-header">
+                        <div class="view-filters">
+                            <select id="contactFilter" class="filter-select">
+                                <option value="all">All Contacts</option>
+                                <option value="superintendent">Superintendents</option>
+                                <option value="principal">Principals</option>
+                                <option value="teacher">Teachers</option>
+                                <option value="decision_maker">Decision Makers</option>
+                            </select>
+                            <input type="text" id="contactSearch" class="search-input" placeholder="Search contacts...">
+                        </div>
+                        <button class="btn btn-primary" id="addNewContactBtn">
+                            <i class="fas fa-plus"></i> Add New Contact
+                        </button>
+                    </div>
+                    <div class="contacts-table-container">
+                        <table class="data-table" id="contactsTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Title</th>
+                                    <th>School District</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Decision Maker</th>
+                                    <th>Last Contact</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contactsTableBody">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pipeline View -->
+                <div id="pipelineView" class="view">
+                    <h2><i class="fas fa-project-diagram"></i> Sales Pipeline</h2>
+                    <div class="pipeline-stages">
+                        <div class="pipeline-stage" data-stage="discovery">
+                            <h4>Discovery <span class="stage-count" id="stageDiscovery">0</span></h4>
+                            <div class="stage-content" id="stageDiscoveryContent">
+                                <!-- Opportunities will be added here -->
+                            </div>
+                        </div>
+                        <div class="pipeline-stage" data-stage="needs_assessment">
+                            <h4>Needs Assessment <span class="stage-count" id="stageNeeds">0</span></h4>
+                            <div class="stage-content" id="stageNeedsContent">
+                                <!-- Opportunities will be added here -->
+                            </div>
+                        </div>
+                        <div class="pipeline-stage" data-stage="proposal_sent">
+                            <h4>Proposal Sent <span class="stage-count" id="stageProposal">0</span></h4>
+                            <div class="stage-content" id="stageProposalContent">
+                                <!-- Opportunities will be added here -->
+                            </div>
+                        </div>
+                        <div class="pipeline-stage" data-stage="demo_scheduled">
+                            <h4>Demo Scheduled <span class="stage-count" id="stageDemo">0</span></h4>
+                            <div class="stage-content" id="stageDemoContent">
+                                <!-- Opportunities will be added here -->
+                            </div>
+                        </div>
+                        <div class="pipeline-stage" data-stage="pilot_negotiation">
+                            <h4>Pilot Negotiation <span class="stage-count" id="stagePilot">0</span></h4>
+                            <div class="stage-content" id="stagePilotContent">
+                                <!-- Opportunities will be added here -->
+                            </div>
+                        </div>
+                        <div class="pipeline-stage" data-stage="contract_review">
+                            <h4>Contract Review <span class="stage-count" id="stageContract">0</span></h4>
+                            <div class="stage-content" id="stageContractContent">
+                                <!-- Opportunities will be added here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Communications View -->
+                <div id="communicationsView" class="view">
+                    <h2><i class="fas fa-comments"></i> Communication History</h2>
+                    <div class="view-header">
+                        <div class="view-filters">
+                            <select id="commTypeFilter" class="filter-select">
+                                <option value="all">All Types</option>
+                                <option value="email">Email</option>
+                                <option value="call">Call</option>
+                                <option value="meeting">Meeting</option>
+                                <option value="linkedin">LinkedIn</option>
+                            </select>
+                            <select id="commSchoolFilter" class="filter-select">
+                                <option value="all">All Schools</option>
+                                <!-- Schools will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" id="addNewCommBtn">
+                            <i class="fas fa-plus"></i> Log Communication
+                        </button>
+                    </div>
+                    <div class="communications-list" id="communicationsList">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Reports View -->
+                <div id="reportsView" class="view">
+                    <h2><i class="fas fa-chart-bar"></i> Reports & Analytics</h2>
+                    <div class="reports-grid">
+                        <div class="report-card">
+                            <h3>Revenue Projection</h3>
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                        <div class="report-card">
+                            <h3>School Status Distribution</h3>
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                        <div class="report-card">
+                            <h3>Pipeline Conversion</h3>
+                            <div class="conversion-metrics" id="conversionMetrics">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        <div class="report-card">
+                            <h3>Export Data</h3>
+                            <div class="export-options">
+                                <button class="btn btn-secondary" id="exportSchoolsBtn">
+                                    <i class="fas fa-download"></i> Export Schools (CSV)
+                                </button>
+                                <button class="btn btn-secondary" id="exportContactsBtn">
+                                    <i class="fas fa-download"></i> Export Contacts (CSV)
+                                </button>
+                                <button class="btn btn-secondary" id="exportPipelineBtn">
+                                    <i class="fas fa-download"></i> Export Pipeline (CSV)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts View -->
+                <div id="alertsView" class="view">
+                    <h2><i class="fas fa-bell"></i> Alerts & Reminders</h2>
+                    <div class="alerts-container">
+                        <div class="alert-section">
+                            <h3>Renewal Alerts <span class="badge" id="renewalAlertCount">0</span></h3>
+                            <div class="alert-list" id="renewalAlerts">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        <div class="alert-section">
+                            <h3>Follow-up Reminders <span class="badge" id="followupAlertCount">0</span></h3>
+                            <div class="alert-list" id="followupAlerts">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        <div class="alert-section">
+                            <h3>Pipeline Stalls <span class="badge" id="stallAlertCount">0</span></h3>
+                            <div class="alert-list" id="stallAlerts">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Modals -->
+        <div id="schoolModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-school"></i> <span id="modalSchoolTitle">Add New School</span></h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="schoolForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="schoolName">School District Name *</label>
+                                <input type="text" id="schoolName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="schoolState">State *</label>
+                                <input type="text" id="schoolState" maxlength="2" placeholder="IN" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="schoolCity">City *</label>
+                                <input type="text" id="schoolCity" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="schoolStudents">Total Students *</label>
+                                <input type="number" id="schoolStudents" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="schoolStatus">Relationship Status</label>
+                                <select id="schoolStatus">
+                                    <option value="prospect">Prospect</option>
+                                    <option value="pilot">Pilot</option>
+                                    <option value="active">Active</option>
+                                    <option value="renewal_pending">Renewal Pending</option>
+                                    <option value="churned">Churned</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="schoolRenewal">Renewal Date</label>
+                                <input type="date" id="schoolRenewal">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="schoolBudget">Budget Range</label>
+                            <input type="text" id="schoolBudget" placeholder="e.g., $500k - $1M">
+                        </div>
+                        <div class="form-group">
+                            <label for="schoolNotes">Notes</label>
+                            <textarea id="schoolNotes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary close-modal">Cancel</button>
+                    <button class="btn btn-primary" id="saveSchoolBtn">Save School</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="contactModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-user-plus"></i> <span id="modalContactTitle">Add New Contact</span></h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="contactForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactFirstName">First Name *</label>
+                                <input type="text" id="contactFirstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactLastName">Last Name *</label>
+                                <input type="text" id="contactLastName" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactTitle">Title *</label>
+                                <select id="contactTitle" required>
+                                    <option value="">Select Title</option>
+                                    <option value="superintendent">Superintendent</option>
+                                    <option value="principal">Principal</option>
+                                    <option value="teacher">Teacher</option>
+                                    <option value="curriculum_director">Curriculum Director</option>
+                                    <option value="technology_coordinator">Technology Coordinator</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactSchool">School District *</label>
+                                <select id="contactSchool" required>
+                                    <option value="">Select School</option>
+                                    <!-- Schools will be populated by JavaScript -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactEmail">Email *</label>
+                                <input type="email" id="contactEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactPhone">Phone</label>
+                                <input type="tel" id="contactPhone">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactLinkedIn">LinkedIn URL</label>
+                                <input type="url" id="contactLinkedIn">
+                            </div>
+                            <div class="form-group">
+                                <label for="contactDecisionMaker">Decision Maker</label>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="contactDecisionMaker">
+                                    <label for="contactDecisionMaker">This contact can make purchasing decisions</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactNotes">Notes</label>
+                            <textarea id="contactNotes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary close-modal">Cancel</button>
+                    <button class="btn btn-primary" id="saveContactBtn">Save Contact</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="communicationModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-comment-medical"></i> <span id="modalCommTitle">Log Communication</span></h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="communicationForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="commSchool">School District *</label>
+                                <select id="commSchool" required>
+                                    <option value="">Select School</option>
+                                    <!-- Schools will be populated by JavaScript -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="commContact">Contact (Optional)</label>
+                                <select id="commContact">
+                                    <option value="">Select Contact</option>
+                                    <!-- Contacts will be populated by JavaScript -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="commType">Type *</label>
+                                <select id="commType" required>
+                                    <option value="email">Email</option>
+                                    <option value="call">Phone Call</option>
+                                    <option value="meeting">Meeting</option>
+                                    <option value="linkedin">LinkedIn</option>
+                                    <option value="demo">Demo</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="commDirection">Direction *</label>
+                                <select id="commDirection" required>
+                                    <option value="outbound">Outbound</option>
+                                    <option value="inbound">Inbound</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="commSubject">Subject *</label>
+                                <input type="text" id="commSubject" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="commDate">Date & Time *</label>
+                                <input type="datetime-local" id="commDate" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="commContent">Content/Notes *</label>
+                            <textarea id="commContent" rows="4" required></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="commFollowUp">Follow-up Date</label>
+                                <input type="date" id="commFollowUp">
+                            </div>
+                            <div class="form-group">
+                                <label for="commFollowUpNotes">Follow-up Notes</label>
+                                <input type="text" id="commFollowUpNotes">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary close-modal">Cancel</button>
+                    <button class="btn btn-primary" id="saveCommunicationBtn">Save Communication</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Ascent XR CRM &copy; 2026 | Data stored locally in browser | <a href="#" id="exportAllBtn">Export All Data</a> | <a href="#" id="importBtn">Import Data</a></p>
+            <p class="data-info">Last updated: <span id="lastUpdated">Never</span></p>
+        </footer>
+    </div>
+
+    <script src="crm.js"></script>
+</body>
+</html>
