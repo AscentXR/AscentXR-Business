@@ -17,16 +17,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-// Create necessary directories
+// Create necessary directories (with error handling for read-only filesystems)
 const directories = [
-  process.env.UPLOAD_DIR || './uploads',
-  process.env.DOCUMENTS_DIR || './documents',
-  process.env.EXPORT_DIR || './exports'
+  process.env.UPLOAD_DIR || '/tmp/uploads',
+  process.env.DOCUMENTS_DIR || '/tmp/documents',
+  process.env.EXPORT_DIR || '/tmp/exports'
 ];
 
 directories.forEach(dir => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  try {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  } catch (err) {
+    console.warn(`Warning: Could not create directory ${dir}: ${err.message}`);
   }
 });
 
