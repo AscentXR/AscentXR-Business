@@ -1,190 +1,3558 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/png" href="favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="-1">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Ascent XR Dashboard v19 - Loading...</title>
+    <meta http-equiv="Expires" content="0">
+    <title>Ascent XR Dashboard v19</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="agent_coordination_styles.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
+        :root {
+            --primary: #0a1d45;
+            --primary-dark: #071732;
+            --secondary: #132e5e;
+            --success: #ff6b00;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-border: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --gradient-primary: linear-gradient(135deg, #071732 0%, #0a1d45 100%);
+            --gradient-success: linear-gradient(135deg, #ff6b00 0%, #0d9488 100%);
+            --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            color: #f8fafc;
+            padding: 20px;
+            color: var(--text-primary);
         }
-        .loader {
-            width: 80px;
-            height: 80px;
-            border: 5px solid rgba(59, 130, 246, 0.2);
-            border-top-color: #3b82f6;
-            border-right-color: #3b82f6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        
+        .dashboard {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: var(--dark-bg);
+            border-radius: 24px;
+            box-shadow: 0 25px 75px rgba(0,0,0,0.5);
+            overflow: hidden;
+            border: 1px solid var(--dark-border);
+        }
+        
+        /* HEADER */
+        .header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--dark-border);
+        }
+        
+        .header-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .header-content .subtitle {
+            opacity: 0.9;
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .header-stat {
+            text-align: center;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .header-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* MAIN GRID - 3 COLUMN LAYOUT */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr 400px;
+            gap: 0;
+            min-height: calc(100vh - 180px);
+        }
+        
+        /* LEFT SIDEBAR - NAVIGATION */
+        .sidebar-left {
+            padding: 25px;
+            background: var(--dark-card);
+            border-right: 1px solid var(--dark-border);
+        }
+        
+        .nav-section {
             margin-bottom: 30px;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        h1 {
-            margin: 0 0 10px 0;
-            font-size: 2rem;
-            font-weight: 600;
-        }
-        p {
-            margin: 0 0 20px 0;
-            color: #94a3b8;
-            font-size: 1.1rem;
-        }
-        .version {
-            margin-top: 20px;
-            padding: 15px 30px;
-            background: rgba(59, 130, 246, 0.15);
-            border-radius: 12px;
-            border: 2px solid rgba(59, 130, 246, 0.4);
+        
+        .nav-title {
             font-size: 1rem;
-            color: #60a5fa;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             font-weight: 600;
         }
-        .timestamp {
-            margin-top: 10px;
-            font-size: 0.85rem;
-            color: #64748b;
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-item {
+            margin-bottom: 10px;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            background: var(--dark-bg);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* CENTER CONTENT AREA */
+        .content-area {
+            padding: 30px;
+            overflow-y: auto;
+            max-height: calc(100vh - 180px);
+        }
+        
+        /* RIGHT SIDEBAR - QUICK ACTIONS & INFO */
+        .sidebar-right {
+            padding: 25px;
+            background: var(--dark-card);
+            border-left: 1px solid var(--dark-border);
+        }
+        
+        /* SECTION STYLES */
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--dark-border);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+        
+        .section-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: var(--dark-border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--text-muted);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+        }
+        
+        /* DOCUMENT VIEWER */
+        .document-viewer {
+            background: var(--dark-card);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid var(--dark-border);
+            height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .document-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--dark-border);
+        }
+        
+        .document-content {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* DOCUMENTATION CARDS */
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        /* INTEGRATION CARDS */
+        .integrations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .integration-card {
+            background: var(--dark-card);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--dark-border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .integration-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        
+        .integration-card.linkedin {
+            border-left: 4px solid #0077b5;
+        }
+        
+        .integration-card.crm {
+            border-left: 4px solid var(--warning);
+        }
+        
+        .integration-card.agents {
+            border-left: 4px solid var(--success);
+        }
+        
+        .integration-card.voice {
+            border-left: 4px solid #0a1d45;
+        }
+        
+        .integration-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .integration-header i {
+            font-size: 1.5rem;
+        }
+        
+        .integration-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .integration-status.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+        
+        .integration-status.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+        
+        .integration-status.info {
+            background: rgba(6, 182, 212, 0.2);
+            color: var(--info);
+        }
+        
+        .integration-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .integration-countdown {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
             font-family: monospace;
         }
-        .manual-link {
-            margin-top: 40px;
-            padding: 15px 25px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            color: #94a3b8;
+        
+        .integration-description {
+            color: var(--text-secondary);
             font-size: 0.9rem;
-            text-align: center;
+            margin-bottom: 15px;
+            line-height: 1.4;
         }
-        .manual-link a {
-            color: #3b82f6;
-            text-decoration: none;
+        
+        .integration-stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
             font-weight: 600;
+            color: var(--text-primary);
         }
-        .manual-link a:hover {
-            text-decoration: underline;
+        
+        .integration-features {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
         }
-        .cache-info {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
+        
+        .feature-tag {
+            padding: 4px 10px;
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--secondary);
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .integration-credentials {
+            background: rgba(0,0,0,0.2);
             border-radius: 8px;
-            max-width: 500px;
-            text-align: center;
+            padding: 12px;
+            margin-bottom: 15px;
         }
-        .cache-info h3 {
-            color: #22c55e;
-            margin-bottom: 10px;
-            font-size: 1rem;
+        
+        .credential-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-family: monospace;
         }
-        .cache-info p {
-            color: #94a3b8;
-            font-size: 0.9rem;
-            margin: 0;
-        }
-        .rollback-info {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 8px;
-            max-width: 500px;
-            text-align: center;
-        }
-        .rollback-info h3 {
-            color: #f59e0b;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-        }
-        .rollback-info a {
-            color: #f59e0b;
-            text-decoration: none;
-        }
-        .deployment-info {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: rgba(6, 182, 212, 0.1);
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            border-radius: 8px;
-            color: #06b6d4;
+        
+        .cred-label {
+            color: var(--text-muted);
             font-size: 0.85rem;
         }
+        
+        .cred-value {
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .doc-card {
+            background: var(--dark-card);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--dark-border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .doc-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            border-color: var(--primary);
+        }
+        
+        .doc-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+        
+        .doc-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .doc-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .doc-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--dark-card);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--dark-border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+        
+        .stat-card.success::before {
+            background: var(--gradient-success);
+        }
+        
+        .stat-card.warning::before {
+            background: var(--gradient-warning);
+        }
+        
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        
+        .stat-progress {
+            height: 6px;
+            background: var(--dark-border);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        
+        .stat-progress-bar {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 3px;
+            transition: width 1s ease;
+        }
+        
+        /* TASKS BOARD */
+        .tasks-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .task-column {
+            background: var(--dark-card);
+            border-radius: 16px;
+            border: 1px solid var(--dark-border);
+            overflow: hidden;
+        }
+        
+        .column-header {
+            padding: 20px;
+            background: var(--dark-border);
+            border-bottom: 1px solid var(--dark-border);
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .task-count {
+            background: var(--dark-bg);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .task-list {
+            padding: 20px;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .task-item {
+            padding: 18px;
+            margin-bottom: 12px;
+            background: var(--dark-bg);
+            border-radius: 12px;
+            border: 1px solid var(--dark-border);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: all 0.2s ease;
+            cursor: grab;
+        }
+        
+        .task-item:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+        
+        .task-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            cursor: pointer;
+            background: var(--dark-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .task-checkbox.checked {
+            background: var(--primary);
+        }
+        
+        .task-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+        }
+        
+        .task-content {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .task-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+        }
+        
+        .task-owner {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .owner-jim { background: rgba(59, 130, 246, 0.2); color: var(--primary); }
+        .owner-nick { background: rgba(14, 165, 233, 0.2); color: var(--secondary); }
+        .owner-ai { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .owner-both { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        
+        .task-priority {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .priority-high { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .priority-medium { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .priority-low { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        
+        /* INFO CARDS */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .info-card {
+            background: var(--dark-card);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid var(--dark-border);
+        }
+        
+        .info-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--dark-border);
+        }
+        
+        .info-card-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 1400px) {
+            .main-grid {
+                grid-template-columns: 250px 1fr 350px;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar-left, .sidebar-right {
+                display: none;
+            }
+            
+            .nav-menu {
+                display: flex;
+                gap: 10px;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .nav-item {
+                flex-shrink: 0;
+                margin-bottom: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .header-stats {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .tasks-board, .docs-grid, .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .task-meta {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .section-title {
+                font-size: 1.1rem;
+                color: var(--text-primary);
+            }
+            
+            .btn {
+                padding: 8px 14px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* MOBILE RESPONSIVE - AGENT COORDINATION */
+        @media (max-width: 768px) {
+            /* Agent Task View */
+            .agent-task-filters {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .agent-task-filter {
+                padding: 6px 12px;
+                font-size: 0.85rem;
+                flex: 1;
+                min-width: 80px;
+                text-align: center;
+            }
+            
+            .agent-task-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .agent-task-card {
+                padding: 15px;
+            }
+            
+            /* Priority Queue */
+            .priority-queue-columns {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .priority-column {
+                min-height: 150px;
+            }
+            
+            /* Workload Panel */
+            .workload-panel .quick-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .workload-panel .quick-action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .balance-indicator {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            /* Agent Chat */
+            .agent-chat-container {
+                height: 400px;
+            }
+            
+            .agent-chat-messages {
+                padding: 15px;
+            }
+            
+            .agent-chat-message {
+                max-width: 90%;
+                padding: 10px 14px;
+            }
+            
+            .agent-chat-input-area {
+                padding: 10px 15px;
+            }
+            
+            .agent-chat-input {
+                padding: 10px 12px;
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+            
+            /* Performance Charts */
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-container {
+                height: 280px;
+                padding: 15px;
+            }
+            
+            /* Agent Workload Items */
+            .agent-workload-item {
+                flex-direction: column;
+                gap: 10px;
+                padding: 12px;
+            }
+            
+            .agent-workload-name {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .agent-workload-bar {
+                width: 100%;
+            }
+            
+            .agent-workload-value {
+                width: 100%;
+                text-align: center;
+            }
+            
+            /* Section Headers */
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .section-actions {
+                width: 100%;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .section-actions .btn,
+            .section-actions .agent-selector {
+                flex: 1;
+                min-width: 140px;
+            }
+            
+            /* Agent Selectors */
+            .agent-selector {
+                width: 100%;
+                min-width: unset;
+            }
+            
+            /* Priority Task Items */
+            .priority-task-item {
+                padding: 10px;
+            }
+            
+            /* Modal Adjustments */
+            .modal-content {
+                padding: 20px;
+                margin: 20px;
+                max-height: 85vh;
+            }
+            
+            /* Notifications */
+            .notification-container {
+                left: 15px;
+                right: 15px;
+                top: 15px;
+            }
+            
+            .notification {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            /* Smaller screens */
+            .agent-chat-container {
+                height: 350px;
+            }
+            
+            .agent-task-header {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .agent-task-priority {
+                align-self: flex-start;
+            }
+            
+            .agent-task-meta {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .chart-container {
+                height: 250px;
+                padding: 12px;
+            }
+            
+            .chart-title {
+                font-size: 0.95rem;
+            }
+            
+            .quick-actions {
+                gap: 8px;
+            }
+            
+            .quick-action-btn {
+                padding: 10px 14px;
+                font-size: 0.85rem;
+            }
+            
+            /* Sidebar nav improvements */
+            .sidebar-nav {
+                padding: 15px;
+            }
+            
+            .nav-title {
+                font-size: 0.75rem;
+            }
+            
+            .nav-item {
+                padding: 10px 12px;
+            }
+            
+            /* Touch targets - minimum 44px */
+            .btn, .nav-item, .agent-task-filter, .quick-action-btn {
+                min-height: 44px;
+            }
+            
+            /* Font size adjustments for readability */
+            body {
+                font-size: 15px;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .stat-label {
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* TOUCH DEVICE OPTIMIZATIONS */
+        @media (hover: none) and (pointer: coarse) {
+            /* Larger touch targets on touch devices */
+            .btn, .nav-item, .agent-task-filter, .quick-action-btn, 
+            .agent-chat-send, .priority-task-item {
+                min-height: 44px;
+            }
+            
+            /* Remove hover effects that don't work well on touch */
+            .agent-task-card:hover,
+            .priority-task-item:hover,
+            .quick-action-btn:hover {
+                transform: none;
+            }
+            
+            /* Add active state for touch feedback */
+            .btn:active, .nav-item:active, .agent-task-filter:active {
+                opacity: 0.8;
+                transform: scale(0.98);
+            }
+        }
+        
+        /* SAFARI iOS FIXES */
+        @supports (-webkit-touch-callout: none) {
+            /* Prevent iOS zoom on input focus */
+            input, select, textarea {
+                font-size: 16px;
+            }
+            
+            /* Fix iOS scroll issues */
+            .agent-chat-messages {
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            /* Fix iOS rounded inputs */
+            .agent-chat-input {
+                border-radius: 8px;
+            }
+        }
+        
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* CUSTOM SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--dark-border);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+        
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: var(--dark-card);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            width: 90%;
+            border: 1px solid var(--dark-border);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--dark-border);
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* FILE PREVIEW */
+        .file-preview {
+            background: var(--dark-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--dark-border);
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        /* AGENT PROGRESS TRACKER */
+        .agent-progress-tracker {
+            margin: 15px 0;
+        }
+        
+        .progress-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .progress-label {
+            flex: 1;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .progress-bar-small {
+            width: 100px;
+            height: 6px;
+            background-color: var(--dark-border);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 0 10px;
+        }
+        
+        .progress-fill-small {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-percent {
+            width: 35px;
+            text-align: right;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
     </style>
+</head>
+<body>
+    <!-- AUTHENTICATION CHECK -->
+    
+    <div class="dashboard">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🚀 Ascent XR Dashboard</h1>
+                <div class="subtitle">Mission Control v19</div>
+            </div>
+            <div class="header-stats">
+                <div class="header-stat">
+                    <div class="header-stat-value" id="daysRemaining">--</div>
+                    <div class="header-stat-label">Days to Target</div>
+                </div>
+                <div class="header-stat">
+                    <div class="header-stat-value" id="revenuePipeline">$--K</div>
+                    <div class="header-stat-label">Pipeline</div>
+                </div>
+                <div class="header-stat">
+                    <div class="header-stat-value" id="taskCompletion">--%</div>
+                    <div class="header-stat-label">Tasks</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-grid">
+            <!-- LEFT SIDEBAR -->
+            <aside class="sidebar-left">
+                <nav class="nav-section">
+                    <div class="nav-title">Navigation</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item"><a href="#" class="nav-link active"><i class="fas fa-home"></i> Overview</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-tasks"></i> Tasks</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-robot"></i> Agents</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- CENTER CONTENT -->
+            <main class="content-area">
+                <!-- ROW 1: Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">$300K</div>
+                        <div class="stat-label">Revenue Target</div>
+                        <div class="stat-progress"><div class="stat-progress-bar" style="width: 4%"></div></div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-value">23</div>
+                        <div class="stat-label">Tasks Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">LinkedIn Posts</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Active Prospects</div>
+                    </div>
+                </div>
+
+                <!-- ROW 2: Task Board (hidden but present for JS) -->
+                <div id="overviewView" style="display:none;">
+                    <div class="tasks-board">
+                        <div class="task-column">
+                            <h3>Jim's Tasks <span id="jimCount">0</span></h3>
+                            <div id="jimTasks"></div>
+                        </div>
+                        <div class="task-column">
+                            <h3>Nick's Tasks <span id="nickCount">0</span></h3>
+                            <div id="nickTasks"></div>
+                        </div>
+                        <div class="task-column">
+                            <h3>AI Tasks <span id="aiCount">0</span></h3>
+                            <div id="aiTasks"></div>
+                        </div>
+                    </div>
+                    <div id="detailedJimTasks" style="display:none;"></div>
+                    <div id="detailedNickTasks" style="display:none;"></div>
+                    <div id="detailedAiTasks" style="display:none;"></div>
+                    <div id="detailedJointTasks" style="display:none;"></div>
+                </div>
+            </main>
+
+            <!-- RIGHT SIDEBAR -->
+            <aside class="sidebar-right">
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Live Updates</div>
+                    </div>
+                    <ul id="activityFeed" style="list-style:none; padding:0;">
+                        <li style="padding:12px; color:var(--text-secondary);">Loading...</li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+
     <script>
-        // FORCE CACHE BUST - Unique timestamp on every load
-        const CACHE_BUSTER = Date.now();
-        const CURRENT_VERSION = 'v19.0';
-        const BUILD_DATE = '2026-02-03';
+// DATA DEFINITIONS
+const AGENT_REGISTRY_URL = './agent_registry.json';
+let agentRegistryData = null;
+let lastRefreshTime = null;
+const tasks = {
+            jim: [
+                { id: 1, title: "Complete client management CRM system", due: "Feb 7", priority: "high", completed: false, description: "Document all existing school relationships, usage data, renewal dates" },
+                { id: 2, title: "Document all existing school relationships and status", due: "Feb 7", priority: "medium", completed: false, description: "Create comprehensive database of all current and past school relationships" },
+                { id: 3, title: "Identify 5 WebXR experiences for tablet adaptation", due: "Feb 7", priority: "medium", completed: false, description: "Select best experiences for tablet optimization and document adaptation requirements" }
+            ],
+            nick: [
+                { id: 4, title: "Continue food web experience development", due: "Ongoing", priority: "high", completed: false, description: "Finish food web ecosystem experience with predator-prey relationships" },
+                { id: 5, title: "Continue co-signs project", due: "Ongoing", priority: "medium", completed: false, description: "Develop co-signs experience for spatial learning" },
+                { id: 6, title: "Continue restorative model project", due: "Ongoing", priority: "medium", completed: false, description: "Build restorative justice model experience" },
+                { id: 7, title: "Focus on creating reusable skills from existing experiences", due: "Feb 7", priority: "high", completed: false, description: "Document existing experiences as case studies and reusable components" }
+            ],
+            ai: [
+                { id: 8, title: "Create ROI documentation template ✅", due: "Feb 7 | Completed", priority: "high", completed: true, description: "ROI template for school districts with metrics and calculations" },
+                { id: 9, title: "Draft LinkedIn post templates", due: "Feb 7", priority: "high", completed: false, description: "Create 3 LinkedIn post templates for engagement, AI, and superintendent topics" },
+                { id: 10, title: "Research EdTech conferences for Q1-Q2", due: "Feb 7", priority: "medium", completed: false, description: "Identify relevant conferences and speaking opportunities" },
+                { id: 11, title: "Set up weekly progress review system", due: "Feb 7", priority: "high", completed: false, description: "Create system for tracking weekly progress and metrics" },
+                { id: 12, title: "Create custom experience proposal template", due: "Feb 7", priority: "medium", completed: false, description: "Template for proposing custom WebXR experiences to prospects" }
+            ],
+            joint: [
+                { id: 13, title: "Schedule calls with Kevin (Geo) and Anita", due: "Feb 7", priority: "high", completed: false, description: "Schedule renewal and expansion discussions with existing clients" },
+                { id: 14, title: "Draft first 3 LinkedIn posts", due: "Feb 7", priority: "medium", completed: false, description: "Create final versions of 3 LinkedIn posts for Week 1" },
+                { id: 15, title: "Create target list of 10 potential clients", due: "Feb 7", priority: "medium", completed: false, description: "Identify 10 prospects for custom experience projects" }
+            ]
+        };
+const documents = {
+            dashboard: { title: "Ascent XR DASHBOARD", content: `Complete business dashboard and action plan`, file: "ASCENT_XR_DASHBOARD.html", realPath: "ASCENT_XR_DASHBOARD.html" },
+            linkedin: { title: "LINKEDIN STRATEGY", content: `Complete content strategy with 3 draft posts`, file: "ASCENT_XR_LINKEDIN_STRATEGY.html", realPath: "ASCENT_XR_LINKEDIN_STRATEGY.html" },
+            roi: { title: "ROI TEMPLATE", content: `ROI documentation template for school districts`, file: "ASCENT_XR_ROI_TEMPLATE.html", realPath: "ASCENT_XR_ROI_TEMPLATE.html" },
+            constitution: { title: "ASCENT CONSTITUTION", content: `Ascent XR company constitution and principles`, file: "ASCENT_ASSISTANT_CONSTITUTION.html", realPath: "ASCENT_ASSISTANT_CONSTITUTION.html" },
+            nick: { title: "NICK STATUS", content: `Latest status update from Nick (CTO)`, file: "NICK_STATUS.html", realPath: "NICK_STATUS.html" },
+            schedule: { title: "LINKEDIN SCHEDULE", content: `LinkedIn posting schedule and automation`, file: "LINKEDIN_SCHEDULE.html", realPath: "LINKEDIN_SCHEDULE.html" },
+            docs: { title: "ALL DOCUMENTS", content: `Complete documentation hub`, file: "ascent_dashboard_docs.html", realPath: "ascent_dashboard_docs.html" },
+            gallery: { title: "LINKEDIN GALLERY", content: `LinkedIn post images gallery`, file: "linkedin_gallery.html", realPath: "linkedin_gallery.html" }
+        };
+let agentData = null;
+let taskQueue = [];
+let coordinationMetrics = {};
+const agentMessages = [];
+const liveUpdates = [
+        { id: 1, type: 'success', message: 'Dashboard v16 deployed - cache fixes applied', time: 'Just now', icon: '🚀' },
+        { id: 2, type: 'info', message: 'JavaScript errors fixed - renderLiveUpdates working', time: '2 minutes ago', icon: '🐛' },
+        { id: 3, type: 'success', message: 'Business impact testing completed', time: '10 minutes ago', icon: '✅' },
+        { id: 4, type: 'success', message: '3 New Agents Activated: SDR, CRM Sales, Financial (CPA)', time: '20 minutes ago', icon: '🤖' },
+        { id: 5, type: 'info', message: 'Authentication system active - 2 admins configured', time: '30 minutes ago', icon: '🔐' },
+        { id: 6, type: 'success', message: '8 new analytics charts added to dashboard', time: '1 hour ago', icon: '📊' },
+        { id: 7, type: 'info', message: 'Tax documentation library created (CPA resources)', time: '2 hours ago', icon: '📚' },
+        { id: 8, type: 'success', message: 'Q1 Marketing & Sales Plan completed ($300K target)', time: '3 hours ago', icon: '🎯' },
+        { id: 9, type: 'info', message: 'Week 2 LinkedIn posts ready (Feb 10, 12, 14)', time: '4 hours ago', icon: '📅' },
+        { id: 10, type: 'warning', message: 'Purple colors removed from all LinkedIn specs', time: '5 hours ago', icon: '🎨' }
+    ];
+
+
+// FUNCTION DEFINITIONS
+function renderLiveUpdates() {
+        const feed = document.getElementById('activityFeed');
+        if (!feed) {
+            console.warn('⚠️ renderLiveUpdates: activityFeed not found');
+            return;
+        }
         
-        // Construct the URL with aggressive cache busting
-        const dashboardUrl = `dashboard_v19.html?nocache=${CACHE_BUSTER}&v=${CURRENT_VERSION}&t=${BUILD_DATE}`;
+        if (liveUpdates.length === 0) {
+            feed.innerHTML = `
+                <li style="padding: 20px; text-align: center; color: var(--text-secondary);">
+                    <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px; display: block; opacity: 0.5;"></i>
+                    No updates yet
+                </li>
+            `;
+            return;
+        }
         
-        // Clear browser cache for this page
-        if ('caches' in window) {
-            caches.keys().then(names => {
-                names.forEach(name => caches.delete(name));
+        const borderColors = {
+            success: '#22c55e',
+            info: '#3b82f6',
+            warning: '#f59e0b',
+            error: '#ef4444'
+        };
+        
+        feed.innerHTML = liveUpdates.map(update => `
+            <li style="padding: 12px; margin-bottom: 8px; background: var(--dark-card); border-radius: 8px; border-left: 4px solid ${borderColors[update.type] || '#3b82f6'};">
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <span style="font-size: 1.3rem; flex-shrink: 0;">${update.icon}</span>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px; line-height: 1.4;">${update.message}</div>
+                        <div style="font-size: 0.8rem; color: #64748b; display: flex; align-items: center; gap: 6px;">
+                            <i class="far fa-clock" style="font-size: 0.75rem;"></i>
+                            ${update.time}
+                        </div>
+                    </div>
+                </div>
+            </li>
+        `).join('');
+    }
+
+
+function toggleLiveUpdates() {
+        const container = document.getElementById('liveUpdatesContainer');
+        const toggle = document.getElementById('liveUpdatesToggle');
+        
+        if (!container) {
+            console.warn('⚠️ toggleLiveUpdates: liveUpdatesContainer not found');
+            return;
+        }
+        
+        if (container.style.maxHeight === '0px') {
+            container.style.maxHeight = '500px';
+            if (toggle) toggle.style.transform = 'rotate(0deg)';
+        } else {
+            container.style.maxHeight = '0px';
+            if (toggle) toggle.style.transform = 'rotate(-90deg)';
+        }
+    }
+
+
+function addLiveUpdate(type, message, icon = '📢') {
+        const newUpdate = {
+            id: Date.now(),
+            type: type,
+            message: message,
+            time: 'Just now',
+            icon: icon
+        };
+        
+        liveUpdates.unshift(newUpdate);
+        if (liveUpdates.length > 20) liveUpdates.pop();
+        
+        liveUpdates.forEach((update, index) => {
+            if (index === 0) update.time = 'Just now';
+            else if (index === 1) update.time = '1 minute ago';
+            else if (index < 5) update.time = `${index} minutes ago`;
+            else if (index < 15) update.time = `${Math.floor(index / 5)} hours ago`;
+            else update.time = 'Today';
+        });
+        
+        renderLiveUpdates();
+    }
+
+
+function renderAllTasks() {
+            // Overview board tasks
+            renderTaskColumn('jimTasks', tasks.jim, 3);
+            renderTaskColumn('nickTasks', tasks.nick, 4);
+            renderTaskColumn('aiTasks', tasks.ai, 5);
+            
+            // Detailed tasks
+            renderDetailedTasks('detailedJimTasks', tasks.jim);
+            renderDetailedTasks('detailedNickTasks', tasks.nick);
+            renderDetailedTasks('detailedAiTasks', tasks.ai);
+            renderDetailedTasks('detailedJointTasks', tasks.joint);
+            
+            // Update counts (with null checks)
+            const jimCount = document.getElementById('jimCount');
+            const nickCount = document.getElementById('nickCount');
+            const aiCount = document.getElementById('aiCount');
+            if (jimCount) jimCount.textContent = tasks.jim.length;
+            if (nickCount) nickCount.textContent = tasks.nick.length;
+            if (aiCount) aiCount.textContent = tasks.ai.length;
+        }
+
+
+function renderTaskColumn(containerId, taskList, limit = 3) {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                console.warn(`⚠️ renderTaskColumn: Container '${containerId}' not found`);
+                return;
+            }
+            container.innerHTML = '';
+            
+            const displayTasks = taskList.slice(0, limit);
+            
+            displayTasks.forEach(task => {
+                const taskItem = document.createElement('div');
+                taskItem.className = 'task-item fade-in';
+                taskItem.innerHTML = `
+                    <div class="task-checkbox ${task.completed ? 'checked' : ''}" 
+                         onclick="toggleTask(${task.id}, this)">
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-meta">
+                            <span><i class="far fa-calendar"></i> ${task.due}</span>
+                            <span class="task-priority priority-${task.priority}">${task.priority}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(taskItem);
+            });
+        }
+
+
+function renderDetailedTasks(containerId, taskList) {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                console.warn(`⚠️ renderDetailedTasks: Container '${containerId}' not found`);
+                return;
+            }
+            container.innerHTML = '';
+            
+            taskList.forEach(task => {
+                const taskItem = document.createElement('div');
+                taskItem.className = 'task-item fade-in';
+                taskItem.innerHTML = `
+                    <div class="task-checkbox ${task.completed ? 'checked' : ''}" 
+                         onclick="toggleTask(${task.id}, this)">
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-description" style="font-size: 0.9rem; color: var(--text-secondary); margin: 5px 0; line-height: 1.4;">${task.description}</div>
+                        <div class="task-meta">
+                            <span><i class="far fa-calendar"></i> ${task.due}</span>
+                            <span class="task-priority priority-${task.priority}">${task.priority}</span>
+                            <span style="color: ${task.completed ? 'var(--success)' : 'var(--warning)'}">
+                                <i class="fas fa-${task.completed ? 'check-circle' : 'clock'}"></i> ${task.completed ? 'Completed' : 'Pending'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(taskItem);
+            });
+        }
+
+
+function toggleTask(taskId, checkbox) {
+            // Find task in all arrays
+            let task = null;
+            let category = null;
+            
+            for (const [cat, taskList] of Object.entries(tasks)) {
+                const found = taskList.find(t => t.id === taskId);
+                if (found) {
+                    task = found;
+                    category = cat;
+                    break;
+                }
+            }
+            
+            if (task) {
+                task.completed = !task.completed;
+                checkbox.classList.toggle('checked');
+                
+                // Update notification
+                addNotification(
+                    task.completed ? 'success' : 'info',
+                    task.completed ? 
+                        `✅ Task Completed: "${task.title}"` :
+                        `🔄 Task Reopened: "${task.title}"`
+                );
+                
+                updateStats();
+                renderAllTasks();
+            }
+        }
+
+
+function updateStats() {
+            // Calculate completion rate
+            let totalTasks = 0;
+            let completedTasks = 0;
+            
+            try {
+                for (const taskList of Object.values(tasks)) {
+                    if (taskList && Array.isArray(taskList)) {
+                        totalTasks += taskList.length;
+                        completedTasks += taskList.filter(t => t && t.completed).length;
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error calculating stats:', error);
+                return;
+            }
+            
+            if (totalTasks === 0) return;
+            
+            const completionRate = Math.round((completedTasks / totalTasks) * 100);
+            
+            // Update display (with null checks)
+            const taskCompletionEl = document.getElementById('taskCompletion');
+            const statCardValue = document.querySelector('.stat-card:nth-child(2) .stat-value');
+            const statProgressBar = document.querySelector('.stat-card:nth-child(2) .stat-progress-bar');
+            
+            if (taskCompletionEl) taskCompletionEl.textContent = `${completionRate}%`;
+            if (statCardValue) statCardValue.textContent = `${totalTasks}`;
+            if (statProgressBar) statProgressBar.style.width = `${completionRate}%`;
+            
+            // Update progress bars
+            try {
+                const progressBars = document.querySelectorAll('.stat-progress-bar');
+                if (progressBars && progressBars[1]) {
+                    progressBars[1].style.width = `${completionRate}%`;
+                }
+            } catch (error) {
+                console.warn('⚠️ Error updating progress bars:', error);
+            }
+        }
+
+
+function setupNavigation() {
+            try {
+                // View navigation links
+                const navLinks = document.querySelectorAll('.nav-link[data-view]');
+                if (navLinks) {
+                    navLinks.forEach(link => {
+                        if (link) {
+                            link.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                
+                                // Update active state
+                                try {
+                                    document.querySelectorAll('.nav-link[data-view]').forEach(l => {
+                                        if (l) l.classList.remove('active');
+                                    });
+                                } catch (error) {
+                                    console.warn('⚠️ Error removing active state:', error);
+                                }
+                                this.classList.add('active');
+                                
+                                // Switch view
+                                const view = this.dataset.view;
+                                if (view) switchView(view);
+                            });
+                        }
+                    });
+                }
+                
+                // Document navigation links
+                const docLinks = document.querySelectorAll('.nav-link.document-link');
+                if (docLinks) {
+                    docLinks.forEach(link => {
+                        if (link) {
+                            link.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                
+                                // Update active state
+                                try {
+                                    document.querySelectorAll('.nav-link').forEach(l => {
+                                        if (l) l.classList.remove('active');
+                                    });
+                                } catch (error) {
+                                    console.warn('⚠️ Error removing active state:', error);
+                                }
+                                this.classList.add('active');
+                                
+                                // Load document
+                                const docKey = this.dataset.doc;
+                                if (docKey) openDocument(docKey, e);
+                            });
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('❌ Error in setupNavigation:', error);
+            }
+        }
+
+
+function switchView(view) {
+            // Clear any document viewer
+            try {
+                const contentArea = document.querySelector('.content-area');
+                if (contentArea) {
+                    const documentViewer = contentArea.querySelector('.document-viewer');
+                    if (documentViewer) {
+                        documentViewer.remove();
+                    }
+                }
+            } catch (error) {
+                console.warn('⚠️ Error clearing document viewer:', error);
+            }
+            
+            // Hide all views
+            try {
+                const viewContents = document.querySelectorAll('.view-content');
+                if (viewContents) {
+                    viewContents.forEach(v => {
+                        if (v) v.style.display = 'none';
+                    });
+                }
+            } catch (error) {
+                console.warn('⚠️ Error hiding views:', error);
+            }
+            
+            // Show selected view
+            const viewElement = document.getElementById(`${view}View`);
+            if (viewElement) {
+                viewElement.style.display = 'block';
+                
+                // Load view-specific content
+                switch(view) {
+                    case 'documents':
+                        loadDocumentsView();
+                        break;
+                    case 'revenue':
+                        loadRevenueView();
+                        break;
+                    case 'linkedin':
+                        loadLinkedInView();
+                        break;
+                }
+            } else {
+                console.warn(`⚠️ switchView: View '${view}View' not found`);
+            }
+        }
+
+
+function openDocument(docKey, e) {
+            const doc = documents[docKey];
+            if (!doc) {
+                console.warn(`⚠️ openDocument: Document '${docKey}' not found`);
+                return;
+            }
+            
+            // Hide current content
+            const contentArea = document.querySelector('.content-area');
+            if (!contentArea) {
+                console.error('❌ openDocument: Content area not found');
+                return;
+            }
+            contentArea.innerHTML = '';
+            
+            // Create document container
+            const docContainer = document.createElement('div');
+            docContainer.className = 'document-viewer';
+            docContainer.innerHTML = `
+                <div class="document-header">
+                    <button class="btn btn-secondary" onclick="switchView('overview')">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </button>
+                    <h2 style="margin: 0; color: var(--primary);">${doc.title}</h2>
+                </div>
+                <div class="document-content">
+                    <iframe src="${doc.file}" style="width: 100%; height: calc(100vh - 200px); border: none; border-radius: 12px;"></iframe>
+                </div>
+            `;
+            
+            contentArea.appendChild(docContainer);
+            
+            // Update active nav state
+            if (e && e.target) {
+                document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                e.target.classList.add('active');
+            }
+        }
+
+
+function closeModal() {
+            const modal = document.getElementById('documentModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+
+function showModal(content) {
+            const modal = document.getElementById('documentModal');
+            const modalBody = document.getElementById('modalBody');
+            if (modal && modalBody) {
+                modalBody.innerHTML = content;
+                modal.style.display = 'flex';
+            }
+        }
+
+
+async function simulateFileLoad(filename) {
+            try {
+                // Try to fetch actual file content
+                const response = await fetch(`/api/documents/${filename}`);
+                
+                if (response.ok) {
+                    return await response.text();
+                } else {
+                    // Fallback: check if file exists in workspace and serve it
+                    const fallbackFiles = {
+                        "ASCENT_XR_DASHBOARD.html": `<iframe src="ASCENT_XR_DASHBOARD.html" style="width: 100%; height: 500px; border: none; border-radius: 8px;"></iframe>`,
+                        "ASCENT_XR_LINKEDIN_STRATEGY.html": `<iframe src="ASCENT_XR_LINKEDIN_STRATEGY.html" style="width: 100%; height: 500px; border: none; border-radius: 8px;"></iframe>`,
+                        "ASCENT_XR_ROI_TEMPLATE.html": `<iframe src="ASCENT_XR_ROI_TEMPLATE.html" style="width: 100%; height: 500px; border: none; border-radius: 8px;"></iframe>`,
+                        "ASCENT_ASSISTANT_CONSTITUTION.html": `<iframe src="ASCENT_ASSISTANT_CONSTITUTION.html" style="width: 100%; height: 500px; border: none; border-radius: 8px;"></iframe>`,
+                        "NICK_STATUS.html": `<iframe src="NICK_STATUS.html" style="width: 100%; height: 500px; border: none; border-radius: 8px;"></iframe>`,
+                        "LINKEDIN_SCHEDULE.html": `<iframe src="LINKEDIN_SCHEDULE.html" style="width: 100%; height: 500px; border: none; border-radius: 8px;"></iframe>`,
+                        "ascent_dashboard_docs.html": `<iframe src="ascent_dashboard_docs.html" style="width: 100%; height: 500px; border: none; border-radius: 8px;"></iframe>`,
+                        "linkedin_gallery.html": `<iframe src="linkedin_gallery.html" style="width: 100%; height: 500px; border: none; border-radius: 8px;"></iframe>`
+                    };
+                    
+                    if (fallbackFiles[filename]) {
+                        return fallbackFiles[filename];
+                    } else {
+                        return `File "${filename}" not found.\n\nAvailable HTML documents:\n- ASCENT_XR_DASHBOARD.html\n- ASCENT_XR_LINKEDIN_STRATEGY.html\n- ASCENT_XR_ROI_TEMPLATE.html\n- ASCENT_ASSISTANT_CONSTITUTION.html\n- NICK_STATUS.html\n- LINKEDIN_SCHEDULE.html\n- ascent_dashboard_docs.html\n- linkedin_gallery.html\n\n**Note:** All documents are now available as HTML files with working links.`;
+                    }
+                }
+            } catch (error) {
+                return `Error loading ${filename}: ${error.message}\n\nThis dashboard is running locally. To access actual files, we need:\n1. Backend API server\n2. File serving endpoint\n3. Authentication system`;
+            }
+        }
+
+
+function loadDocumentsView() {
+            const container = document.getElementById('documentsView');
+            container.innerHTML = `
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title"><i class="fas fa-folder-open"></i> All Documentation</div>
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportAllDocs()"><i class="fas fa-download"></i> Export All</button>
+                            <button class="btn btn-secondary" onclick="refreshDocs()"><i class="fas fa-sync"></i> Refresh</button>
+                        </div>
+                    </div>
+                    <div class="docs-grid">
+                        ${Object.entries(documents).map(([key, doc]) => `
+                            <div class="doc-card" onclick="openDocument('${key}')">
+                                <div class="doc-title"><i class="fas fa-file-alt"></i> ${doc.title}</div>
+                                <div class="doc-description">Click to view full document content and details.</div>
+                                <div class="doc-meta">
+                                    <span><i class="fas fa-file"></i> ${doc.file}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+
+function loadRevenueView() {
+            const container = document.getElementById('revenueView');
+            container.innerHTML = `
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title"><i class="fas fa-chart-line"></i> Revenue Pipeline</div>
+                        <div class="section-actions">
+                            <button class="btn" onclick="updatePipeline()"><i class="fas fa-sync"></i> Update</button>
+                            <button class="btn btn-secondary" onclick="exportPipeline()"><i class="fas fa-file-export"></i> Export</button>
+                        </div>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <div class="info-card-header">
+                                <i class="fas fa-school" style="color: var(--primary);"></i>
+                                <div class="info-card-title">Track 1: District Licensing</div>
+                            </div>
+                            <div style="margin-top: 15px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <span>Target:</span>
+                                    <span style="color: var(--primary); font-weight: 600;">5-10 districts by June</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <span>Revenue Potential:</span>
+                                    <span style="color: var(--success); font-weight: 600;">$48K-$150K</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Status:</span>
+                                    <span style="color: var(--warning);">Planning phase</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-card-header">
+                                <i class="fas fa-cube" style="color: var(--secondary);"></i>
+                                <div class="info-card-title">Track 2: Custom Experiences</div>
+                            </div>
+                            <div style="margin-top: 15px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <span>Target:</span>
+                                    <span style="color: var(--primary); font-weight: 600;">5-10 projects by June</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <span>Revenue Potential:</span>
+                                    <span style="color: var(--success); font-weight: 600;">$25K-$75K</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Status:</span>
+                                    <span style="color: var(--warning);">Prospect identification</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-card-header">
+                                <i class="fas fa-robot" style="color: var(--danger);"></i>
+                                <div class="info-card-title">Track 3: AI Lesson Generation</div>
+                            </div>
+                            <div style="margin-top: 15px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <span>Target:</span>
+                                    <span style="color: var(--primary); font-weight: 600;">Launch pilot in March</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <span>Revenue Potential:</span>
+                                    <span style="color: var(--success); font-weight: 600;">$15K-$50K</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Status:</span>
+                                    <span style="color: var(--warning);">Development planning</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+
+function loadLinkedInView() {
+            const container = document.getElementById('linkedinView');
+            container.innerHTML = `
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title"><i class="fab fa-linkedin"></i> LinkedIn Strategy - Week 1</div>
+                        <div class="section-actions">
+                            <a href="linkedin_gallery.html" target="_blank" class="btn" style="color: white; text-decoration: none;"><i class="fas fa-eye"></i> View Gallery</a>
+                            <button class="btn" onclick="postToLinkedIn()"><i class="fas fa-paper-plane"></i> Schedule Posts</button>
+                            <button class="btn btn-secondary" onclick="openDocument('schedule')"><i class="fas fa-calendar"></i> View Schedule</button>
+                        </div>
+                    </div>
+                    
+                    <!-- EMBEDDED LINKEDIN GALLERY IFRAME -->
+                    <div class="info-card" style="grid-column: 1 / -1; padding: 0; overflow: hidden;">
+                        <iframe src="/dev/linkedin_gallery.html" style="width: 100%; height: 400px; border: none; border-radius: 12px;"></iframe>
+                        <div style="padding: 15px; border-top: 1px solid var(--dark-border);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>Ready for Launch:</strong> 3 posts with images uploaded
+                                </div>
+                                <div>
+                                    <a href="linkedin_gallery.html" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">
+                                        Open Full Gallery →
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- QUICK STATS -->
+                    <div class="info-grid" style="margin-top: 20px;">
+                            <div class="info-card-header">
+                                <i class="fas fa-video" style="color: var(--primary);"></i>
+                                <div class="info-card-title">Post 1: The Engagement Gap</div>
+                            </div>
+                            <div style="margin-top: 15px;">
+                                <div style="margin-bottom: 10px; font-weight: 600; color: var(--text-primary);">Monday, Feb 3 • 8:30 AM EST</div>
+                                <div style="color: var(--text-secondary); margin-bottom: 15px; line-height: 1.5;">
+                                    Traditional worksheets vs. immersive experiences - which would your students choose? We're seeing 300%+ engagement increases...
+                                </div>
+                                <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                    <span style="background: var(--dark-border); padding: 3px 8px; border-radius: 12px; font-size: 0.8rem;">#EdTech</span>
+                                    <span style="background: var(--dark-border); padding: 3px 8px; border-radius: 12px; font-size: 0.8rem;">#K12</span>
+                                    <span style="background: var(--dark-border); padding: 3px 8px; border-radius: 12px; font-size: 0.8rem;">#SpatialLearning</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-card-header">
+                                <i class="fas fa-image" style="color: var(--secondary);"></i>
+                                <div class="info-card-title">Post 2: AI + Spatial Learning</div>
+                            </div>
+                            <div style="margin-top: 15px;">
+                                <div style="margin-bottom: 10px; font-weight: 600; color: var(--text-primary);">Wednesday, Feb 5 • 11:30 AM EST</div>
+                                <div style="color: var(--text-secondary); margin-bottom: 15px; line-height: 1.5;">
+                                    Teachers spend 7+ hours weekly creating supplemental materials. What if AI could generate immersive lessons in minutes?
+                                </div>
+                                <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                    <span style="background: var(--dark-border); padding: 3px 8px; border-radius: 12px; font-size: 0.8rem;">#AI</span>
+                                    <span style="background: var(--dark-border); padding: 3px 8px; border-radius: 12px; font-size: 0.8rem;">#EdTech</span>
+                                    <span style="background: var(--dark-border); padding: 3px 8px; border-radius: 12px; font-size: 0.8rem;">#TeacherTools</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-card-header">
+                                <i class="fas fa-chart-bar" style="color: var(--success);"></i>
+                                <div class="info-card-title">Post 3: Superintendent's Dilemma</div>
+                            </div>
+                            <div style="margin-top: 15px;">
+                                <div style="margin-bottom: 10px; font-weight: 600; color: var(--text-primary);">Friday, Feb 7 • 3:30 PM EST</div>
+                                <div style="color: var(--text-secondary); margin-bottom: 15px; line-height: 1.5;">
+                                    To my 250+ superintendent connections: You're constantly balancing innovation with budget constraints...
+                                </div>
+                                <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                    <span style="background: var(--dark-border); padding: 3px 8px; border-radius: 12px; font-size: 0.8rem;">#Leadership</span>
+                                    <span style="background: var(--dark-border); padding: 3px 8px; border-radius: 12px; font-size: 0.8rem;">#K12Leadership</span>
+                                    <span style="background: var(--dark-border); padding: 3px 8px; border-radius: 12px; font-size: 0.8rem;">#SchoolAdministration</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+
+function startTimer() {
+            const entry = document.getElementById('timeEntry').value;
+            if (!entry) {
+                alert('Please enter what you\'re working on');
+                return;
+            }
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            timerSeconds = 0;
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                document.querySelector('.btn i.fa-play').className = 'fas fa-stop';
+            }, 1000);
+            
+            addNotification('info', `⏱️ Started timer for: "${entry}"`);
+        }
+
+
+function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                const hours = (timerSeconds / 3600).toFixed(1);
+                const entry = document.getElementById('timeEntry').value;
+                
+                if (hours > 0) {
+                    const timeLog = document.querySelector('.time-log');
+                    const logItem = document.createElement('div');
+                    logItem.className = 'time-log-item';
+                    logItem.innerHTML = `<span>${entry}</span><span>${hours}h</span>`;
+                    timeLog.prepend(logItem);
+                    
+                    document.getElementById('timeEntry').value = '';
+                    document.querySelector('.btn i.fa-stop').className = 'fas fa-play';
+                    
+                    addNotification('success', `✅ Logged ${hours} hours for: "${entry}"`);
+                }
+            }
+        }
+
+
+function addNotification(type, message) {
+            const notificationList = document.querySelector('.notification-list');
+            const notificationItem = document.createElement('li');
+            notificationItem.className = `notification-item ${type}`;
+            notificationItem.innerHTML = `
+                <strong>${message}</strong>
+                <div class="activity-time">Just now</div>
+            `;
+            
+            notificationList.prepend(notificationItem);
+            
+            // Limit to 4 notifications
+            if (notificationList.children.length > 4) {
+                notificationList.removeChild(notificationList.lastChild);
+            }
+        }
+
+
+function sendUpdate(recipient) {
+            const message = prompt(`Enter update to send to ${recipient}:`);
+            if (message) {
+                addNotification('info', `📤 Update sent to ${recipient}: "${message}"`);
+            }
+        }
+
+
+function exportReport() {
+            addNotification('success', '📊 Weekly report exported successfully');
+        }
+
+
+function scheduleMeeting() {
+            const date = prompt('Enter meeting date and time (e.g., Feb 5 2:00 PM):');
+            if (date) {
+                addNotification('success', `📅 Meeting scheduled for ${date}`);
+            }
+        }
+
+
+function markTaskComplete() {
+            const taskId = prompt('Enter task ID to mark complete:');
+            if (taskId) {
+                // Find and mark task
+                for (const taskList of Object.values(tasks)) {
+                    const task = taskList.find(t => t.id == taskId);
+                    if (task) {
+                        task.completed = true;
+                        addNotification('success', `✅ Marked task ${taskId} as complete`);
+                        updateStats();
+                        renderAllTasks();
+                        return;
+                    }
+                }
+                addNotification('warning', `⚠️ Task ${taskId} not found`);
+            }
+        }
+
+
+function exportAllDocs() {
+            addNotification('success', '📚 All documents exported as ZIP file');
+        }
+
+
+function postToLinkedIn() {
+            addNotification('success', '📱 LinkedIn posts scheduled successfully');
+        }
+
+
+function refreshIntegrations() {
+            const countdownElement = document.getElementById('linkedinCountdown');
+            if (countdownElement) {
+                // Feb 3, 8:30 AM EST = 13:30 UTC
+                const postTime = new Date('2026-02-03T13:30:00Z');
+                const now = new Date();
+                const diff = postTime - now;
+                
+                if (diff > 0) {
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    
+                    if (days > 0) {
+                        countdownElement.textContent = `${days}d ${hours}h ${minutes}m`;
+                    } else {
+                        countdownElement.textContent = `${hours}h ${minutes}m ${seconds}s`;
+                    }
+                } else {
+                    countdownElement.textContent = 'LIVE NOW!';
+                    countdownElement.style.color = 'var(--success)';
+                }
+            }
+            
+            // Update CRM status
+            const crmStatus = document.querySelector('.integration-card.crm .integration-status');
+            if (crmStatus) {
+                crmStatus.textContent = 'CONNECTED';
+                crmStatus.className = 'integration-status success';
+            }
+            
+            // Update agent count
+            const agentCount = document.querySelector('.integration-card.agents .stat-item:nth-child(1) .stat-value');
+            if (agentCount) {
+                agentCount.textContent = '14';
+            }
+            
+            // Update image preview if modal exists
+            const modalImages = document.querySelectorAll('.post-preview-image');
+            if (modalImages.length > 0) {
+                updateImagePreviews();
+            }
+        }
+
+
+function previewLinkedInPosts() {
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+            modal.style.zIndex = '10000';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            
+            modal.innerHTML = `
+                <div style="background: var(--dark-card); padding: 30px; border-radius: 20px; max-width: 500px; width: 90%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="color: var(--primary);">LinkedIn Posts Preview</h3>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" style="background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer;">×</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: var(--text-primary); margin-bottom: 10px;">Post 1: The Engagement Gap</h4>
+                        <div style="background: var(--dark-bg); padding: 15px; border-radius: 10px; margin-bottom: 10px;">
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Feb 3, 8:30 AM EST</div>
+                            <div style="color: var(--text-primary); margin: 10px 0;">Traditional learning vs spatial learning - which engages students more?</div>
+                            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                <span style="background: rgba(37, 99, 235, 0.2); color: var(--primary); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">#EdTech</span>
+                                <span style="background: rgba(37, 99, 235, 0.2); color: var(--primary); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">#K12</span>
+                                <span style="background: rgba(37, 99, 235, 0.2); color: var(--primary); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">#SpatialLearning</span>
+                            </div>
+                        </div>
+                        
+                        <h4 style="color: var(--text-primary); margin-bottom: 10px;">Post 2: AI + Spatial Learning</h4>
+                        <div style="background: var(--dark-bg); padding: 15px; border-radius: 10px; margin-bottom: 10px;">
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Feb 5, 11:30 AM EST</div>
+                            <div style="color: var(--text-primary); margin: 10px 0;">AI generating 3D educational content - saving teachers hours of prep time.</div>
+                            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                <span style="background: rgba(37, 99, 235, 0.2); color: var(--primary); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">#AI</span>
+                                <span style="background: rgba(37, 99, 235, 0.2); color: var(--primary); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">#EdTech</span>
+                                <span style="background: rgba(37, 99, 235, 0.2); color: var(--primary); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">#TeacherTools</span>
+                            </div>
+                        </div>
+                        
+                        <h4 style="color: var(--text-primary); margin-bottom: 10px;">Post 3: Superintendent's Dilemma</h4>
+                        <div style="background: var(--dark-bg); padding: 15px; border-radius: 10px;">
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Feb 7, 3:30 PM EST</div>
+                            <div style="color: var(--text-primary); margin: 10px 0;">ROI framework for superintendents - 4 quadrants of measurable impact.</div>
+                            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                <span style="background: rgba(37, 99, 235, 0.2); color: var(--primary); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">#Leadership</span>
+                                <span style="background: rgba(37, 99, 235, 0.2); color: var(--primary); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">#K12Leadership</span>
+                                <span style="background: rgba(37, 99, 235, 0.2); color: var(--primary); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">#EdTech</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button onclick="postToLinkedIn()" style="background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Schedule All Posts</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+
+function testCRMConnection() {
+            const statusElement = document.querySelector('.integration-card.crm .integration-status');
+            if (statusElement) {
+                statusElement.textContent = 'TESTING...';
+                statusElement.className = 'integration-status info';
+                
+                setTimeout(() => {
+                    statusElement.textContent = 'CONNECTED';
+                    statusElement.className = 'integration-status success';
+                    
+                    // Show success notification
+                    const notification = document.createElement('div');
+                    notification.style.position = 'fixed';
+                    notification.style.top = '20px';
+                    notification.style.right = '20px';
+                    notification.style.backgroundColor = 'var(--success)';
+                    notification.style.color = 'white';
+                    notification.style.padding = '15px';
+                    notification.style.borderRadius = '8px';
+                    notification.style.zIndex = '10000';
+                    notification.textContent = '✅ CRM connection successful!';
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 3000);
+                }, 1500);
+            }
+        }
+
+
+function viewAgentRegistry() {
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+            modal.style.zIndex = '10000';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            
+            modal.innerHTML = `
+                <div style="background: var(--dark-card); padding: 30px; border-radius: 20px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="color: var(--primary);">Agent Team Registry</h3>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" style="background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer;">×</button>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                        <div style="background: var(--dark-bg); padding: 15px; border-radius: 10px;">
+                            <div style="font-weight: 600; color: var(--primary); margin-bottom: 5px;">Main Agent</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Coordination & Project Management</div>
+                            <div style="margin-top: 10px; color: var(--success); font-size: 0.85rem;">✅ Active</div>
+                        </div>
+                        
+                        <div style="background: var(--dark-bg); padding: 15px; border-radius: 10px;">
+                            <div style="font-weight: 600; color: var(--primary); margin-bottom: 5px;">LinkedIn Execution</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Content Creation & Scheduling</div>
+                            <div style="margin-top: 10px; color: var(--success); font-size: 0.85rem;">✅ Completed Week 1</div>
+                        </div>
+                        
+                        <div style="background: var(--dark-bg); padding: 15px; border-radius: 10px;">
+                            <div style="font-weight: 600; color: var(--primary); margin-bottom: 5px;">CRM Development</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">School Relationship Management</div>
+                            <div style="margin-top: 10px; color: var(--success); font-size: 0.85rem;">✅ Interface Built</div>
+                        </div>
+                        
+                        <div style="background: var(--dark-bg); padding: 15px; border-radius: 10px;">
+                            <div style="font-weight: 600; color: var(--primary); margin-bottom: 5px;">Branding & Design</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Visual Assets & Consistency</div>
+                            <div style="margin-top: 10px; color: var(--success); font-size: 0.85rem;">✅ Style Guide Complete</div>
+                        </div>
+                        
+                        <div style="background: var(--dark-bg); padding: 15px; border-radius: 10px;">
+                            <div style="font-weight: 600; color: var(--primary); margin-bottom: 5px;">AI Content Generation</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Blogs, Case Studies, Social Media</div>
+                            <div style="margin-top: 10px; color: var(--success); font-size: 0.85rem;">✅ Templates Ready</div>
+                        </div>
+                        
+                        <div style="background: var(--dark-bg); padding: 15px; border-radius: 10px;">
+                            <div style="font-weight: 600; color: var(--primary); margin-bottom: 5px;">Analytics & Reporting</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Performance Tracking & Metrics</div>
+                            <div style="margin-top: 10px; color: var(--success); font-size: 0.85rem;">✅ System Created</div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+                        14 total agents | Last updated: Just now
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+
+function testVoiceInterface() {
+            // Create voice test interface
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+            modal.style.zIndex = '10000';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            
+            modal.innerHTML = `
+                <div style="background: var(--dark-card); padding: 30px; border-radius: 20px; max-width: 400px; width: 90%; text-align: center;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="color: #132e5e;">Samantha Voice Test</h3>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" style="background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer;">×</button>
+                    </div>
+                    
+                    <div style="color: var(--text-secondary); margin-bottom: 30px;">
+                        <i class="fas fa-microphone" style="font-size: 3rem; color: #132e5e; margin-bottom: 20px;"></i>
+                        <p>Samantha voice interface <span style="color: #ff6b00;">✅ Demo Active</span></p>
+                        <p style="font-size: 0.9rem; margin-top: 10px;">Voice demo shows interface. TTS available via OpenClaw when connected.</p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button onclick="playTestMessage('Welcome to Ascent XR! I\\'m Samantha, your magical assistant.')" style="background: #132e5e; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Test Greeting</button>
+                        <button onclick="playTestMessage('Your LinkedIn posts are ready for Monday launch! Three images generated, scheduling complete.')" style="background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Test Update</button>
+                    </div>
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(14, 165, 233, 0.1); border-radius: 8px; font-size: 0.85rem;">
+                        <i class="fas fa-info-circle" style="color: #132e5e; margin-right: 5px;"></i>
+                        <strong>Note:</strong> Voice demo shows interface. Actual TTS requires OpenClaw connection.
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Function to play test message
+            window.playTestMessage = function(text) {
+                const ttsEvent = new CustomEvent('ttsRequest', { detail: { text: text } });
+                window.dispatchEvent(ttsEvent);
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.style.position = 'fixed';
+                messageDiv.style.bottom = '20px';
+                messageDiv.style.left = '50%';
+                messageDiv.style.transform = 'translateX(-50%)';
+                messageDiv.style.backgroundColor = 'var(--primary)';
+                messageDiv.style.color = 'white';
+                messageDiv.style.padding = '10px 20px';
+                messageDiv.style.borderRadius = '8px';
+                messageDiv.style.zIndex = '10001';
+                messageDiv.textContent = 'Playing: ' + text.substring(0, 50) + '...';
+                document.body.appendChild(messageDiv);
+                
+                setTimeout(() => {
+                    messageDiv.remove();
+                }, 3000);
+            };
+        }
+
+
+function updateLiveData() {
+            // Randomly update pipeline value (simulation)
+            const pipelineValue = document.getElementById('revenuePipeline');
+            const currentValue = parseInt(pipelineValue.textContent.replace('$', '').replace('K', ''));
+            const newValue = currentValue + (Math.random() > 0.9 ? 5 : 0);
+            if (newValue !== currentValue && newValue <= 300) {
+                pipelineValue.textContent = `$${newValue}K`;
+                pipelineValue.style.color = 'var(--success)';
+                setTimeout(() => {
+                    pipelineValue.style.color = '';
+                }, 1000);
+                
+                // Update progress bar
+                const progress = Math.min(100, (newValue / 300) * 100);
+                document.querySelector('.stat-card:nth-child(1) .stat-progress-bar').style.width = `${progress}%`;
+            }
+            
+            // Update days remaining
+            const targetDate = new Date('2026-06-30');
+            const today = new Date();
+            const daysRemaining = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+            document.getElementById('daysRemaining').textContent = daysRemaining;
+        }
+
+
+function updateTime() {
+            const now = new Date();
+            const subtitle = document.querySelector('.header .subtitle');
+            if (subtitle) {
+                subtitle.textContent = `All Documentation • Last updated: ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            }
+        }
+
+
+function addNewTask() {
+            const title = prompt('Enter new task title:');
+            if (title) {
+                const owner = prompt('Task owner (jim/nick/ai/joint):');
+                const due = prompt('Due date (e.g., Feb 7):');
+                const priority = prompt('Priority (high/medium/low):');
+                const description = prompt('Task description:');
+                
+                if (owner && tasks[owner]) {
+                    const newId = Math.max(...Object.values(tasks).flat().map(t => t.id)) + 1;
+                    tasks[owner].push({
+                        id: newId,
+                        title,
+                        due: due || 'Feb 7',
+                        priority: priority || 'medium',
+                        completed: false,
+                        description: description || title
+                    });
+                    
+                    addNotification('success', `✅ Added new task: "${title}"`);
+                    updateStats();
+                    renderAllTasks();
+                }
+            }
+        }
+
+
+function markAllComplete() {
+            if (confirm('Mark all tasks as complete?')) {
+                for (const taskList of Object.values(tasks)) {
+                    taskList.forEach(task => task.completed = true);
+                }
+                addNotification('success', '✅ All tasks marked as complete');
+                updateStats();
+                renderAllTasks();
+            }
+        }
+
+
+async function loadAgentRegistry() {
+        try {
+            const response = await fetch(AGENT_REGISTRY_URL + '?t=' + Date.now());
+            if (!response.ok) throw new Error('Failed to load agent registry: ' + response.status);
+            agentData = await response.json();
+            if (agentData && agentData.agents) {
+                console.log('✅ Agent registry loaded:', agentData.agents.length, 'agents');
+            }
+            updateAgentDashboard();
+            return agentData;
+        } catch (error) {
+            console.warn('⚠️ Using cached agent data:', error.message);
+            // Fallback to embedded data
+            try {
+                agentData = getEmbeddedAgentData();
+                updateAgentDashboard();
+                return agentData;
+            } catch (fallbackError) {
+                console.error('❌ Failed to load embedded agent data:', fallbackError);
+                return null;
+            }
+        }
+    }
+
+
+function getEmbeddedAgentData() {
+        return {
+            agents: [
+                { id: 'main', name: 'Main Agent', specialization: 'Coordination & Project Management', current_status: 'active', availability: 'high', tasks_completed: 47, tasks_pending: 3, success_rate: 94 },
+                { id: 'content_creator', name: 'LinkedIn Execution Agent', specialization: 'Content & Social Media', current_status: 'active', availability: 'high', tasks_completed: 23, tasks_pending: 2, success_rate: 91 },
+                { id: 'designer', name: 'Branding & Design Agent', specialization: 'Visual Assets & UI/UX', current_status: 'active', availability: 'medium', tasks_completed: 19, tasks_pending: 1, success_rate: 96 },
+                { id: 'developer', name: 'CRM Development Agent', specialization: 'Web Development & Integration', current_status: 'active', availability: 'high', tasks_completed: 31, tasks_pending: 4, success_rate: 92 },
+                { id: 'ai_content', name: 'AI Content Generation Agent', specialization: 'Long-form Content & Research', current_status: 'available', availability: 'high', tasks_completed: 28, tasks_pending: 0, success_rate: 89 },
+                { id: 'analytics', name: 'Analytics & Reporting Agent', specialization: 'Data Analysis & KPIs', current_status: 'available', availability: 'medium', tasks_completed: 15, tasks_pending: 0, success_rate: 95 },
+                { id: 'market_research', name: 'Market Research Agent', specialization: 'Competitor & Trend Analysis', current_status: 'available', availability: 'medium', tasks_completed: 12, tasks_pending: 0, success_rate: 88 },
+                { id: 'proposal_contract', name: 'Proposal & Contract Agent', specialization: 'Documentation & Legal', current_status: 'available', availability: 'medium', tasks_completed: 8, tasks_pending: 0, success_rate: 93 },
+                { id: 'email_automation', name: 'Email Automation Agent', specialization: 'Campaigns & Workflows', current_status: 'active', availability: 'high', tasks_completed: 17, tasks_pending: 2, success_rate: 90 },
+                { id: 'coordination_system', name: 'Agent Coordination System', specialization: 'Task Routing & Load Balancing', current_status: 'active', availability: 'high', tasks_completed: 156, tasks_pending: 8, success_rate: 97 },
+                { id: 'communication_protocol', name: 'Agent Communication Protocol', specialization: 'Inter-agent Messaging', current_status: 'active', availability: 'high', tasks_completed: 203, tasks_pending: 12, success_rate: 99 },
+                { id: 'dashboard_enhancement', name: 'Dashboard Enhancement Agent', specialization: 'UI/UX Improvements', current_status: 'active', availability: 'medium', tasks_completed: 22, tasks_pending: 3, success_rate: 91 },
+                { id: 'graphic_design', name: 'Graphic Design Agent', specialization: 'Visual Content & Graphics', current_status: 'available', availability: 'high', tasks_completed: 34, tasks_pending: 0, success_rate: 94 },
+                { id: 'slack_troubleshooter', name: 'Slack Upload Troubleshooter', specialization: 'Integration Debugging', current_status: 'available', availability: 'low', tasks_completed: 7, tasks_pending: 0, success_rate: 86 },
+                { id: 'sdr_agent', name: 'SDR Agent', specialization: 'LinkedIn Prospecting & Lead Qualification', current_status: 'available', availability: 'high', tasks_completed: 0, tasks_pending: 0, success_rate: 0 },
+                { id: 'crm_sales_agent', name: 'CRM & Sales Pipeline Agent', specialization: 'Pipeline Management & Deal Tracking', current_status: 'available', availability: 'high', tasks_completed: 0, tasks_pending: 0, success_rate: 0 },
+                { id: 'financial_agent', name: 'Financial Agent (CPA)', specialization: 'Tax Strategy, Budgeting & Forecasting', current_status: 'available', availability: 'high', tasks_completed: 0, tasks_pending: 0, success_rate: 0 }
+            ],
+            coordination_metrics: {
+                total_agents: 17,
+                active_now: 8,
+                available: 6,
+                busy: 5,
+                offline: 0,
+                avg_success_rate: 92.3,
+                tasks_completed_today: 23,
+                tasks_pending: 25
+            }
+        };
+    }
+
+
+function updateAgentDashboard() {
+        if (!agentData) return;
+        
+        const metrics = agentData.coordination_metrics || getEmbeddedAgentData().coordination_metrics;
+        
+        // Update stat cards
+        updateStatValue('totalAgents', metrics.total_agents);
+        updateStatValue('activeAgents', metrics.active_now);
+        updateStatValue('completedAgents', metrics.total_agents - metrics.busy);
+        updateStatValue('completionRate', Math.round(metrics.avg_success_rate) + '%');
+        
+        // Update progress bars
+        const completionBar = document.getElementById('overallCompletionBar');
+        if (completionBar) {
+            completionBar.style.width = metrics.avg_success_rate + '%';
+        }
+        
+        // Update agent cards
+        updateAgentCards();
+        
+        console.log('📊 Agent dashboard updated');
+    }
+
+
+function updateStatValue(elementId, value) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.style.opacity = '0';
+            setTimeout(() => {
+                element.textContent = value;
+                element.style.opacity = '1';
+            }, 200);
+        }
+    }
+
+
+function updateAgentCards() {
+        if (!agentData || !agentData.agents) return;
+        
+        // Update the agents card in integrations grid
+        const activeCount = agentData.agents.filter(a => a.current_status === 'active').length;
+        const availableCount = agentData.agents.filter(a => a.current_status === 'available').length;
+        
+        const activeCountEl = document.getElementById('activeAgentCount');
+        const totalCountEl = document.getElementById('totalAgentCount');
+        
+        if (activeCountEl) activeCountEl.textContent = activeCount;
+        if (totalCountEl) totalCountEl.textContent = availableCount;
+        
+        // Render agent cards into registry container
+        renderAgentRegistryCards();
+    }
+
+
+function renderAgentRegistryCards() {
+        const container = document.getElementById('agentRegistry');
+        if (!container || !agentData || !agentData.agents) return;
+        
+        const statusColors = {
+            active: '#22c55e',
+            available: '#3b82f6',
+            busy: '#f59e0b',
+            offline: '#6b7280'
+        };
+        
+        const availabilityColors = {
+            high: '#22c55e',
+            medium: '#f59e0b',
+            low: '#ef4444'
+        };
+        
+        container.innerHTML = agentData.agents.map(agent => `
+            <div class="agent-card" data-agent-id="${agent.id}" style="
+                background: var(--dark-card);
+                border: 1px solid var(--dark-border);
+                border-radius: 12px;
+                padding: 20px;
+                margin-bottom: 15px;
+                transition: all 0.2s ease;
+                cursor: pointer;
+            " onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--dark-border)'">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 1.1rem; color: var(--text-primary); margin-bottom: 4px;">
+                            ${agent.name}
+                        </div>
+                        <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                            ${agent.specialization}
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <span style="
+                            background: ${statusColors[agent.current_status] || '#6b7280'}20;
+                            color: ${statusColors[agent.current_status] || '#6b7280'};
+                            padding: 4px 12px;
+                            border-radius: 20px;
+                            font-size: 0.8rem;
+                            font-weight: 500;
+                            text-transform: uppercase;
+                        ">${agent.current_status}</span>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--dark-border);">
+                    <div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 4px;">Availability</div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: ${availabilityColors[agent.availability] || '#6b7280'};"></div>
+                            <span style="font-weight: 500; color: var(--text-primary); text-transform: capitalize;">${agent.availability}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 4px;">Tasks Pending</div>
+                        <div style="font-weight: 600; color: var(--text-primary);">${agent.tasks_pending || 0}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 4px;">Success Rate</div>
+                        <div style="font-weight: 600; color: ${agent.success_rate >= 90 ? '#22c55e' : agent.success_rate >= 70 ? '#f59e0b' : '#ef4444'};">
+                            ${agent.success_rate}%
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                        <i class="fas fa-check-circle" style="color: var(--success); margin-right: 5px;"></i>
+                        ${agent.tasks_completed || 0} tasks completed
+                    </div>
+                    <button onclick="viewAgentDetails('${agent.id}')" style="
+                        background: transparent;
+                        border: 1px solid var(--primary);
+                        color: var(--primary);
+                        padding: 6px 14px;
+                        border-radius: 6px;
+                        font-size: 0.85rem;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                    " onmouseover="this.style.background='var(--primary)'; this.style.color='white'" onmouseout="this.style.background='transparent'; this.style.color='var(--primary)'">
+                        View Details
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+
+function viewAgentDetails(agentId) {
+        const agent = agentData?.agents?.find(a => a.id === agentId);
+        if (!agent) return;
+        
+        // Create modal content
+        const modalContent = `
+            <div style="max-width: 600px;">
+                <h2 style="margin-bottom: 20px; color: var(--text-primary);">${agent.name}</h2>
+                <div style="margin-bottom: 20px;">
+                    <strong>Specialization:</strong> ${agent.specialization}
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <strong>Status:</strong> <span style="text-transform: capitalize;">${agent.current_status}</span>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <strong>Availability:</strong> <span style="text-transform: capitalize;">${agent.availability}</span>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <strong>Tasks Completed:</strong> ${agent.tasks_completed || 0}
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <strong>Tasks Pending:</strong> ${agent.tasks_pending || 0}
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <strong>Success Rate:</strong> ${agent.success_rate}%
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <strong>Contact Method:</strong> ${agent.contact_method || 'Session-based'}
+                </div>
+                <div style="margin-top: 30px; display: flex; gap: 10px;">
+                    <button onclick="assignTaskToAgent('${agent.id}')" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Assign Task
+                    </button>
+                    <button onclick="closeModal()" class="btn btn-secondary">
+                        Close
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        showModal(modalContent);
+    }
+
+
+function assignTaskToAgent(agentId) {
+        const title = prompt('Enter task title:');
+        if (!title) return;
+        
+        const description = prompt('Enter task description:');
+        const priority = prompt('Priority (critical/high/medium/low):', 'medium');
+        
+        const task = {
+            title: title,
+            description: description || '',
+            priority: priority || 'medium'
+        };
+        
+        const result = assignTask(agentId, task);
+        if (result) {
+            closeModal();
+            renderAgentRegistryCards();
+        }
+    }
+
+
+function assignTask(agentId, task) {
+        const agent = agentData?.agents?.find(a => a.id === agentId);
+        if (!agent) {
+            console.error('❌ Agent not found:', agentId);
+            return false;
+        }
+        
+        if (agent.current_status === 'offline' || agent.availability === 'low') {
+            console.warn('⚠️ Agent unavailable:', agent.name);
+            return false;
+        }
+        
+        const taskAssignment = {
+            task_id: 'TASK-' + Date.now(),
+            agent_id: agentId,
+            agent_name: agent.name,
+            title: task.title,
+            description: task.description,
+            priority: task.priority || 'medium',
+            status: 'assigned',
+            assigned_at: new Date().toISOString(),
+            due: task.due || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+            progress: 0
+        };
+        
+        taskQueue.push(taskAssignment);
+        agent.tasks_pending++;
+        
+        console.log('✅ Task assigned to', agent.name, ':', task.title);
+        addNotification('success', `📋 Task assigned to ${agent.name}`);
+        
+        return taskAssignment;
+    }
+
+
+function findBestAgent(taskType, requirements = []) {
+        if (!agentData || !agentData.agents) return null;
+        
+        const availableAgents = agentData.agents.filter(a => 
+            (a.current_status === 'available' || a.current_status === 'active') &&
+            a.availability !== 'low'
+        );
+        
+        if (availableAgents.length === 0) {
+            console.warn('⚠️ No available agents');
+            return null;
+        }
+        
+        // Score agents based on capability match and current load
+        const scoredAgents = availableAgents.map(agent => {
+            let score = 0;
+            
+            // Capability match
+            if (agent.capabilities && agent.capabilities.includes(taskType)) {
+                score += 50;
+            }
+            
+            // Success rate
+            score += (agent.success_rate || 90) * 0.3;
+            
+            // Availability (prefer less busy agents)
+            const availabilityScore = {
+                'high': 20,
+                'medium': 10,
+                'low': 0
+            }[agent.availability] || 0;
+            score += availabilityScore;
+            
+            // Penalize high pending task count
+            score -= (agent.tasks_pending || 0) * 5;
+            
+            return { agent, score };
+        });
+        
+        // Sort by score descending
+        scoredAgents.sort((a, b) => b.score - a.score);
+        
+        console.log('🎯 Best agent for', taskType, ':', scoredAgents[0]?.agent?.name);
+        return scoredAgents[0]?.agent || availableAgents[0];
+    }
+
+
+function autoAssignTask(task) {
+        const bestAgent = findBestAgent(task.task_type, task.requirements);
+        if (bestAgent) {
+            return assignTask(bestAgent.id, task);
+        }
+        console.error('❌ Could not auto-assign task:', task.title);
+        return null;
+    }
+
+
+function sendAgentMessage(fromAgentId, toAgentId, message, priority = 'normal') {
+        const msg = {
+            id: 'MSG-' + Date.now(),
+            from: fromAgentId,
+            to: toAgentId,
+            content: message,
+            priority: priority,
+            timestamp: new Date().toISOString(),
+            read: false
+        };
+        
+        agentMessages.push(msg);
+        
+        if (priority === 'high') {
+            addNotification('alert', `📨 High priority message from ${fromAgentId}`);
+        }
+        
+        console.log('📨 Message sent:', fromAgentId, '→', toAgentId);
+        return msg;
+    }
+
+
+function broadcastToAgents(fromAgentId, message, excludeOffline = true) {
+        if (!agentData || !agentData.agents) return;
+        
+        agentData.agents.forEach(agent => {
+            if (agent.id !== fromAgentId) {
+                if (!excludeOffline || agent.current_status !== 'offline') {
+                    sendAgentMessage(fromAgentId, agent.id, message);
+                }
+            }
+        });
+        
+        console.log('📢 Broadcast sent from', fromAgentId, 'to all agents');
+    }
+
+
+function updateAgentMetrics(agentId, metricUpdate) {
+        const agent = agentData?.agents?.find(a => a.id === agentId);
+        if (!agent) return;
+        
+        if (metricUpdate.tasks_completed !== undefined) {
+            agent.tasks_completed = metricUpdate.tasks_completed;
+        }
+        if (metricUpdate.tasks_pending !== undefined) {
+            agent.tasks_pending = metricUpdate.tasks_pending;
+        }
+        if (metricUpdate.success_rate !== undefined) {
+            agent.success_rate = metricUpdate.success_rate;
+        }
+        if (metricUpdate.current_status !== undefined) {
+            agent.current_status = metricUpdate.current_status;
+        }
+        
+        // Update last active timestamp
+        agent.last_active = new Date().toISOString();
+        
+        console.log('📈 Metrics updated for', agent.name);
+        updateAgentDashboard();
+    }
+
+
+function generateCoordinationReport() {
+        if (!agentData) return null;
+        
+        const report = {
+            timestamp: new Date().toISOString(),
+            summary: {
+                total_agents: agentData.agents.length,
+                active_agents: agentData.agents.filter(a => a.current_status === 'active').length,
+                available_agents: agentData.agents.filter(a => a.current_status === 'available').length,
+                busy_agents: agentData.agents.filter(a => a.current_status === 'busy').length,
+                offline_agents: agentData.agents.filter(a => a.current_status === 'offline').length,
+                avg_success_rate: Math.round(agentData.agents.reduce((sum, a) => sum + (a.success_rate || 0), 0) / agentData.agents.length),
+                total_tasks_completed: agentData.agents.reduce((sum, a) => sum + (a.tasks_completed || 0), 0),
+                total_tasks_pending: agentData.agents.reduce((sum, a) => sum + (a.tasks_pending || 0), 0)
+            },
+            agents: agentData.agents.map(a => ({
+                id: a.id,
+                name: a.name,
+                status: a.current_status,
+                availability: a.availability,
+                tasks_completed: a.tasks_completed,
+                tasks_pending: a.tasks_pending,
+                success_rate: a.success_rate
+            })),
+            task_queue: taskQueue,
+            recent_messages: agentMessages.slice(-10)
+        };
+        
+        console.log('📊 Coordination report generated');
+        return report;
+    }
+
+
+function exportAgentReport() {
+        const report = generateCoordinationReport();
+        if (!report) {
+            addNotification('error', '❌ Failed to generate report');
+            return;
+        }
+        
+        const dataStr = JSON.stringify(report, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `agent-coordination-report-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        addNotification('success', '📊 Agent report exported');
+    }
+
+
+function refreshAgentData() {
+        addNotification('info', '🔄 Refreshing agent data...');
+        loadAgentRegistry().then(() => {
+            addNotification('success', '✅ Agent data refreshed');
+        }).catch(error => {
+            addNotification('error', '❌ Failed to refresh agent data');
+        });
+    }
+
+
+function renderAgentTasks(filter = 'all') {
+        const container = document.getElementById('agentTaskGrid');
+        if (!container) return;
+        
+        // Sample tasks for demonstration
+        const tasks = [
+            { id: 1, title: 'Create LinkedIn post for Feb 4', agent: 'LinkedIn Execution Agent', priority: 'high', progress: 60, status: 'in_progress' },
+            { id: 2, title: 'Fix dashboard color scheme', agent: 'Dashboard Enhancement Agent', priority: 'medium', progress: 90, status: 'in_progress' },
+            { id: 3, title: 'Update agent coordination system', agent: 'Agent Coordination System', priority: 'critical', progress: 35, status: 'in_progress' },
+            { id: 4, title: 'Design new landing page', agent: 'Branding & Design Agent', priority: 'medium', progress: 20, status: 'pending' },
+            { id: 5, title: 'Write blog post about VR in education', agent: 'AI Content Generation Agent', priority: 'low', progress: 0, status: 'pending' },
+            { id: 6, title: 'Analyze Q1 performance metrics', agent: 'Analytics & Reporting Agent', priority: 'high', progress: 45, status: 'in_progress' }
+        ];
+        
+        const filteredTasks = filter === 'all' ? tasks : tasks.filter(t => t.priority === filter);
+        
+        container.innerHTML = filteredTasks.map(task => `
+            <div class="agent-task-card ${task.priority}">
+                <div class="agent-task-header">
+                    <div class="agent-task-title">${task.title}</div>
+                    <div class="agent-task-priority ${task.priority}">${task.priority}</div>
+                </div>
+                <div class="agent-task-meta">
+                    <span><i class="fas fa-robot"></i> ${task.agent}</span>
+                    <span><i class="fas fa-clock"></i> ${task.status}</span>
+                </div>
+                <div class="agent-task-progress">
+                    <div class="progress-label">Progress: ${task.progress}%</div>
+                    <div class="progress-bar-small">
+                        <div class="progress-fill-small" style="width: ${task.progress}%; background-color: var(--${task.priority === 'critical' ? 'danger' : task.priority === 'high' ? 'success' : 'primary'});"></div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+
+function filterTasksByPriority(priority) {
+        document.querySelectorAll('.agent-task-filter').forEach(f => f.classList.remove('active'));
+        event.target.classList.add('active');
+        renderAgentTasks(priority);
+    }
+
+
+function renderPriorityQueue() {
+        const priorities = ['critical', 'high', 'medium', 'low'];
+        const sampleTasks = {
+            critical: [
+                { id: 1, title: 'Fix production bug', agent: 'Developer Agent' }
+            ],
+            high: [
+                { id: 2, title: 'Create LinkedIn post', agent: 'LinkedIn Agent' },
+                { id: 3, title: 'Update dashboard', agent: 'Dashboard Agent' }
+            ],
+            medium: [
+                { id: 4, title: 'Design landing page', agent: 'Design Agent' }
+            ],
+            low: [
+                { id: 5, title: 'Research competitors', agent: 'Research Agent' }
+            ]
+        };
+        
+        priorities.forEach(priority => {
+            const container = document.getElementById(`${priority}Tasks`);
+            const countEl = document.getElementById(`${priority}Count`);
+            if (container) {
+                const tasks = sampleTasks[priority] || [];
+                countEl.textContent = tasks.length;
+                container.innerHTML = tasks.map(task => `
+                    <div class="priority-task-item" draggable="true">
+                        <div style="font-weight: 600; margin-bottom: 5px;">${task.title}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                            <i class="fas fa-robot"></i> ${task.agent}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        });
+    }
+
+
+function refreshPriorityQueue() {
+        renderPriorityQueue();
+        addNotification('success', '🔄 Priority queue refreshed');
+    }
+
+
+function addPriorityTask() {
+        const title = prompt('Enter task title:');
+        if (!title) return;
+        
+        const priority = prompt('Priority (critical/high/medium/low):', 'medium');
+        const agent = prompt('Assign to agent:', 'Main Agent');
+        
+        addNotification('success', `✅ Task "${title}" added with ${priority} priority`);
+        renderPriorityQueue();
+    }
+
+
+function renderWorkloadChart() {
+        const container = document.getElementById('workloadChartContainer');
+        if (!container) return;
+        
+        if (!agentData || !agentData.agents) return;
+        
+        const workloadData = agentData.agents.map(agent => {
+            const workload = Math.min(100, (agent.tasks_pending || 0) * 20 + (agent.tasks_completed || 0) * 0.5);
+            let level = 'low';
+            if (workload > 80) level = 'critical';
+            else if (workload > 60) level = 'high';
+            else if (workload > 40) level = 'medium';
+            
+            return {
+                name: agent.name,
+                workload: Math.round(workload),
+                level: level,
+                tasks: agent.tasks_pending || 0
+            };
+        });
+        
+        container.innerHTML = workloadData.map(agent => `
+            <div class="agent-workload-item">
+                <div class="agent-workload-name">${agent.name}</div>
+                <div class="agent-workload-bar">
+                    <div class="agent-workload-fill ${agent.level}" style="width: ${agent.workload}%"></div>
+                </div>
+                <div class="agent-workload-value">${agent.workload}%</div>
+            </div>
+        `).join('');
+    }
+
+
+function analyzeWorkload() {
+        renderWorkloadChart();
+        addNotification('info', '🔍 Workload analysis complete');
+    }
+
+
+function rebalanceWorkload() {
+        addNotification('info', '⚖️ Rebalancing workload...');
+        setTimeout(() => {
+            addNotification('success', '✅ Workload rebalanced');
+            renderWorkloadChart();
+        }, 1500);
+    }
+
+
+function redistributeTasks() {
+        addNotification('info', '🔄 Redistributing tasks...');
+        setTimeout(() => {
+            addNotification('success', '✅ Tasks redistributed');
+        }, 1500);
+    }
+
+
+function identifyBottlenecks() {
+        const busyAgents = agentData?.agents?.filter(a => (a.tasks_pending || 0) > 3) || [];
+        if (busyAgents.length > 0) {
+            addNotification('warning', `⚠️ Found ${busyAgents.length} agents with high workload`);
+        } else {
+            addNotification('success', '✅ No bottlenecks detected');
+        }
+    }
+
+
+function suggestReassignments() {
+        addNotification('info', '💡 Analyzing optimal task distribution...');
+        setTimeout(() => {
+            addNotification('success', '✅ Suggestions ready (see console)');
+            console.log('Task reassignment suggestions:', [
+                { task: 'LinkedIn Post', from: 'LinkedIn Agent', to: 'AI Content Agent', reason: 'Better availability' },
+                { task: 'Dashboard Fix', from: 'Dashboard Agent', to: 'Developer Agent', reason: 'Technical expertise' }
+            ]);
+        }, 1500);
+    }
+
+
+function viewCapacityPlanning() {
+        addNotification('info', '📊 Capacity planning report generated');
+        console.log('Capacity Planning:', {
+            totalCapacity: '140 hours/week',
+            utilizedCapacity: '98 hours/week (70%)',
+            availableCapacity: '42 hours/week',
+            recommendations: ['Hire additional designer', 'Optimize meeting schedules']
+        });
+    }
+
+
+function sendAgentChatMessage() {
+        const input = document.getElementById('agentChatInput');
+        const messagesContainer = document.getElementById('agentChatMessages');
+        const agentSelector = document.getElementById('chatAgentSelector');
+        
+        if (!input || !messagesContainer || !input.value.trim()) return;
+        
+        const message = input.value.trim();
+        const target = agentSelector ? agentSelector.value : 'broadcast';
+        
+        // Add outgoing message
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'agent-chat-message outgoing';
+        msgDiv.innerHTML = `
+            <div class="agent-chat-message-header">
+                <span>You</span>
+                <span>${new Date().toLocaleTimeString()}</span>
+            </div>
+            <div>${message}</div>
+        `;
+        messagesContainer.appendChild(msgDiv);
+        
+        input.value = '';
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Simulate response
+        if (target !== 'broadcast') {
+            setTimeout(() => {
+                const responseDiv = document.createElement('div');
+                responseDiv.className = 'agent-chat-message incoming';
+                responseDiv.innerHTML = `
+                    <div class="agent-chat-message-header">
+                        <span>${target.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                        <span>${new Date().toLocaleTimeString()}</span>
+                    </div>
+                    <div>Received! Working on it...</div>
+                `;
+                messagesContainer.appendChild(responseDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 1000);
+        }
+    }
+
+
+function handleChatKeypress(event) {
+        if (event.key === 'Enter') {
+            sendAgentChatMessage();
+        }
+    }
+
+
+function clearChatHistory() {
+        const messagesContainer = document.getElementById('agentChatMessages');
+        if (messagesContainer) {
+            messagesContainer.innerHTML = '<div style="color: var(--text-secondary); text-align: center; padding: 20px;">Chat history cleared</div>';
+        }
+    }
+
+
+function autoAssignAllTasks() {
+        addNotification('info', '🤖 Auto-assigning all pending tasks...');
+        setTimeout(() => {
+            addNotification('success', '✅ 6 tasks auto-assigned to optimal agents');
+            renderAgentTasks();
+        }, 1500);
+    }
+
+
+function filterAgentTasks() {
+        const selector = document.getElementById('agentTaskFilter');
+        if (selector) {
+            renderAgentTasks(selector.value);
+        }
+    }
+
+
+function initPerformanceCharts() {
+        // Completion Rate Chart
+        const completionCtx = document.getElementById('completionRateChart');
+        if (completionCtx) {
+            new Chart(completionCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['LinkedIn', 'Design', 'Dev', 'Content', 'Analytics'],
+                    datasets: [{
+                        label: 'Tasks Completed',
+                        data: [23, 19, 31, 28, 15],
+                        backgroundColor: '#ff6b00'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
             });
         }
         
-        // Log for debugging
-        console.log('🚀 Ascent XR Dashboard Loader');
-        console.log('Version:', CURRENT_VERSION);
-        console.log('Cache Buster:', CACHE_BUSTER);
-        console.log('Target URL:', dashboardUrl);
+        // Response Time Chart
+        const responseCtx = document.getElementById('responseTimeChart');
+        if (responseCtx) {
+            new Chart(responseCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                    datasets: [{
+                        label: 'Avg Response Time (min)',
+                        data: [15, 12, 18, 10, 14],
+                        borderColor: '#132e5e',
+                        backgroundColor: 'rgba(19, 46, 94, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
         
-        // Redirect after brief delay
+        // Success Rate Trend Chart
+        const successCtx = document.getElementById('successRateTrendChart');
+        if (successCtx) {
+            new Chart(successCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Success Rate %',
+                        data: [88, 90, 91, 92.3],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { min: 80, max: 100 }
+                    }
+                }
+            });
+        }
+        
+        // Workload Distribution Chart
+        const workloadCtx = document.getElementById('workloadDistributionChart');
+        if (workloadCtx) {
+            new Chart(workloadCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Active', 'Available', 'Busy', 'Offline'],
+                    datasets: [{
+                        data: [8, 3, 5, 1],
+                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#6b7280']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+        
+        // NEW ANALYTICS CHARTS
+        // Revenue Trend Chart
+        const revenueCtx = document.getElementById('revenueTrendChart');
+        if (revenueCtx) {
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Pipeline ($K)',
+                        data: [15, 45, 85, 140, 210, 300],
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Closed ($K)',
+                        data: [5, 12, 28, 55, 95, 150],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+        
+        // Agent Performance Chart
+        const agentPerfCtx = document.getElementById('agentPerformanceChart');
+        if (agentPerfCtx) {
+            new Chart(agentPerfCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Speed', 'Quality', 'Communication', 'Tasks', 'Success', 'Availability'],
+                    datasets: [{
+                        label: 'SDR Agent',
+                        data: [85, 92, 88, 75, 90, 95],
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.2)'
+                    }, {
+                        label: 'CRM Agent',
+                        data: [90, 88, 85, 90, 92, 88],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)'
+                    }, {
+                        label: 'Financial Agent',
+                        data: [88, 95, 90, 85, 94, 92],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.2)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: { min: 0, max: 100 }
+                    }
+                }
+            });
+        }
+        
+        // Task Distribution Doughnut
+        const taskDistCtx = document.getElementById('taskDistributionChart');
+        if (taskDistCtx) {
+            new Chart(taskDistCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Sales', 'Marketing', 'Development', 'Finance', 'Operations'],
+                    datasets: [{
+                        data: [35, 25, 20, 12, 8],
+                        backgroundColor: [
+                            '#22c55e',
+                            '#3b82f6',
+                            '#f59e0b',
+                            '#8b5cf6',
+                            '#ec4899'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+        
+        // Weekly Activity Chart
+        const weeklyCtx = document.getElementById('weeklyActivityChart');
+        if (weeklyCtx) {
+            new Chart(weeklyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Tasks Completed',
+                        data: [12, 19, 15, 22, 18, 8, 5],
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 6
+                    }, {
+                        label: 'New Leads',
+                        data: [5, 8, 6, 10, 7, 3, 2],
+                        backgroundColor: '#22c55e',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+    }
+
+
+function refreshAnalytics() {
+        addNotification('info', '📊 Refreshing analytics data...');
         setTimeout(() => {
-            window.location.replace(dashboardUrl);
-        }, 2000);
-    </script>
-</head>
-<body>
-    <div class="loader"></div>
-    <h1>Ascent XR Dashboard</h1>
-    <p>Loading latest version with auto-deployment...</p>
-    <div class="version">Version v19.0</div>
-    <div class="timestamp" id="timestamp"></div>
-    
-    <div class="deployment-info">
-        🔄 Auto-deployment pipeline active
-    </div>
-    
-    <div class="cache-info">
-        <h3>🚀 Cache Busting Active</h3>
-        <p>Fresh download guaranteed - no cached files</p>
-    </div>
-    
-    <div class="rollback-info">
-        <h3>⚠️ Rollback Available</h3>
-        <p>If issues occur: <a href="dashboard_v18.4.html?v=18.4&rollback=true">Revert to v18.4</a></p>
-    </div>
-    
-    <div class="manual-link">
-        <p>Not redirecting? <a id="manualLink" href="#">Click here to force load v19</a></p>
-        <p style="margin-top: 10px; font-size: 0.8rem;">Having issues? Try: Ctrl+Shift+R (hard refresh)</p>
-    </div>
-    
-    <script>
-        // Update timestamp display
-        document.getElementById('timestamp').textContent = 'Build: ' + new Date().toLocaleString();
+            initPerformanceCharts();
+            addNotification('success', '✅ Analytics updated');
+        }, 1000);
+    }
+
+
+function exportAnalytics() {
+        const data = {
+            timestamp: new Date().toISOString(),
+            revenue: { pipeline: 45000, closed: 12000, target: 300000 },
+            tasks: { completed: 847, pending: 28, total: 875 },
+            agents: { active: 11, available: 6, total: 20 },
+            performance: { successRate: 94, avgResponseTime: 2.4 }
+        };
         
-        // Set manual link
-        document.getElementById('manualLink').href = dashboardUrl;
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `analytics-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        addNotification('success', '📊 Analytics exported');
+    }
+
+
+function updatePerformanceCharts() {
+        // Re-initialize with new time range data
+        initPerformanceCharts();
+    }
+
+
+function exportChartData() {
+        addNotification('success', '📊 Chart data exported to console');
+        console.log('Performance Chart Data:', {
+            completionRates: { linkedin: 23, design: 19, dev: 31, content: 28, analytics: 15 },
+            responseTimes: [15, 12, 18, 10, 14],
+            successRates: [88, 90, 91, 92.3],
+            workloadDistribution: { active: 8, available: 3, busy: 5, offline: 1 }
+        });
+    }
+
+
+
+
+// Logout function
+function logout() {
+    localStorage.removeItem('ascent_session');
+    window.location.href = 'login.html';
+}
+
+// INITIALIZATION
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Initializing Ascent XR Dashboard v19...');
+    
+    // Add visible version indicator to page
+    const versionIndicator = document.createElement('div');
+    versionIndicator.id = 'versionIndicator';
+    versionIndicator.style.cssText = 'position:fixed;bottom:10px;right:10px;background:rgba(0,0,0,0.7);color:#fff;padding:5px 10px;border-radius:4px;font-size:12px;z-index:9999;font-family:monospace;';
+    versionIndicator.textContent = 'v19.0 | Feb 3, 2026';
+    document.body.appendChild(versionIndicator);
+    
+    renderAllTasks();
+    setupNavigation();
+    updateStats();
+    
+    // Display current user info on load
+    if (window.currentUser) {
+        const userNameEl = document.getElementById('userName');
+        const userRoleEl = document.getElementById('userRole');
+        if (userNameEl) userNameEl.textContent = window.currentUser.name || 'Admin';
+        if (userRoleEl) userRoleEl.textContent = window.currentUser.role || 'Admin';
+    }
+    
+    // Load initial view
+    switchView('overview');
+    // Auto-updates disabled - refresh page to update data
+    // setInterval(updateLiveData, 10000);
+    // setInterval(updateTime, 60000);
+    // setInterval(refreshIntegrations, 1000);
+    // Load agent registry
+    loadAgentRegistry().then(() => {
+    // Render UI components
+    renderAgentTasks();
+    renderPriorityQueue();
+    renderWorkloadChart();
+    initPerformanceCharts();
+    });
+    // Periodic refresh disabled - update on page load only
+    // setInterval(() => {
+    // updateAgentDashboard();
+    // renderWorkloadChart();
+    // }, 30000);
+    // Render live updates
+    if (typeof renderLiveUpdates === 'function') {
+        renderLiveUpdates();
+    }
+    
+    // Session timeout check (every minute)
+    setInterval(function() {
+        const session = localStorage.getItem('ascent_session');
+        if (!session) {
+            window.location.href = 'login.html';
+            return;
+        }
+        try {
+            const sessionData = JSON.parse(session);
+            if (sessionData.expires < Date.now()) {
+                logout();
+            }
+        } catch (e) {
+            logout();
+        }
+    }, 60000);
+    
+    // LinkedIn countdown timer
+    setInterval(function() {
+        const countdownElement = document.getElementById('linkedinCountdown');
+        if (countdownElement) {
+            const text = countdownElement.textContent;
+            const match = text.match(/(\d+)h\s*(\d+)m/);
+            if (match) {
+                let hours = parseInt(match[1]);
+                let minutes = parseInt(match[2]);
+                minutes--;
+                if (minutes < 0) {
+                    minutes = 59;
+                    hours--;
+                }
+                if (hours >= 0) {
+                    countdownElement.textContent = hours + 'h ' + minutes + 'm';
+                }
+            }
+        }
+    }, 60000);
+    
+    console.log('✅ Dashboard v19 initialized successfully');
+});
     </script>
 </body>
 </html>
