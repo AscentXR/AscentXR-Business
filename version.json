@@ -1,18 +1,30 @@
 {
-  "version": "v18.0",
-  "buildDate": "2026-02-03T13:25:00Z",
-  "buildTimestamp": 1706969100,
-  "file": "unified_dashboard.html",
+  "version": "v19.0",
+  "buildDate": "2026-02-03T21:30:00Z",
+  "buildTimestamp": 1706971800,
+  "rollbackVersion": "v18.4",
+  "rollbackFile": "dashboard_v18.4.html",
+  "files": {
+    "current": "dashboard_v19.html",
+    "index": "index.html",
+    "css": "agent_coordination_styles.css",
+    "registry": "shared_assets/tasks/agent_registry.json"
+  },
+  "deployment": {
+    "target": "bluehost",
+    "path": "/public_html/ascentxr-com/dev/",
+    "autoDeploy": true,
+    "deployTime": "<2 minutes"
+  },
   "changelog": [
-    "Fixed JavaScript errors (logout function, orphaned code)",
-    "Added visible version indicator",
-    "Implemented cache-busting strategy",
-    "Updated .htaccess for aggressive cache control",
-    "Added meta no-cache headers"
+    "Auto-deployment pipeline configured",
+    "GitHub Actions workflow for FTP deploy",
+    "Rollback version v18.4 preserved",
+    "Version tracking system updated"
   ],
   "cacheBusting": {
     "enabled": true,
-    "queryParam": "t",
+    "queryParam": "v",
     "filenameVersioning": true
   }
 }

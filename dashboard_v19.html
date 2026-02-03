@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Ascent XR Dashboard v18</title>
+    <title>Ascent XR Dashboard v19</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1648,14 +1648,10 @@ function showModal(content) {
 
 async function simulateFileLoad(filename) {
             try {
-                if (!filename) {
-                    throw new Error('Filename is required');
-                }
-                
                 // Try to fetch actual file content
                 const response = await fetch(`/api/documents/${filename}`);
                 
-                if (response && response.ok) {
+                if (response.ok) {
                     return await response.text();
                 } else {
                     // Fallback: check if file exists in workspace and serve it
@@ -1677,18 +1673,13 @@ async function simulateFileLoad(filename) {
                     }
                 }
             } catch (error) {
-                console.error(`❌ Error loading ${filename}:`, error);
-                return `Error loading ${filename}: ${error && error.message ? error.message : 'Unknown error'}\n\nThis dashboard is running locally. To access actual files, we need:\n1. Backend API server\n2. File serving endpoint\n3. Authentication system`;
+                return `Error loading ${filename}: ${error.message}\n\nThis dashboard is running locally. To access actual files, we need:\n1. Backend API server\n2. File serving endpoint\n3. Authentication system`;
             }
         }
 
 
 function loadDocumentsView() {
             const container = document.getElementById('documentsView');
-            if (!container) {
-                console.warn('⚠️ loadDocumentsView: documentsView not found');
-                return;
-            }
             container.innerHTML = `
                 <div class="section">
                     <div class="section-header">
@@ -1716,10 +1707,6 @@ function loadDocumentsView() {
 
 function loadRevenueView() {
             const container = document.getElementById('revenueView');
-            if (!container) {
-                console.warn('⚠️ loadRevenueView: revenueView not found');
-                return;
-            }
             container.innerHTML = `
                 <div class="section">
                     <div class="section-header">
@@ -1800,10 +1787,6 @@ function loadRevenueView() {
 
 function loadLinkedInView() {
             const container = document.getElementById('linkedinView');
-            if (!container) {
-                console.warn('⚠️ loadLinkedInView: linkedinView not found');
-                return;
-            }
             container.innerHTML = `
                 <div class="section">
                     <div class="section-header">
@@ -1893,33 +1876,23 @@ function loadLinkedInView() {
 
 
 function startTimer() {
-            try {
-                const timeEntry = document.getElementById('timeEntry');
-                const entry = timeEntry ? timeEntry.value : '';
-                if (!entry) {
-                    alert('Please enter what you\'re working on');
-                    return;
-                }
-                
-                if (timerInterval) {
-                    clearInterval(timerInterval);
-                }
-                
-                timerSeconds = 0;
-                timerInterval = setInterval(() => {
-                    timerSeconds++;
-                    try {
-                        const playBtn = document.querySelector('.btn i.fa-play');
-                        if (playBtn) playBtn.className = 'fas fa-stop';
-                    } catch (e) {
-                        console.warn('⚠️ Error updating timer icon:', e);
-                    }
-                }, 1000);
-                
-                addNotification('info', `⏱️ Started timer for: "${entry}"`);
-            } catch (error) {
-                console.error('❌ Error in startTimer:', error);
+            const entry = document.getElementById('timeEntry').value;
+            if (!entry) {
+                alert('Please enter what you\'re working on');
+                return;
             }
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            timerSeconds = 0;
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                document.querySelector('.btn i.fa-play').className = 'fas fa-stop';
+            }, 1000);
+            
+            addNotification('info', `⏱️ Started timer for: "${entry}"`);
         }
 
 
@@ -2365,24 +2338,17 @@ async function loadAgentRegistry() {
         try {
             const response = await fetch(AGENT_REGISTRY_URL + '?t=' + Date.now());
             if (!response.ok) throw new Error('Failed to load agent registry: ' + response.status);
-            agentRegistryData = await response.json();
-            agentData = agentRegistryData;
-            lastRefreshTime = new Date();
+            agentData = await response.json();
             if (agentData && agentData.agents) {
                 console.log('✅ Agent registry loaded:', agentData.agents.length, 'agents');
-                console.log('📊 Metrics:', agentRegistryData.coordination_metrics);
             }
             updateAgentDashboard();
-            updateTaskQueueFromRegistry();
-            updateHeaderStats();
-            addLiveUpdate('success', `Dashboard refreshed - ${agentRegistryData.coordination_metrics?.active_now || 0} agents active`, '🔄');
             return agentData;
         } catch (error) {
             console.warn('⚠️ Using cached agent data:', error.message);
             // Fallback to embedded data
             try {
                 agentData = getEmbeddedAgentData();
-                agentRegistryData = agentData;
                 updateAgentDashboard();
                 return agentData;
             } catch (fallbackError) {
@@ -2390,106 +2356,6 @@ async function loadAgentRegistry() {
                 return null;
             }
         }
-    }
-
-    // Auto-refresh data every 60 seconds
-    function startAutoRefresh() {
-        console.log('🔄 Auto-refresh enabled (60s interval)');
-        setInterval(async () => {
-            console.log('🔄 Auto-refreshing agent data...');
-            await loadAgentRegistry();
-        }, 60000);
-    }
-
-    // Update header stats from registry
-    function updateHeaderStats() {
-        if (!agentRegistryData || !agentRegistryData.coordination_metrics) return;
-        const metrics = agentRegistryData.coordination_metrics;
-        const totalAgentsEl = document.getElementById('headerTotalAgents');
-        const activeAgentsEl = document.getElementById('headerActiveAgents');
-        const tasksTodayEl = document.getElementById('headerTasksToday');
-        if (totalAgentsEl) totalAgentsEl.textContent = metrics.total_agents;
-        if (activeAgentsEl) activeAgentsEl.textContent = metrics.active_now;
-        if (tasksTodayEl) tasksTodayEl.textContent = metrics.tasks_completed_today;
-    }
-
-    // Update task queue from registry
-    function updateTaskQueueFromRegistry() {
-        if (!agentRegistryData || !agentRegistryData.task_queue) return;
-        taskQueue = agentRegistryData.task_queue.map(task => ({
-            task_id: task.task_id,
-            agent_id: task.assigned_to,
-            agent_name: getAgentNameById(task.assigned_to),
-            title: task.title,
-            priority: task.priority,
-            status: task.status,
-            progress: task.progress || 0,
-            due: task.due
-        }));
-        renderTaskQueue();
-    }
-
-    // Get agent name by ID
-    function getAgentNameById(agentId) {
-        if (!agentRegistryData || !agentRegistryData.agents) return agentId;
-        const agent = agentRegistryData.agents.find(a => a.id === agentId);
-        return agent ? agent.name : agentId;
-    }
-
-    // Render task queue in the UI
-    function renderTaskQueue() {
-        const container = document.getElementById('taskQueueContainer');
-        if (!container) return;
-        if (!taskQueue.length) {
-            container.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary);">No active tasks</div>';
-            return;
-        }
-        container.innerHTML = taskQueue.map(task => `
-            <div class="task-queue-item ${task.priority}" style="
-                background: var(--dark-bg);
-                border: 1px solid var(--dark-border);
-                border-radius: 8px;
-                padding: 15px;
-                margin-bottom: 10px;
-                border-left: 4px solid ${getPriorityColor(task.priority)};
-            ">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div style="font-weight: 600; color: var(--text-primary);">${task.title}</div>
-                    <span style="
-                        background: ${getPriorityColor(task.priority)}20;
-                        color: ${getPriorityColor(task.priority)};
-                        padding: 2px 8px;
-                        border-radius: 12px;
-                        font-size: 0.75rem;
-                        text-transform: uppercase;
-                    ">${task.priority}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.85rem; color: var(--text-secondary);">
-                    <span><i class="fas fa-robot"></i> ${task.agent_name}</span>
-                    <span><i class="fas fa-clock"></i> ${task.status}</span>
-                </div>
-                <div style="margin-top: 10px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
-                        <span>Progress</span>
-                        <span>${task.progress}%</span>
-                    </div>
-                    <div style="height: 6px; background: var(--dark-border); border-radius: 3px; overflow: hidden;">
-                        <div style="width: ${task.progress}%; height: 100%; background: ${getPriorityColor(task.priority)}; border-radius: 3px; transition: width 0.3s ease;"></div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // Get color for priority level
-    function getPriorityColor(priority) {
-        const colors = {
-            critical: '#ef4444',
-            high: '#f59e0b',
-            medium: '#3b82f6',
-            low: '#22c55e'
-        };
-        return colors[priority] || '#6b7280';
     }
 
 
@@ -3504,13 +3370,13 @@ function logout() {
 
 // INITIALIZATION
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Initializing Ascent XR Dashboard v18...');
+    console.log('🚀 Initializing Ascent XR Dashboard v19...');
     
     // Add visible version indicator to page
     const versionIndicator = document.createElement('div');
     versionIndicator.id = 'versionIndicator';
     versionIndicator.style.cssText = 'position:fixed;bottom:10px;right:10px;background:rgba(0,0,0,0.7);color:#fff;padding:5px 10px;border-radius:4px;font-size:12px;z-index:9999;font-family:monospace;';
-    versionIndicator.textContent = 'v18.0 | Feb 3, 2026';
+    versionIndicator.textContent = 'v19.0 | Feb 3, 2026';
     document.body.appendChild(versionIndicator);
     
     renderAllTasks();
@@ -3587,7 +3453,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 60000);
     
-    console.log('✅ Dashboard v18 initialized successfully');
+    console.log('✅ Dashboard v19 initialized successfully');
 });
     </script>
 </body>

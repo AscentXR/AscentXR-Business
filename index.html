@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="-1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Ascent XR Dashboard v18 - Loading...</title>
+    <title>Ascent XR Dashboard v19 - Loading...</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -97,15 +97,42 @@
             font-size: 0.9rem;
             margin: 0;
         }
+        .rollback-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            max-width: 500px;
+            text-align: center;
+        }
+        .rollback-info h3 {
+            color: #f59e0b;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        .rollback-info a {
+            color: #f59e0b;
+            text-decoration: none;
+        }
+        .deployment-info {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 8px;
+            color: #06b6d4;
+            font-size: 0.85rem;
+        }
     </style>
     <script>
         // FORCE CACHE BUST - Unique timestamp on every load
         const CACHE_BUSTER = Date.now();
-        const CURRENT_VERSION = 'v18.0';
+        const CURRENT_VERSION = 'v19.0';
         const BUILD_DATE = '2026-02-03';
         
         // Construct the URL with aggressive cache busting
-        const dashboardUrl = `unified_dashboard.html?nocache=${CACHE_BUSTER}&v=${CURRENT_VERSION}&t=${BUILD_DATE}`;
+        const dashboardUrl = `dashboard_v19.html?nocache=${CACHE_BUSTER}&v=${CURRENT_VERSION}&t=${BUILD_DATE}`;
         
         // Clear browser cache for this page
         if ('caches' in window) {
@@ -129,17 +156,26 @@
 <body>
     <div class="loader"></div>
     <h1>Ascent XR Dashboard</h1>
-    <p>Loading latest version with cache bypass...</p>
-    <div class="version">Version v18.0</div>
+    <p>Loading latest version with auto-deployment...</p>
+    <div class="version">Version v19.0</div>
     <div class="timestamp" id="timestamp"></div>
+    
+    <div class="deployment-info">
+        🔄 Auto-deployment pipeline active
+    </div>
     
     <div class="cache-info">
         <h3>🚀 Cache Busting Active</h3>
-        <p>We've detected cache issues. This loader forces a fresh download of v18.</p>
+        <p>Fresh download guaranteed - no cached files</p>
+    </div>
+    
+    <div class="rollback-info">
+        <h3>⚠️ Rollback Available</h3>
+        <p>If issues occur: <a href="dashboard_v18.4.html?v=18.4&rollback=true">Revert to v18.4</a></p>
     </div>
     
     <div class="manual-link">
-        <p>Not redirecting? <a id="manualLink" href="#">Click here to force load v18</a></p>
+        <p>Not redirecting? <a id="manualLink" href="#">Click here to force load v19</a></p>
         <p style="margin-top: 10px; font-size: 0.8rem;">Having issues? Try: Ctrl+Shift+R (hard refresh)</p>
     </div>
     

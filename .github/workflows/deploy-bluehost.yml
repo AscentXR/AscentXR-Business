@@ -1,0 +1,141 @@
+name: Deploy to Bluehost
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Bluehost FTP
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup deployment variables
+      id: vars
+      run: |
+        if [ "${{ github.event.inputs.environment }}" = "production" ]; then
+          echo "remote_path=/public_html/ascentxr-com/" >> $GITHUB_OUTPUT
+          echo "environment=production" >> $GITHUB_OUTPUT
+        else
+          echo "remote_path=/public_html/ascentxr-com/dev/" >> $GITHUB_OUTPUT
+          echo "environment=dev" >> $GITHUB_OUTPUT
+        fi
+        echo "timestamp=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
+        echo "Deploying to ${{ steps.vars.outputs.environment }} environment"
+    
+    - name: Create deployment info file
+      run: |
+        cat > deploy_info.json << 'EOF'
+        {
+          "deployment_time": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "git_commit": "${{ github.sha }}",
+          "git_branch": "${{ github.ref_name }}",
+          "deployed_by": "GitHub Actions",
+          "environment": "${{ steps.vars.outputs.environment }}",
+          "version": "v19.0"
+        }
+        EOF
+    
+    - name: Backup current version on server
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.BLUEHOST_FTP_SERVER }}
+        username: ${{ secrets.BLUEHOST_FTP_USERNAME }}
+        password: ${{ secrets.BLUEHOST_FTP_PASSWORD }}
+        protocol: ftps
+        port: 21
+        server-dir: ${{ steps.vars.outputs.remote_path }}backup/
+        local-dir: ./
+        include: |
+          dashboard_v18.html
+          index.html
+          agent_coordination_styles.css
+          agent_registry.json
+          .htaccess
+        dry-run: false
+      continue-on-error: true
+    
+    - name: Deploy to Bluehost
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.BLUEHOST_FTP_SERVER }}
+        username: ${{ secrets.BLUEHOST_FTP_USERNAME }}
+        password: ${{ secrets.BLUEHOST_FTP_PASSWORD }}
+        protocol: ftps
+        port: 21
+        server-dir: ${{ steps.vars.outputs.remote_path }}
+        local-dir: ./
+        include: |
+          dashboard_v19.html
+          index.html
+          agent_coordination_styles.css
+          shared_assets/tasks/agent_registry.json
+          .htaccess
+          deploy_info.json
+          version.json
+        exclude: |
+          **/.git*/**
+          **/node_modules/**
+          **/backend/**
+          **/.env*
+          **/README.md
+          **/*.md
+          **/.github/**
+          **/agents/**
+          **/branding/**
+          **/contracts/**
+          **/marketing_agents/**
+          **/linkedin_week*/**
+          **/memory/**
+          **/crm/**
+          **/testing/**
+          **/deploy*/**
+          **/nginx/**
+          **/*.sh
+          **/*.py
+          **/*.json
+          !agent_registry.json
+          !deploy_info.json
+          !version.json
+    
+    - name: Verify deployment
+      run: |
+        echo "Deployment completed at $(date)"
+        echo "Files deployed:"
+        echo "  - dashboard_v19.html"
+        echo "  - index.html"
+        echo "  - agent_coordination_styles.css"
+        echo "  - agent_registry.json"
+        echo "  - .htaccess"
+        echo ""
+        echo "Verification URLs:"
+        echo "  Dev: https://ascentxr.com/dev/"
+        echo "  Dashboard: https://ascentxr.com/dev/dashboard_v19.html"
+    
+    - name: Notify deployment status
+      if: always()
+      run: |
+        if [ "${{ job.status }}" = "success" ]; then
+          echo "✅ Deployment successful!"
+          echo "Commit: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Time: $(date)"
+        else
+          echo "❌ Deployment failed!"
+          echo "Check logs for details"
+        fi
