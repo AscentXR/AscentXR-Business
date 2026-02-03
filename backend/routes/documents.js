@@ -8,7 +8,7 @@ const documentsService = require('../services/documentsService');
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadDir = process.env.UPLOAD_DIR || './uploads';
+    const uploadDir = process.env.UPLOAD_DIR || '/tmp/uploads';
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {

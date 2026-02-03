@@ -16,7 +16,7 @@ router.post('/zip', async (req, res, next) => {
     }
 
     // Create temporary export directory
-    const exportDir = process.env.EXPORT_DIR || './exports';
+    const exportDir = process.env.EXPORT_DIR || '/tmp/exports';
     const timestamp = Date.now();
     const zipFileName = `documents-export-${timestamp}.zip`;
     const zipFilePath = path.join(exportDir, zipFileName);
