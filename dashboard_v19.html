@@ -1181,6 +1181,104 @@
 <body>
     <!-- AUTHENTICATION CHECK -->
     
+    <div class="dashboard">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🚀 Ascent XR Dashboard</h1>
+                <div class="subtitle">Mission Control v19</div>
+            </div>
+            <div class="header-stats">
+                <div class="header-stat">
+                    <div class="header-stat-value" id="daysRemaining">--</div>
+                    <div class="header-stat-label">Days to Target</div>
+                </div>
+                <div class="header-stat">
+                    <div class="header-stat-value" id="revenuePipeline">$--K</div>
+                    <div class="header-stat-label">Pipeline</div>
+                </div>
+                <div class="header-stat">
+                    <div class="header-stat-value" id="taskCompletion">--%</div>
+                    <div class="header-stat-label">Tasks</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-grid">
+            <!-- LEFT SIDEBAR -->
+            <aside class="sidebar-left">
+                <nav class="nav-section">
+                    <div class="nav-title">Navigation</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item"><a href="#" class="nav-link active"><i class="fas fa-home"></i> Overview</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-tasks"></i> Tasks</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-robot"></i> Agents</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- CENTER CONTENT -->
+            <main class="content-area">
+                <!-- ROW 1: Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">$300K</div>
+                        <div class="stat-label">Revenue Target</div>
+                        <div class="stat-progress"><div class="stat-progress-bar" style="width: 4%"></div></div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-value">23</div>
+                        <div class="stat-label">Tasks Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">LinkedIn Posts</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Active Prospects</div>
+                    </div>
+                </div>
+
+                <!-- ROW 2: Task Board (hidden but present for JS) -->
+                <div id="overviewView" style="display:none;">
+                    <div class="tasks-board">
+                        <div class="task-column">
+                            <h3>Jim's Tasks <span id="jimCount">0</span></h3>
+                            <div id="jimTasks"></div>
+                        </div>
+                        <div class="task-column">
+                            <h3>Nick's Tasks <span id="nickCount">0</span></h3>
+                            <div id="nickTasks"></div>
+                        </div>
+                        <div class="task-column">
+                            <h3>AI Tasks <span id="aiCount">0</span></h3>
+                            <div id="aiTasks"></div>
+                        </div>
+                    </div>
+                    <div id="detailedJimTasks" style="display:none;"></div>
+                    <div id="detailedNickTasks" style="display:none;"></div>
+                    <div id="detailedAiTasks" style="display:none;"></div>
+                    <div id="detailedJointTasks" style="display:none;"></div>
+                </div>
+            </main>
+
+            <!-- RIGHT SIDEBAR -->
+            <aside class="sidebar-right">
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Live Updates</div>
+                    </div>
+                    <ul id="activityFeed" style="list-style:none; padding:0;">
+                        <li style="padding:12px; color:var(--text-secondary);">Loading...</li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+
     <script>
 // DATA DEFINITIONS
 const AGENT_REGISTRY_URL = './agent_registry.json';
