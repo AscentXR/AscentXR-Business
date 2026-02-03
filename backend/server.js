@@ -17,22 +17,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-// Create necessary directories (with error handling for read-only filesystems)
-const directories = [
-  process.env.UPLOAD_DIR || '/tmp/uploads',
-  process.env.DOCUMENTS_DIR || '/tmp/documents',
-  process.env.EXPORT_DIR || '/tmp/exports'
-];
-
-directories.forEach(dir => {
-  try {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-  } catch (err) {
-    console.warn(`Warning: Could not create directory ${dir}: ${err.message}`);
-  }
-});
+// Skip directory creation - handled by environment or not needed
+console.log('📁 Skipping directory creation (handled by environment)');
 
 // Health check endpoint (for Railway)
 app.get('/health', (req, res) => {
