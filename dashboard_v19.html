@@ -1762,6 +1762,86 @@
                     </div>
                 </div>
 
+                <!-- ROW 2.5: AGENT WORKLOAD PANEL -->
+                <div class="workload-panel" style="background: var(--dark-card); border-radius: 16px; padding: 25px; margin-bottom: 30px; border: 1px solid var(--dark-border);">
+                    <div class="section-header" style="margin-bottom: 20px;">
+                        <div class="section-title"><i class="fas fa-tasks"></i> Agent Workload</div>
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <span style="color: var(--text-secondary);">11 Active</span>
+                            <span style="color: var(--success);">6 Available</span>
+                            <span style="color: var(--warning);">5 Busy</span>
+                        </div>
+                    </div>
+                    <div class="workload-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                        <div class="agent-workload-card" style="background: var(--dark-bg); padding: 15px; border-radius: 12px; border-left: 4px solid var(--success);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <strong>Dashboard UX Agent</strong>
+                                <span style="color: var(--success); font-size: 0.85rem;">● Active</span>
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">BUILD: Mission Control v2.0</div>
+                            <div style="display: flex; gap: 10px; font-size: 0.8rem;">
+                                <span style="background: var(--primary); padding: 2px 8px; border-radius: 4px;">Due: Feb 5</span>
+                                <span style="background: var(--warning); padding: 2px 8px; border-radius: 4px;">Progress: 85%</span>
+                            </div>
+                        </div>
+                        <div class="agent-workload-card" style="background: var(--dark-bg); padding: 15px; border-radius: 12px; border-left: 4px solid var(--success);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <strong>SDR Agent</strong>
+                                <span style="color: var(--success); font-size: 0.85rem;">● Active</span>
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">LinkedIn Prospecting - Week 1</div>
+                            <div style="display: flex; gap: 10px; font-size: 0.8rem;">
+                                <span style="background: var(--primary); padding: 2px 8px; border-radius: 4px;">Due: Feb 7</span>
+                                <span style="background: var(--success); padding: 2px 8px; border-radius: 4px;">Progress: 15%</span>
+                            </div>
+                        </div>
+                        <div class="agent-workload-card" style="background: var(--dark-bg); padding: 15px; border-radius: 12px; border-left: 4px solid var(--success);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <strong>CRM Sales Agent</strong>
+                                <span style="color: var(--success); font-size: 0.85rem;">● Active</span>
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">HubSpot CRM Setup</div>
+                            <div style="display: flex; gap: 10px; font-size: 0.8rem;">
+                                <span style="background: var(--primary); padding: 2px 8px; border-radius: 4px;">Due: Feb 5</span>
+                                <span style="background: var(--warning); padding: 2px 8px; border-radius: 4px;">Progress: 10%</span>
+                            </div>
+                        </div>
+                        <div class="agent-workload-card" style="background: var(--dark-bg); padding: 15px; border-radius: 12px; border-left: 4px solid var(--warning);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <strong>Content Creator</strong>
+                                <span style="color: var(--warning); font-size: 0.85rem;">● Active</span>
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">LinkedIn Post for Feb 4</div>
+                            <div style="display: flex; gap: 10px; font-size: 0.8rem;">
+                                <span style="background: var(--primary); padding: 2px 8px; border-radius: 4px;">Due: Today</span>
+                                <span style="background: var(--success); padding: 2px 8px; border-radius: 4px;">Progress: 60%</span>
+                            </div>
+                        </div>
+                        <div class="agent-workload-card" style="background: var(--dark-bg); padding: 15px; border-radius: 12px; border-left: 4px solid var(--warning);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <strong>Dashboard Enhancement</strong>
+                                <span style="color: var(--warning); font-size: 0.85rem;">● Active</span>
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">Fix dashboard color scheme</div>
+                            <div style="display: flex; gap: 10px; font-size: 0.8rem;">
+                                <span style="background: var(--primary); padding: 2px 8px; border-radius: 4px;">Due: Today</span>
+                                <span style="background: var(--success); padding: 2px 8px; border-radius: 4px;">Progress: 90%</span>
+                            </div>
+                        </div>
+                        <div class="agent-workload-card" style="background: var(--dark-bg); padding: 15px; border-radius: 12px; border-left: 4px solid var(--danger);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <strong>Coordination Dashboard</strong>
+                                <span style="color: var(--danger); font-size: 0.85rem;">● At Risk</span>
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px;">Update agent coordination system</div>
+                            <div style="display: flex; gap: 10px; font-size: 0.8rem;">
+                                <span style="background: var(--danger); padding: 2px 8px; border-radius: 4px;">Due: Feb 3 (OVERDUE)</span>
+                                <span style="background: var(--warning); padding: 2px 8px; border-radius: 4px;">Progress: 35%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ROW 3: Task Board (hidden but present for JS) -->
                 <div id="overviewView" style="display:none;">
                     <div class="tasks-board">
@@ -1782,6 +1862,81 @@
                     <div id="detailedNickTasks" style="display:none;"></div>
                     <div id="detailedAiTasks" style="display:none;"></div>
                     <div id="detailedJointTasks" style="display:none;"></div>
+                </div>
+
+                <!-- LINKEDIN CAMPAIGN SECTION -->
+                <div class="linkedin-campaign-section" id="linkedinCampaignSection" style="background: var(--dark-card); border-radius: 16px; padding: 25px; margin-bottom: 30px; border: 1px solid var(--dark-border); border-left: 4px solid #0077b5;">
+                    <div class="section-header" style="margin-bottom: 20px;">
+                        <div class="section-title"><i class="fab fa-linkedin" style="color: #0077b5;"></i> LinkedIn Campaign - Week 1</div>
+                        <div style="display: flex; gap: 10px;">
+                            <span style="background: var(--success); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">Active</span>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 25px;">
+                        <div style="background: var(--dark-bg); padding: 20px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold; color: #0077b5; margin-bottom: 5px;">3</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Posts Scheduled</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">Feb 3, 5, 7</div>
+                        </div>
+                        <div style="background: var(--dark-bg); padding: 20px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold; color: var(--success); margin-bottom: 5px;">0</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Posts Published</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">Campaign starts tomorrow</div>
+                        </div>
+                        <div style="background: var(--dark-bg); padding: 20px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold; color: var(--warning); margin-bottom: 5px;">250</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Target Connections</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">50/day x 5 days</div>
+                        </div>
+                        <div style="background: var(--dark-bg); padding: 20px; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold; color: var(--info); margin-bottom: 5px;">10</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Qualified Leads Goal</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">3 discovery calls</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--dark-bg); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                        <div style="font-weight: 600; margin-bottom: 15px; color: var(--text-primary);">📅 Posting Schedule</div>
+                        <div style="display: grid; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 12px; background: var(--dark-card); border-radius: 8px; border-left: 3px solid var(--warning);">
+                                <div style="background: var(--warning); color: white; padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 0.85rem;">MON</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600;">Post 1: The Engagement Gap</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary);">8:30 AM EST • Food Web VR Experience</div>
+                                </div>
+                                <div style="color: var(--warning); font-size: 0.8rem; font-weight: 600;">TOMORROW</div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 12px; background: var(--dark-card); border-radius: 8px; border-left: 3px solid var(--text-muted);">
+                                <div style="background: var(--text-muted); color: white; padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 0.85rem;">WED</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600;">Post 2: AI + Spatial Learning</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary);">11:30 AM EST • AI Demo Interface</div>
+                                </div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">Feb 5</div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 12px; background: var(--dark-card); border-radius: 8px; border-left: 3px solid var(--text-muted);">
+                                <div style="background: var(--text-muted); color: white; padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 0.85rem;">FRI</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600;">Post 3: Superintendent's Dilemma</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary);">3:30 PM EST • ROI Framework</div>
+                                </div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">Feb 7</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <button onclick="viewLinkedInDetails()" style="background: #0077b5; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                            <i class="fab fa-linkedin"></i> View Campaign Details
+                        </button>
+                        <button onclick="viewPostContent()" style="background: var(--dark-border); color: var(--text-primary); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-file-alt"></i> View Post Content
+                        </button>
+                        <button onclick="trackEngagement()" style="background: var(--dark-border); color: var(--text-primary); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-chart-line"></i> Track Engagement
+                        </button>
+                    </div>
                 </div>
 
                 <!-- AGENT REGISTRY SECTION -->
