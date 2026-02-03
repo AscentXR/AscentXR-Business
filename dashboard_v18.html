@@ -3579,6 +3579,34 @@ function exportChartData() {
     }
 
 
+function startAutoRefresh() {
+        // Clear any existing intervals first
+        if (activeIntervals.refresh) {
+            clearInterval(activeIntervals.refresh);
+        }
+        
+        // Start new refresh interval (60 seconds)
+        activeIntervals.refresh = setInterval(() => {
+            try {
+                loadAgentRegistry();
+                renderWorkloadChart();
+                console.log('🔄 Auto-refresh completed');
+            } catch (error) {
+                console.error('❌ Error in auto-refresh:', error);
+            }
+        }, 60000);
+        
+        console.log('✅ Auto-refresh started (60s interval)');
+    }
+
+
+function stopAutoRefresh() {
+        if (activeIntervals.refresh) {
+            clearInterval(activeIntervals.refresh);
+            activeIntervals.refresh = null;
+            console.log('⏹️ Auto-refresh stopped');
+        }
+    }
 
 
 // Logout function
