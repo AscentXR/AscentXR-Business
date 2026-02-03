@@ -2357,7 +2357,6 @@ function updateTime() {
             } catch (error) {
                 console.warn('⚠️ Error in updateTime:', error);
             }
-            }
         }
 
 
@@ -2437,8 +2436,42 @@ async function loadAgentRegistry() {
         setInterval(async () => {
             console.log('🔄 Auto-refreshing agent data...');
             await loadAgentRegistry();
+            updateLastRefreshTime();
         }, 60000);
     }
+
+    // Update last refresh time display
+    function updateLastRefreshTime() {
+        if (!lastRefreshTime) return;
+        const timeString = lastRefreshTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+        const refreshEl = document.getElementById('lastRefreshTime');
+        if (refreshEl) {
+            refreshEl.textContent = `Last updated: ${timeString}`;
+        }
+    }
+
+    // Manual refresh function for refresh buttons
+    async function manualRefresh() {
+        addNotification('info', '🔄 Manually refreshing data...');
+        await loadAgentRegistry();
+        updateLastRefreshTime();
+        addNotification('success', '✅ Dashboard data refreshed successfully');
+    }
+
+    // Get current data status for debugging/monitoring
+    function getDashboardStatus() {
+        return {
+            registryLoaded: !!agentRegistryData,
+            lastRefresh: lastRefreshTime,
+            agentCount: agentRegistryData?.agents?.length || 0,
+            activeAgents: agentRegistryData?.coordination_metrics?.active_now || 0,
+            tasksInQueue: taskQueue.length,
+            metrics: agentRegistryData?.coordination_metrics || null
+        };
+    }
+
+    // Console helper to check status
+    window.dashboardStatus = getDashboardStatus;
 
     // Update header stats from registry
     function updateHeaderStats() {
@@ -3048,8 +3081,16 @@ function renderAgentTasks(filter = 'all') {
         const container = document.getElementById('agentTaskGrid');
         if (!container) return;
         
-        // Sample tasks for demonstration
-        const tasks = [
+        // Use real task queue data from registry
+        let tasks = taskQueue.length > 0 ? taskQueue.map(t => ({
+            id: t.task_id,
+            title: t.title,
+            agent: t.agent_name,
+            priority: t.priority,
+            progress: t.progress,
+            status: t.status
+        })) : [
+            // Fallback sample tasks if registry not loaded
             { id: 1, title: 'Create LinkedIn post for Feb 4', agent: 'LinkedIn Execution Agent', priority: 'high', progress: 60, status: 'in_progress' },
             { id: 2, title: 'Fix dashboard color scheme', agent: 'Dashboard Enhancement Agent', priority: 'medium', progress: 90, status: 'in_progress' },
             { id: 3, title: 'Update agent coordination system', agent: 'Agent Coordination System', priority: 'critical', progress: 35, status: 'in_progress' },
@@ -3082,46 +3123,61 @@ function renderAgentTasks(filter = 'all') {
 
 
 function filterTasksByPriority(priority) {
-        document.querySelectorAll('.agent-task-filter').forEach(f => f.classList.remove('active'));
-        event.target.classList.add('active');
-        renderAgentTasks(priority);
+        try {
+            const filters = document.querySelectorAll('.agent-task-filter');
+            if (filters) {
+                filters.forEach(f => {
+                    if (f) f.classList.remove('active');
+                });
+            }
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            renderAgentTasks(priority);
+        } catch (error) {
+            console.error('❌ Error in filterTasksByPriority:', error);
+        }
     }
 
 
 function renderPriorityQueue() {
-        const priorities = ['critical', 'high', 'medium', 'low'];
-        const sampleTasks = {
-            critical: [
-                { id: 1, title: 'Fix production bug', agent: 'Developer Agent' }
-            ],
-            high: [
-                { id: 2, title: 'Create LinkedIn post', agent: 'LinkedIn Agent' },
-                { id: 3, title: 'Update dashboard', agent: 'Dashboard Agent' }
-            ],
-            medium: [
-                { id: 4, title: 'Design landing page', agent: 'Design Agent' }
-            ],
-            low: [
-                { id: 5, title: 'Research competitors', agent: 'Research Agent' }
-            ]
-        };
-        
-        priorities.forEach(priority => {
-            const container = document.getElementById(`${priority}Tasks`);
-            const countEl = document.getElementById(`${priority}Count`);
-            if (container) {
-                const tasks = sampleTasks[priority] || [];
-                countEl.textContent = tasks.length;
-                container.innerHTML = tasks.map(task => `
-                    <div class="priority-task-item" draggable="true">
-                        <div style="font-weight: 600; margin-bottom: 5px;">${task.title}</div>
-                        <div style="font-size: 0.85rem; color: var(--text-secondary);">
-                            <i class="fas fa-robot"></i> ${task.agent}
+        try {
+            const priorities = ['critical', 'high', 'medium', 'low'];
+            const sampleTasks = {
+                critical: [
+                    { id: 1, title: 'Fix production bug', agent: 'Developer Agent' }
+                ],
+                high: [
+                    { id: 2, title: 'Create LinkedIn post', agent: 'LinkedIn Agent' },
+                    { id: 3, title: 'Update dashboard', agent: 'Dashboard Agent' }
+                ],
+                medium: [
+                    { id: 4, title: 'Design landing page', agent: 'Design Agent' }
+                ],
+                low: [
+                    { id: 5, title: 'Research competitors', agent: 'Research Agent' }
+                ]
+            };
+            
+            priorities.forEach(priority => {
+                const container = document.getElementById(`${priority}Tasks`);
+                const countEl = document.getElementById(`${priority}Count`);
+                if (container) {
+                    const tasks = sampleTasks[priority] || [];
+                    if (countEl) countEl.textContent = tasks.length;
+                    container.innerHTML = tasks.map(task => `
+                        <div class="priority-task-item" draggable="true">
+                            <div style="font-weight: 600; margin-bottom: 5px;">${task.title}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                                <i class="fas fa-robot"></i> ${task.agent}
+                            </div>
                         </div>
-                    </div>
-                `).join('');
-            }
-        });
+                    `).join('');
+                }
+            });
+        } catch (error) {
+            console.error('❌ Error in renderPriorityQueue:', error);
+        }
     }
 
 
@@ -3611,6 +3667,14 @@ function stopAutoRefresh() {
 
 // Logout function
 function logout() {
+    // Clear all active intervals
+    Object.keys(activeIntervals).forEach(key => {
+        if (activeIntervals[key]) {
+            clearInterval(activeIntervals[key]);
+            activeIntervals[key] = null;
+        }
+    });
+    
     localStorage.removeItem('ascent_session');
     window.location.href = 'login.html';
 }
@@ -3640,60 +3704,73 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Load initial view
     switchView('overview');
-    // Auto-updates disabled - refresh page to update data
-    // setInterval(updateLiveData, 10000);
-    // setInterval(updateTime, 60000);
-    // setInterval(refreshIntegrations, 1000);
+    
     // Load agent registry and start auto-refresh
     loadAgentRegistry().then(() => {
         // Render UI components
-        renderAgentTasks();
-        renderPriorityQueue();
-        renderWorkloadChart();
-        initPerformanceCharts();
+        try {
+            renderAgentTasks();
+            renderPriorityQueue();
+            renderWorkloadChart();
+            initPerformanceCharts();
+        } catch (error) {
+            console.error('❌ Error rendering UI components:', error);
+        }
         // Start auto-refresh every 60 seconds
         startAutoRefresh();
+    }).catch(error => {
+        console.error('❌ Error loading agent registry:', error);
     });
+    
     // Render live updates
     if (typeof renderLiveUpdates === 'function') {
-        renderLiveUpdates();
+        try {
+            renderLiveUpdates();
+        } catch (error) {
+            console.error('❌ Error rendering live updates:', error);
+        }
     }
     
-    // Session timeout check (every minute)
-    setInterval(function() {
-        const session = localStorage.getItem('ascent_session');
-        if (!session) {
-            window.location.href = 'login.html';
-            return;
-        }
+    // Session timeout check (every minute) - store interval reference
+    activeIntervals.sessionCheck = setInterval(function() {
         try {
+            const session = localStorage.getItem('ascent_session');
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
             const sessionData = JSON.parse(session);
             if (sessionData.expires < Date.now()) {
                 logout();
             }
         } catch (e) {
+            console.error('❌ Session check error:', e);
             logout();
         }
     }, 60000);
     
-    // LinkedIn countdown timer
-    setInterval(function() {
-        const countdownElement = document.getElementById('linkedinCountdown');
-        if (countdownElement) {
-            const text = countdownElement.textContent;
-            const match = text.match(/(\d+)h\s*(\d+)m/);
-            if (match) {
-                let hours = parseInt(match[1]);
-                let minutes = parseInt(match[2]);
-                minutes--;
-                if (minutes < 0) {
-                    minutes = 59;
-                    hours--;
-                }
-                if (hours >= 0) {
-                    countdownElement.textContent = hours + 'h ' + minutes + 'm';
+    // LinkedIn countdown timer - store interval reference
+    activeIntervals.countdown = setInterval(function() {
+        try {
+            const countdownElement = document.getElementById('linkedinCountdown');
+            if (countdownElement) {
+                const text = countdownElement.textContent;
+                const match = text.match(/(\d+)h\s*(\d+)m/);
+                if (match) {
+                    let hours = parseInt(match[1]);
+                    let minutes = parseInt(match[2]);
+                    minutes--;
+                    if (minutes < 0) {
+                        minutes = 59;
+                        hours--;
+                    }
+                    if (hours >= 0) {
+                        countdownElement.textContent = hours + 'h ' + minutes + 'm';
+                    }
                 }
             }
+        } catch (error) {
+            console.warn('⚠️ Error in countdown timer:', error);
         }
     }, 60000);
     

@@ -7,11 +7,19 @@
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "keywords": ["dashboard", "business", "analytics", "crm"],
+  "keywords": [
+    "dashboard",
+    "business",
+    "analytics",
+    "crm"
+  ],
   "author": "Ascent XR",
   "license": "UNLICENSED",
   "private": true,
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "playwright": "^1.58.1"
   }
 }
