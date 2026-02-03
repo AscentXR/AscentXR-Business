@@ -1267,13 +1267,247 @@
 
             <!-- RIGHT SIDEBAR -->
             <aside class="sidebar-right">
-                <div class="section">
-                    <div class="section-header">
-                        <div class="section-title">Live Updates</div>
+                <!-- QUICK STATS MINI CARDS -->
+                <div class="sidebar-section">
+                    <div class="sidebar-header">
+                        <div class="sidebar-title">
+                            <i class="fas fa-chart-pie"></i> Quick Stats
+                        </div>
                     </div>
-                    <ul id="activityFeed" style="list-style:none; padding:0;">
-                        <li style="padding:12px; color:var(--text-secondary);">Loading...</li>
-                    </ul>
+                    <div class="quick-stats-grid">
+                        <div class="quick-stat-card" id="quickStatTasks">
+                            <div class="quick-stat-value" id="quickTasksCount">23</div>
+                            <div class="quick-stat-label">Active Tasks</div>
+                            <div class="quick-stat-trend up">
+                                <i class="fas fa-arrow-up"></i> 12%
+                            </div>
+                        </div>
+                        <div class="quick-stat-card success" id="quickStatAgents">
+                            <div class="quick-stat-value" id="quickAgentsCount">8</div>
+                            <div class="quick-stat-label">Active Agents</div>
+                            <div class="quick-stat-indicator online"></div>
+                        </div>
+                        <div class="quick-stat-card warning" id="quickStatPosts">
+                            <div class="quick-stat-value" id="quickPostsCount">3</div>
+                            <div class="quick-stat-label">LinkedIn Posts</div>
+                            <div class="quick-stat-status">Ready</div>
+                        </div>
+                        <div class="quick-stat-card info" id="quickStatPipeline">
+                            <div class="quick-stat-value" id="quickPipelineValue">$12K</div>
+                            <div class="quick-stat-label">Pipeline</div>
+                            <div class="quick-stat-progress">
+                                <div class="quick-stat-progress-bar" style="width: 4%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SYSTEM STATUS -->
+                <div class="sidebar-section">
+                    <div class="sidebar-header">
+                        <div class="sidebar-title">
+                            <i class="fas fa-server"></i> System Status
+                        </div>
+                        <div class="status-badge" id="systemStatusBadge">
+                            <span class="status-dot online"></span> All Systems Go
+                        </div>
+                    </div>
+                    <div class="system-status-list">
+                        <div class="status-item">
+                            <div class="status-icon linkedin-bg">
+                                <i class="fab fa-linkedin-in"></i>
+                            </div>
+                            <div class="status-info">
+                                <div class="status-name">LinkedIn API</div>
+                                <div class="status-detail">Connected • 45ms</div>
+                            </div>
+                            <div class="status-indicator online" title="Online">
+                                <span class="status-pulse"></span>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-icon crm-bg">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="status-info">
+                                <div class="status-name">CRM Database</div>
+                                <div class="status-detail">Synced • 2 min ago</div>
+                            </div>
+                            <div class="status-indicator online" title="Online">
+                                <span class="status-pulse"></span>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-icon agents-bg">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="status-info">
+                                <div class="status-name">Agent Network</div>
+                                <div class="status-detail">8 Active • 14 Total</div>
+                            </div>
+                            <div class="status-indicator online" title="Online">
+                                <span class="status-pulse"></span>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-icon voice-bg">
+                                <i class="fas fa-microphone"></i>
+                            </div>
+                            <div class="status-info">
+                                <div class="status-name">Voice System</div>
+                                <div class="status-detail">Samantha Ready</div>
+                            </div>
+                            <div class="status-indicator online" title="Online">
+                                <span class="status-pulse"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UPCOMING MILESTONES -->
+                <div class="sidebar-section">
+                    <div class="sidebar-header">
+                        <div class="sidebar-title">
+                            <i class="fas fa-flag-checkered"></i> Milestones
+                        </div>
+                        <div class="milestone-count" id="milestoneCount">4 upcoming</div>
+                    </div>
+                    <div class="milestones-timeline">
+                        <div class="milestone-item urgent">
+                            <div class="milestone-marker">
+                                <div class="milestone-dot"></div>
+                                <div class="milestone-line"></div>
+                            </div>
+                            <div class="milestone-content">
+                                <div class="milestone-date">
+                                    <i class="far fa-calendar"></i> Feb 7, 2026
+                                </div>
+                                <div class="milestone-title">Week 1 Sprint Complete</div>
+                                <div class="milestone-tasks">
+                                    <span class="milestone-badge">3 tasks</span>
+                                    <span class="milestone-urgency">2 days left</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="milestone-item">
+                            <div class="milestone-marker">
+                                <div class="milestone-dot"></div>
+                                <div class="milestone-line"></div>
+                            </div>
+                            <div class="milestone-content">
+                                <div class="milestone-date">
+                                    <i class="far fa-calendar"></i> Feb 10, 2026
+                                </div>
+                                <div class="milestone-title">LinkedIn Post #1 Live</div>
+                                <div class="milestone-tasks">
+                                    <span class="milestone-badge ready">Ready</span>
+                                    <span class="milestone-eta">5 days</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="milestone-item">
+                            <div class="milestone-marker">
+                                <div class="milestone-dot"></div>
+                                <div class="milestone-line"></div>
+                            </div>
+                            <div class="milestone-content">
+                                <div class="milestone-date">
+                                    <i class="far fa-calendar"></i> Feb 14, 2026
+                                </div>
+                                <div class="milestone-title">CRM System v1.0</div>
+                                <div class="milestone-tasks">
+                                    <span class="milestone-badge progress">In Progress</span>
+                                    <span class="milestone-eta">9 days</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="milestone-item">
+                            <div class="milestone-marker">
+                                <div class="milestone-dot last"></div>
+                            </div>
+                            <div class="milestone-content">
+                                <div class="milestone-date">
+                                    <i class="far fa-calendar"></i> Jun 30, 2026
+                                </div>
+                                <div class="milestone-title">$300K Revenue Target</div>
+                                <div class="milestone-tasks">
+                                    <span class="milestone-badge target">Q2 Goal</span>
+                                    <span class="milestone-eta">146 days</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NOTIFICATIONS -->
+                <div class="sidebar-section">
+                    <div class="sidebar-header">
+                        <div class="sidebar-title">
+                            <i class="fas fa-bell"></i> Notifications
+                            <span class="notification-badge" id="notificationBadge">3</span>
+                        </div>
+                        <button class="mark-all-read" onclick="markAllNotificationsRead()" title="Mark all as read">
+                            <i class="fas fa-check-double"></i>
+                        </button>
+                    </div>
+                    <div class="notifications-list" id="notificationsList">
+                        <div class="notification-item unread high">
+                            <div class="notification-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-text">Week 1 sprint ending in 2 days</div>
+                                <div class="notification-time">Just now</div>
+                            </div>
+                            <button class="notification-dismiss" onclick="dismissNotification(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="notification-item unread">
+                            <div class="notification-icon success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-text">3 LinkedIn posts scheduled</div>
+                                <div class="notification-time">2 hours ago</div>
+                            </div>
+                            <button class="notification-dismiss" onclick="dismissNotification(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="notification-item unread">
+                            <div class="notification-icon info">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-text">New SDR Agent activated</div>
+                                <div class="notification-time">5 hours ago</div>
+                            </div>
+                            <button class="notification-dismiss" onclick="dismissNotification(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LIVE UPDATES FEED -->
+                <div class="sidebar-section live-updates-section">
+                    <div class="sidebar-header">
+                        <div class="sidebar-title">
+                            <i class="fas fa-stream"></i> Live Updates
+                        </div>
+                        <div class="live-indicator">
+                            <span class="live-dot"></span> LIVE
+                        </div>
+                    </div>
+                    <div class="live-updates-container" id="liveUpdatesContainer">
+                        <ul id="activityFeed" class="live-updates-list">
+                            <li class="live-update-item loading">
+                                <div class="update-spinner"></div>
+                                <span>Loading updates...</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </aside>
         </div>
