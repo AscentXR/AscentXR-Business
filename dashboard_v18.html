@@ -1924,41 +1924,59 @@ function startTimer() {
 
 
 function stopTimer() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                const hours = (timerSeconds / 3600).toFixed(1);
-                const entry = document.getElementById('timeEntry').value;
-                
-                if (hours > 0) {
-                    const timeLog = document.querySelector('.time-log');
-                    const logItem = document.createElement('div');
-                    logItem.className = 'time-log-item';
-                    logItem.innerHTML = `<span>${entry}</span><span>${hours}h</span>`;
-                    timeLog.prepend(logItem);
+            try {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    const hours = (timerSeconds / 3600).toFixed(1);
+                    const timeEntry = document.getElementById('timeEntry');
+                    const entry = timeEntry ? timeEntry.value : '';
                     
-                    document.getElementById('timeEntry').value = '';
-                    document.querySelector('.btn i.fa-stop').className = 'fas fa-play';
-                    
-                    addNotification('success', `✅ Logged ${hours} hours for: "${entry}"`);
+                    if (hours > 0) {
+                        const timeLog = document.querySelector('.time-log');
+                        if (timeLog) {
+                            const logItem = document.createElement('div');
+                            logItem.className = 'time-log-item';
+                            logItem.innerHTML = `<span>${entry}</span><span>${hours}h</span>`;
+                            timeLog.prepend(logItem);
+                        }
+                        
+                        if (timeEntry) timeEntry.value = '';
+                        const stopBtn = document.querySelector('.btn i.fa-stop');
+                        if (stopBtn) stopBtn.className = 'fas fa-play';
+                        
+                        addNotification('success', `✅ Logged ${hours} hours for: "${entry}"`);
+                    }
                 }
+            } catch (error) {
+                console.error('❌ Error in stopTimer:', error);
             }
         }
 
 
 function addNotification(type, message) {
-            const notificationList = document.querySelector('.notification-list');
-            const notificationItem = document.createElement('li');
-            notificationItem.className = `notification-item ${type}`;
-            notificationItem.innerHTML = `
-                <strong>${message}</strong>
-                <div class="activity-time">Just now</div>
-            `;
-            
-            notificationList.prepend(notificationItem);
-            
-            // Limit to 4 notifications
-            if (notificationList.children.length > 4) {
-                notificationList.removeChild(notificationList.lastChild);
+            try {
+                const notificationList = document.querySelector('.notification-list');
+                if (!notificationList) {
+                    console.warn('⚠️ addNotification: notification-list not found');
+                    return;
+                }
+                
+                const notificationItem = document.createElement('li');
+                notificationItem.className = `notification-item ${type}`;
+                notificationItem.innerHTML = `
+                    <strong>${message}</strong>
+                    <div class="activity-time">Just now</div>
+                `;
+                
+                notificationList.prepend(notificationItem);
+                
+                // Limit to 4 notifications
+                if (notificationList.children && notificationList.children.length > 4) {
+                    notificationList.removeChild(notificationList.lastChild);
+                }
+            } catch (error) {
+                console.error('❌ Error in addNotification:', error);
             }
         }
 
@@ -2289,35 +2307,52 @@ function testVoiceInterface() {
 
 
 function updateLiveData() {
-            // Randomly update pipeline value (simulation)
-            const pipelineValue = document.getElementById('revenuePipeline');
-            const currentValue = parseInt(pipelineValue.textContent.replace('$', '').replace('K', ''));
-            const newValue = currentValue + (Math.random() > 0.9 ? 5 : 0);
-            if (newValue !== currentValue && newValue <= 300) {
-                pipelineValue.textContent = `$${newValue}K`;
-                pipelineValue.style.color = 'var(--success)';
-                setTimeout(() => {
-                    pipelineValue.style.color = '';
-                }, 1000);
+            try {
+                // Randomly update pipeline value (simulation)
+                const pipelineValue = document.getElementById('revenuePipeline');
+                if (pipelineValue) {
+                    const currentValue = parseInt(pipelineValue.textContent.replace('$', '').replace('K', ''));
+                    const newValue = currentValue + (Math.random() > 0.9 ? 5 : 0);
+                    if (newValue !== currentValue && newValue <= 300) {
+                        pipelineValue.textContent = `$${newValue}K`;
+                        pipelineValue.style.color = 'var(--success)';
+                        setTimeout(() => {
+                            if (pipelineValue) pipelineValue.style.color = '';
+                        }, 1000);
+                        
+                        // Update progress bar
+                        const progressBar = document.querySelector('.stat-card:nth-child(1) .stat-progress-bar');
+                        if (progressBar) {
+                            const progress = Math.min(100, (newValue / 300) * 100);
+                            progressBar.style.width = `${progress}%`;
+                        }
+                    }
+                }
                 
-                // Update progress bar
-                const progress = Math.min(100, (newValue / 300) * 100);
-                document.querySelector('.stat-card:nth-child(1) .stat-progress-bar').style.width = `${progress}%`;
+                // Update days remaining
+                const daysRemainingEl = document.getElementById('daysRemaining');
+                if (daysRemainingEl) {
+                    const targetDate = new Date('2026-06-30');
+                    const today = new Date();
+                    const daysRemaining = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+                    daysRemainingEl.textContent = daysRemaining;
+                }
+            } catch (error) {
+                console.warn('⚠️ Error in updateLiveData:', error);
             }
-            
-            // Update days remaining
-            const targetDate = new Date('2026-06-30');
-            const today = new Date();
-            const daysRemaining = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
-            document.getElementById('daysRemaining').textContent = daysRemaining;
         }
 
 
 function updateTime() {
-            const now = new Date();
-            const subtitle = document.querySelector('.header .subtitle');
-            if (subtitle) {
-                subtitle.textContent = `All Documentation • Last updated: ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            try {
+                const now = new Date();
+                const subtitle = document.querySelector('.header .subtitle');
+                if (subtitle) {
+                    subtitle.textContent = `All Documentation • Last updated: ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                }
+            } catch (error) {
+                console.warn('⚠️ Error in updateTime:', error);
+            }
             }
         }
 
@@ -2531,24 +2566,70 @@ function getEmbeddedAgentData() {
 function updateAgentDashboard() {
         if (!agentData) return;
         
-        const metrics = agentData.coordination_metrics || getEmbeddedAgentData().coordination_metrics;
+        // Use real metrics from registry if available
+        const metrics = agentRegistryData?.coordination_metrics || agentData.coordination_metrics || getEmbeddedAgentData().coordination_metrics;
         
-        // Update stat cards
-        updateStatValue('totalAgents', metrics.total_agents);
-        updateStatValue('activeAgents', metrics.active_now);
-        updateStatValue('completedAgents', metrics.total_agents - metrics.busy);
-        updateStatValue('completionRate', Math.round(metrics.avg_success_rate) + '%');
+        // Calculate real stats from agents array
+        const agents = agentRegistryData?.agents || agentData.agents || [];
+        const activeNow = agents.filter(a => a.current_status === 'active').length;
+        const availableNow = agents.filter(a => a.current_status === 'available').length;
+        const busyNow = agents.filter(a => a.current_status === 'busy').length;
+        
+        // Calculate total and completed tasks
+        let totalTasksCompleted = 0;
+        let totalTasksPending = 0;
+        let totalSuccessRate = 0;
+        let agentsWithSuccessRate = 0;
+        
+        agents.forEach(agent => {
+            totalTasksCompleted += (agent.tasks_completed || 0);
+            totalTasksPending += (agent.tasks_pending || 0);
+            if (agent.success_rate > 0) {
+                totalSuccessRate += agent.success_rate;
+                agentsWithSuccessRate++;
+            }
+        });
+        
+        const avgSuccessRate = agentsWithSuccessRate > 0 ? Math.round(totalSuccessRate / agentsWithSuccessRate) : 0;
+        const totalTasks = totalTasksCompleted + totalTasksPending;
+        const completionRate = totalTasks > 0 ? Math.round((totalTasksCompleted / totalTasks) * 100) : 0;
+        
+        // Update stat cards with real data
+        updateStatValue('totalAgents', agents.length);
+        updateStatValue('activeAgents', activeNow);
+        updateStatValue('availableAgents', availableNow);
+        updateStatValue('busyAgents', busyNow);
+        updateStatValue('completedAgents', totalTasksCompleted);
+        updateStatValue('pendingAgents', totalTasksPending);
+        updateStatValue('completionRate', completionRate + '%');
+        updateStatValue('successRate', avgSuccessRate + '%');
+        updateStatValue('tasksCompletedToday', metrics.tasks_completed_today || 0);
+        updateStatValue('tasksPendingTotal', metrics.tasks_pending || totalTasksPending);
         
         // Update progress bars
         const completionBar = document.getElementById('overallCompletionBar');
         if (completionBar) {
-            completionBar.style.width = metrics.avg_success_rate + '%';
+            completionBar.style.width = completionRate + '%';
+        }
+        
+        const successBar = document.getElementById('successRateBar');
+        if (successBar) {
+            successBar.style.width = avgSuccessRate + '%';
         }
         
         // Update agent cards
         updateAgentCards();
         
-        console.log('📊 Agent dashboard updated');
+        console.log('📊 Agent dashboard updated:', {
+            totalAgents: agents.length,
+            active: activeNow,
+            available: availableNow,
+            busy: busyNow,
+            tasksCompleted: totalTasksCompleted,
+            tasksPending: totalTasksPending,
+            completionRate: completionRate + '%',
+            avgSuccessRate: avgSuccessRate + '%'
+        });
     }
 
 
@@ -3531,19 +3612,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // setInterval(updateLiveData, 10000);
     // setInterval(updateTime, 60000);
     // setInterval(refreshIntegrations, 1000);
-    // Load agent registry
+    // Load agent registry and start auto-refresh
     loadAgentRegistry().then(() => {
-    // Render UI components
-    renderAgentTasks();
-    renderPriorityQueue();
-    renderWorkloadChart();
-    initPerformanceCharts();
+        // Render UI components
+        renderAgentTasks();
+        renderPriorityQueue();
+        renderWorkloadChart();
+        initPerformanceCharts();
+        // Start auto-refresh every 60 seconds
+        startAutoRefresh();
     });
-    // Periodic refresh disabled - update on page load only
-    // setInterval(() => {
-    // updateAgentDashboard();
-    // renderWorkloadChart();
-    // }, 30000);
     // Render live updates
     if (typeof renderLiveUpdates === 'function') {
         renderLiveUpdates();
