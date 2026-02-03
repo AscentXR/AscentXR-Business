@@ -30,7 +30,17 @@ directories.forEach(dir => {
   }
 });
 
-// Health check endpoint
+// Health check endpoint (for Railway)
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    service: 'Ascent XR Dashboard',
+    version: '18.4'
+  });
+});
+
+// API Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
