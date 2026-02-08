@@ -42,17 +42,30 @@ if (process.env.NODE_ENV === 'production') {
   warnings.forEach(w => console.warn(`[SECURITY WARNING] ${w}`));
 }
 
+// Firebase Auth proxy - must be before helmet/body parsing/static files
+// Proxies /__/auth/* to Firebase so OAuth flows are same-origin
+const { createProxyMiddleware } = require('http-proxy-middleware');
+app.use('/__/auth', createProxyMiddleware({
+  target: 'https://ascent-xr-business.firebaseapp.com',
+  changeOrigin: true,
+  secure: true,
+  onProxyRes(proxyRes) {
+    delete proxyRes.headers['x-frame-options'];
+  }
+}));
+
 // Middleware - Helmet with security headers
 const isDev = process.env.NODE_ENV !== 'production';
 app.use(helmet({
   contentSecurityPolicy: isDev ? false : {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://apis.google.com", "https://www.gstatic.com"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "ws:", "wss:"],
+      connectSrc: ["'self'", "ws:", "wss:", "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com", "https://www.googleapis.com"],
       fontSrc: ["'self'"],
+      frameSrc: ["'self'", "https://ascent-xr-business.firebaseapp.com", "https://accounts.google.com"],
       frameAncestors: ["'none'"]
     }
   },

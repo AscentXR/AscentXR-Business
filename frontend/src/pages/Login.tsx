@@ -145,9 +145,17 @@ export default function Login() {
           <button
             type="button"
             disabled={loading}
-            onClick={() => {
+            onClick={async () => {
               setError('');
-              loginWithGoogle();
+              setLoading(true);
+              try {
+                await loginWithGoogle();
+                navigate('/');
+              } catch (err) {
+                setError(getErrorMessage(err));
+              } finally {
+                setLoading(false);
+              }
             }}
             className="w-full py-2.5 bg-navy-700 hover:bg-navy-600 border border-navy-600 rounded-lg text-white font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-3"
           >

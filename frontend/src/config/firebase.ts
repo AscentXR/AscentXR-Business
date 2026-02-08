@@ -3,7 +3,7 @@ import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDSgGJd_xl5a9fYG5hdDituPWWboSDB_84',
-  authDomain: 'ascent-xr-business.firebaseapp.com',
+  authDomain: 'ascentxr-business-production.up.railway.app',
   projectId: 'ascent-xr-business',
 };
 
