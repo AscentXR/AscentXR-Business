@@ -16,7 +16,7 @@ curl -s https://web-production-f0ae1.up.railway.app/login | grep -i "login\|emai
 // Sample Firebase auth test
 const testAuth = async () => {
   // 1. Get Firebase config from page
-  // 2. Authenticate with sam@ltvr-system.local / Ojxxu3v1ve0vobXx6TrifUnMNgtMezOL
+  // 2. Authenticate with credentials from .env (FIREBASE_TEST_USER / FIREBASE_TEST_PASS)
   // 3. Extract ID token
   // 4. Test API endpoint with Authorization: Bearer <token>
 };

@@ -1,21 +1,38 @@
-# ASCENT XR DASHBOARD - PRODUCTION DOCKERFILE
-# Multi-stage build for optimized production deployment
+# ASCENT XR CONTROL CENTER - PRODUCTION DOCKERFILE
+# Multi-stage build: frontend + backend
 
-# Stage 1: Build stage
-FROM node:18-alpine AS builder
+# Stage 1: Build frontend
+FROM node:18-alpine AS frontend-builder
+
+WORKDIR /frontend
+
+# Copy frontend package files
+COPY frontend/package*.json ./
+
+# Install frontend dependencies
+RUN npm ci
+
+# Copy frontend source
+COPY frontend/ ./
+
+# Build frontend
+RUN npm run build
+
+# Stage 2: Build backend
+FROM node:18-alpine AS backend-builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy backend package files
 COPY backend/package*.json ./
 
-# Install dependencies
+# Install production dependencies only
 RUN npm ci --only=production
 
-# Copy application source
+# Copy backend source
 COPY backend/ ./
 
-# Stage 2: Production stage
+# Stage 3: Production
 FROM node:18-alpine AS production
 
 WORKDIR /app
@@ -24,8 +41,15 @@ WORKDIR /app
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
-# Copy built application from builder
-COPY --from=builder --chown=nodejs:nodejs /app /app
+# Copy backend from builder
+COPY --from=backend-builder --chown=nodejs:nodejs /app /app
+
+# Copy frontend build to frontend/dist (Express serves this)
+COPY --from=frontend-builder --chown=nodejs:nodejs /frontend/dist /app/../frontend/dist
+
+# Create required directories
+RUN mkdir -p /app/uploads /app/exports /app/documents && \
+    chown -R nodejs:nodejs /app
 
 # Switch to non-root user
 USER nodejs
@@ -40,10 +64,10 @@ EXPOSE 3000
 # Start application
 CMD ["node", "server.js"]
 
-# Labels for better maintainability
-LABEL org.label-schema.name="ascent-xr-dashboard" \
-      org.label-schema.description="Ascent XR Dashboard Backend API" \
+# Labels
+LABEL org.label-schema.name="ascent-xr-control-center" \
+      org.label-schema.description="Ascent XR Business Control Center" \
       org.label-schema.vendor="Ascent XR" \
-      org.label-schema.version="1.0.0" \
+      org.label-schema.version="3.0.0" \
       org.label-schema.schema-version="1.0" \
       maintainer="Ascent XR Team <team@ascentxr.com>"

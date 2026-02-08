@@ -19,7 +19,7 @@
         "x-railway-edge": "railway/us-east4-eqdc4a",
         "x-railway-request-id": "9UVXbihcS8utrBoi8u2xcg"
       },
-      "data": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/vite.svg\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n    <meta http-equiv=\"Pragma\" content=\"no-cache\" />\n    <meta http-equiv=\"Expires\" content=\"0\" />\n    <title>LTVR Client Management</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-DjUTbOCX.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-DJY0Pic9.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
+      "data": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/vite.svg\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n    <meta http-equiv=\"Pragma\" content=\"no-cache\" />\n    <meta http-equiv=\"Expires\" content=\"0\" />\n    <title>Ascent XR Client Management</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-DjUTbOCX.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-DJY0Pic9.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
       "error": null
     },
     {
@@ -39,7 +39,7 @@
         "x-railway-edge": "railway/us-east4-eqdc4a",
         "x-railway-request-id": "61Y1fqWiSMKo6hD48u2xcg"
       },
-      "data": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/vite.svg\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n    <meta http-equiv=\"Pragma\" content=\"no-cache\" />\n    <meta http-equiv=\"Expires\" content=\"0\" />\n    <title>LTVR Client Management</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-DjUTbOCX.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-DJY0Pic9.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
+      "data": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/vite.svg\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n    <meta http-equiv=\"Pragma\" content=\"no-cache\" />\n    <meta http-equiv=\"Expires\" content=\"0\" />\n    <title>Ascent XR Client Management</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-DjUTbOCX.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-DJY0Pic9.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
       "error": null
     },
     {
@@ -59,7 +59,7 @@
         "x-railway-edge": "railway/us-east4-eqdc4a",
         "x-railway-request-id": "qmKHPrCaQsyQQjob8u2xcg"
       },
-      "data": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/vite.svg\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n    <meta http-equiv=\"Pragma\" content=\"no-cache\" />\n    <meta http-equiv=\"Expires\" content=\"0\" />\n    <title>LTVR Client Management</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-DjUTbOCX.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-DJY0Pic9.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
+      "data": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"/vite.svg\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n    <meta http-equiv=\"Pragma\" content=\"no-cache\" />\n    <meta http-equiv=\"Expires\" content=\"0\" />\n    <title>Ascent XR Client Management</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-DjUTbOCX.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-DJY0Pic9.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
       "error": null
     }
   ],

@@ -15,7 +15,7 @@ Agents MUST deploy working files, not just create plans. Every task ends with fi
 ### PHASE 2: FTP DEPLOYMENT
 - [ ] Upload ALL files to `/dev/` directory:
 ```bash
-curl -T filename.html "ftp://Sam564564457844537%40ascentxr.com:2Cl%23%2Ah2cdl%40cKNCO@ctz.hzv.mybluehost.me/dev/filename.html"
+curl -T filename.html "ftp://${FTP_USER}:${FTP_PASS}@${FTP_HOST}/dev/filename.html"
 ```
 
 ### PHASE 3: HTTP VERIFICATION  
@@ -103,7 +103,7 @@ grep -r "#667eea\|#764ba2\|#9f7aea\|purple" *.html *.css
 ### 5. "Files not accessible"
 **SOLUTION:** Verify FTP upload succeeded:
 ```bash
-curl -s "ftp://Sam564564457844537%40ascentxr.com:2Cl%23%2Ah2cdl%40cKNCO@ctz.hzv.mybluehost.me/dev/" | grep filename
+curl -s "ftp://${FTP_USER}:${FTP_PASS}@${FTP_HOST}/dev/" | grep filename
 ```
 
 ## SUCCESS METRICS

@@ -1,5 +1,5 @@
 # AGENT TRAINING MASTER INDEX
-**Ascent XR / Learning Time VR Agent Team**
+**Ascent XR Agent Team**
 **Total Agents:** 20 Specialized AI Agents
 
 ---

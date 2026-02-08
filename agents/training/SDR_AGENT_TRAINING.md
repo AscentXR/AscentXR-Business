@@ -40,7 +40,7 @@ Would love to connect and share what's working for Hamilton Southeastern and oth
 
 Best,
 [Your Name]
-Learning Time VR
+Ascent XR
 ```
 
 **Template B: Curriculum Director**
@@ -54,7 +54,7 @@ Quick question: How much time do your teachers spend creating supplemental mater
 Worth a brief conversation?
 
 [Your Name]
-Learning Time VR
+Ascent XR
 ```
 
 **Template C: Technology Director**
@@ -68,7 +68,7 @@ Our WebXR platform runs on any device (Chromebooks, tablets, no app installs) - 
 Happy to share technical specs if helpful.
 
 [Your Name]
-Learning Time VR
+Ascent XR
 ```
 
 ### 3. Lead Qualification (BANT Framework)
@@ -254,7 +254,7 @@ Learning Time VR
 - HubSpot CRM
 - Calendly (scheduling)
 - Zoom (meetings)
-- Learning Time VR demo account
+- Ascent XR demo account
 
 **Reference Materials:**
 - Case studies folder

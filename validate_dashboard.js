@@ -107,7 +107,7 @@ check('Mobile responsive', html.includes('viewport') && html.includes('width=dev
 
 // 8. No Purple Check
 console.log('\n🚫 COLOR CHECK:');
-const purpleMatches = html.match(/#8b5cf6|rgb\(139,\s*92,\s*246|rgba\(139,\s*92,\s*246/gi);
+const purpleMatches = html.match(/#8b5cf6|#667eea|#764ba2|#a855f7|#d946ef|rgb\(139,\s*92,\s*246|rgba\(139,\s*92,\s*246/gi);
 if (purpleMatches) {
   warn('Purple colors found', `${purpleMatches.length} instances - should be blue/teal`);
 } else {

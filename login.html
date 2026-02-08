@@ -326,98 +326,123 @@
     </div>
     
     <script>
-        // Admin credentials (in production, these would be server-side)
-        const ADMIN_USERS = [
-            { username: 'jim', password: 'ascent2026!', name: 'Jim', role: 'CEO' },
-            { username: 'nick', password: 'ascent2026!', name: 'Nick', role: 'CTO' }
-        ];
-        
-        // Check if already logged in
+        // Check if already logged in via JWT
         function checkExistingSession() {
-            const session = localStorage.getItem('ascent_session');
-            if (session) {
-                try {
-                    const sessionData = JSON.parse(session);
-                    if (sessionData.expires > Date.now()) {
-                        window.location.href = 'unified_dashboard.html';
-                        return;
+            const token = localStorage.getItem('ascent_token');
+            if (token) {
+                fetch('/api/auth/session', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const role = data.user.role;
+                        if (role === 'CEO') {
+                            window.location.href = 'dashboard_v19.html?view=ceo';
+                        } else if (role === 'CTO') {
+                            window.location.href = 'dashboard_v19.html?view=cto';
+                        } else {
+                            window.location.href = 'dashboard_v19.html';
+                        }
                     } else {
+                        localStorage.removeItem('ascent_token');
                         localStorage.removeItem('ascent_session');
                     }
-                } catch (e) {
+                })
+                .catch(() => {
+                    localStorage.removeItem('ascent_token');
                     localStorage.removeItem('ascent_session');
-                }
+                });
             }
         }
-        
+
         // Run check on load
         checkExistingSession();
-        
+
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             const username = document.getElementById('username').value.toLowerCase().trim();
             const password = document.getElementById('password').value;
             const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
             const successMessage = document.getElementById('successMessage');
             const loginBtn = document.getElementById('loginBtn');
             const btnText = loginBtn.querySelector('.btn-text');
             const loadingSpinner = document.getElementById('loadingSpinner');
-            
+
             // Hide previous messages
             errorMessage.classList.remove('show');
             successMessage.classList.remove('show');
-            
+
             // Show loading
             loginBtn.disabled = true;
             btnText.style.display = 'none';
             loadingSpinner.classList.add('show');
-            
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 800));
-            
-            // Validate credentials
-            const user = ADMIN_USERS.find(u => u.username === username && u.password === password);
-            
-            if (user) {
-                // Create session
-                const session = {
-                    username: user.username,
-                    name: user.name,
-                    role: user.role,
-                    loginTime: new Date().toISOString(),
-                    expires: Date.now() + (30 * 60 * 1000) // 30 minutes
-                };
-                
-                localStorage.setItem('ascent_session', JSON.stringify(session));
-                
-                // Show success
-                successMessage.classList.add('show');
-                
-                // Redirect after short delay
-                setTimeout(() => {
-                    window.location.href = 'unified_dashboard.html';
-                }, 1000);
-            } else {
-                // Show error
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Store JWT token
+                    localStorage.setItem('ascent_token', data.token);
+                    localStorage.setItem('ascent_session', JSON.stringify({
+                        username: data.user.username,
+                        name: data.user.name,
+                        role: data.user.role,
+                        loginTime: new Date().toISOString(),
+                        expires: Date.now() + (30 * 60 * 1000)
+                    }));
+
+                    // Show success
+                    successMessage.classList.add('show');
+
+                    // Redirect based on role
+                    setTimeout(() => {
+                        const role = data.user.role;
+                        if (role === 'CEO') {
+                            window.location.href = 'dashboard_v19.html?view=ceo';
+                        } else if (role === 'CTO') {
+                            window.location.href = 'dashboard_v19.html?view=cto';
+                        } else {
+                            window.location.href = 'dashboard_v19.html';
+                        }
+                    }, 1000);
+                } else {
+                    // Show error
+                    errorText.textContent = data.error || 'Invalid credentials';
+                    errorMessage.classList.add('show');
+
+                    // Reset button
+                    loginBtn.disabled = false;
+                    btnText.style.display = 'inline';
+                    loadingSpinner.classList.remove('show');
+
+                    // Clear password
+                    document.getElementById('password').value = '';
+                    document.getElementById('password').focus();
+                }
+            } catch (err) {
+                errorText.textContent = 'Server unavailable. Please try again.';
                 errorMessage.classList.add('show');
-                
-                // Reset button
+
                 loginBtn.disabled = false;
                 btnText.style.display = 'inline';
                 loadingSpinner.classList.remove('show');
-                
-                // Clear password
-                document.getElementById('password').value = '';
-                document.getElementById('password').focus();
             }
         });
-        
+
         // Clear error on input
         document.getElementById('username').addEventListener('input', function() {
             document.getElementById('errorMessage').classList.remove('show');
         });
-        
+
         document.getElementById('password').addEventListener('input', function() {
             document.getElementById('errorMessage').classList.remove('show');
         });

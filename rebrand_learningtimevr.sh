@@ -18,7 +18,7 @@ FILES="unified_dashboard.html ascent_dashboard_docs.html ASCENT_XR_DASHBOARD.htm
 
 # Upload favicon first
 echo "Uploading Learning Time VR favicon..."
-curl -T /home/jim/openclaw/branding/learningtimevr/favicon.png "ftp://Sam564564457844537%40ascentxr.com:2Cl%23%2Ah2cdl%40cKNCO@ctz.hzv.mybluehost.me/dev/favicon.png" >/dev/null 2>&1
+curl -T /home/jim/openclaw/branding/learningtimevr/favicon.png "ftp://${FTP_USER}:${FTP_PASS}@${FTP_HOST}/dev/favicon.png" >/dev/null 2>&1
 echo "  ✓ Favicon uploaded"
 
 for file in $FILES; do
@@ -63,7 +63,7 @@ echo ""
 echo "=== UPLOADING REBRANDED FILES ==="
 for file in $FILES; do
     echo "Uploading: $file"
-    curl -T "/home/jim/openclaw/$file" "ftp://Sam564564457844537%40ascentxr.com:2Cl%23%2Ah2cdl%40cKNCO@ctz.hzv.mybluehost.me/dev/$file" >/dev/null 2>&1
+    curl -T "/home/jim/openclaw/$file" "ftp://${FTP_USER}:${FTP_PASS}@${FTP_HOST}/dev/$file" >/dev/null 2>&1
     echo "  ✓ Uploaded"
 done
 

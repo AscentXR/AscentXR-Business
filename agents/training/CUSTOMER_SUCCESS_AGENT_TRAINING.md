@@ -285,11 +285,11 @@
 
 **Welcome Email (New Customer):**
 ```
-Subject: Welcome to Learning Time VR! Let's get started.
+Subject: Welcome to Ascent XR! Let's get started.
 
 Hi [First Name],
 
-Welcome to the Learning Time VR family! We're excited to partner with [School/District] to bring spatial learning to your students.
+Welcome to the Ascent XR family! We're excited to partner with [School/District] to bring spatial learning to your students.
 
 Here's what happens next:
 1. Kickoff call (scheduled for [Date/Time])
@@ -297,18 +297,18 @@ Here's what happens next:
 3. Teacher training sessions
 4. First classroom launch!
 
-Your dedicated success manager is [Name], and you can reach us anytime at success@learningtimevr.com.
+Your dedicated success manager is [Name], and you can reach us anytime at success@ascentxr.com.
 
 Let's make learning unforgettable!
 
 [Your Name]
 Customer Success Team
-Learning Time VR
+Ascent XR
 ```
 
 **Check-In Email:**
 ```
-Subject: How's everything going with Learning Time VR?
+Subject: How's everything going with Ascent XR?
 
 Hi [First Name],
 
@@ -321,7 +321,7 @@ How are things going? Any questions or feedback I can help with?
 
 **Renewal Reminder:**
 ```
-Subject: Your Learning Time VR subscription renews in [X] days
+Subject: Your Ascent XR subscription renews in [X] days
 
 Hi [First Name],
 

@@ -175,7 +175,7 @@ FILES_TO_UPLOAD="unified_dashboard.html ascent_xr_master_dashboard.html index.ht
 for file in $FILES_TO_UPLOAD; do
     if [ -f "/home/jim/openclaw/$file" ]; then
         echo "Uploading: $file"
-        curl -T "/home/jim/openclaw/$file" "ftp://Sam564564457844537%40ascentxr.com:2Cl%23%2Ah2cdl%40cKNCO@ctz.hzv.mybluehost.me/dev/$file" >/dev/null 2>&1
+        curl -T "/home/jim/openclaw/$file" "ftp://${FTP_USER}:${FTP_PASS}@${FTP_HOST}/dev/$file" >/dev/null 2>&1
         echo "  ✓ Uploaded"
     else
         echo "  ⚠ Not found: $file"

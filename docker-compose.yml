@@ -14,7 +14,10 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-ChangeMe123!}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./deploy/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/db/migrations/001_create_tables.sql:/docker-entrypoint-initdb.d/001_create_tables.sql
+      - ./backend/db/migrations/002_control_center_tables.sql:/docker-entrypoint-initdb.d/002_control_center_tables.sql
+      - ./backend/db/seeds/001_sample_data.sql:/docker-entrypoint-initdb.d/003_seed_data.sql
+      - ./backend/db/seeds/002_control_center_seed.sql:/docker-entrypoint-initdb.d/004_control_center_seed.sql
     ports:
       - "5432:5432"
     networks:
@@ -60,6 +63,7 @@ services:
       LINKEDIN_CLIENT_ID: ${LINKEDIN_CLIENT_ID}
       LINKEDIN_CLIENT_SECRET: ${LINKEDIN_CLIENT_SECRET}
       CRM_API_KEY: ${CRM_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       UPLOAD_DIR: /uploads
     ports:
       - "3000:3000"
@@ -100,18 +104,18 @@ services:
       - ascent-network
     restart: unless-stopped
 
-  # Frontend Dashboard
+  # Frontend (React build served by backend, or standalone for dev)
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.frontend
+      dockerfile: Dockerfile
     container_name: ascent-xr-frontend
     environment:
       API_URL: https://api.ascentxr.com
     ports:
       - "8080:80"
     volumes:
-      - ./ascent_xr_dashboard.html:/usr/share/nginx/html/index.html:ro
+      - ./frontend/dist:/usr/share/nginx/html:ro
       - ./shared_assets:/usr/share/nginx/html/assets:ro
     networks:
       - ascent-network

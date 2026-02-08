@@ -1,10 +1,10 @@
-# WEEK 1 LINKEDIN IMAGES - LEARNING TIME VR BRANDING SPECIFICATIONS
-**Branding:** Learning Time VR (school-facing education brand)
-**Note:** LinkedIn content uses Learning Time VR branding per corporate structure
+# WEEK 1 LINKEDIN IMAGES - ASCENT XR BRANDING SPECIFICATIONS
+**Branding:** Ascent XR (school-facing education brand)
+**Note:** LinkedIn content uses Ascent XR branding per corporate structure
 
 ---
 
-## 🎨 LEARNING TIME VR BRAND SPECIFICATIONS
+## 🎨 ASCENT XR BRAND SPECIFICATIONS
 
 ### Color Palette:
 - **Primary Blue:** #0052cc (headers, backgrounds)
@@ -14,7 +14,7 @@
 - **Light Gray:** #f5f7fa (text on light backgrounds)
 
 ### Logo Usage:
-- **Logo File:** Use Learning Time VR logo (LT + VR) on dark backgrounds
+- **Logo File:** Use Ascent XR logo on dark backgrounds
 - **Placement:** Bottom right or bottom left corner
 - **Size:** Approximately 150-200px width
 - **Clear Space:** Minimum 20px padding around logo
@@ -34,7 +34,7 @@
 ---
 
 ## 📸 IMAGE 1: THE ENGAGEMENT GAP
-**File:** `week1-post1-ltvr.png`
+**File:** `week1-post1-ascentxr.png`
 **Post Date:** Feb 3, 8:30 AM EST
 
 ### Layout:
@@ -60,7 +60,7 @@
 │  From Worksheets → Immersive VR             │
 │    (White text, bottom left)                │
 │                                             │
-│  [Learning Time VR Logo - bottom right]            │
+│  [Ascent XR Logo - bottom right]                   │
 └─────────────────────────────────────────────┘
 ```
 
@@ -71,7 +71,7 @@
 4. **Central Image:** Screenshot of food web ecosystem VR experience
 5. **Key Metric:** "300% Engagement Increase" - Red (#DC1625), 32px, bold
 6. **Context Text:** "From Worksheets → Immersive VR" - White, 18px, bottom left
-7. **Logo:** Learning Time VR white logo, bottom right corner, 180px width
+7. **Logo:** Ascent XR white logo, bottom right corner, 180px width
 
 ### Design Notes:
 - Clean, professional look
@@ -82,7 +82,7 @@
 ---
 
 ## 📸 IMAGE 2: AI + SPATIAL LEARNING
-**File:** `week1-post2-ltvr.png`
+**File:** `week1-post2-ascentxr.png`
 **Post Date:** Feb 5, 11:30 AM EST
 
 ### Layout:
@@ -103,13 +103,13 @@
 │  │  - Standards alignment badge        │    │
 │  └─────────────────────────────────────┘    │
 │                                             │
-│  Powered by Learning Time VR                       │
+│  Powered by Ascent XR                               │
 │    (Accent orange, bold)                    │
 │                                             │
-│  learningtimevr.com/ai-demo                       │
+│  ascentxr.com/ai-demo                               │
 │    (White text, bottom left)                │
 │                                             │
-│  [Learning Time VR Logo - bottom right]            │
+│  [Ascent XR Logo - bottom right]                   │
 └─────────────────────────────────────────────┘
 ```
 
@@ -118,9 +118,9 @@
 2. **Main Headline:** "AI + Spatial Learning = ❤️" - White, 52px, bold
 3. **Subheadline:** "Custom lessons in minutes, not months" - Light gray, 22px
 4. **Central Image:** Futuristic AI interface showing 3D content generation
-5. **Brand Attribution:** "Powered by Learning Time VR" - Red (#DC1625), 28px
-6. **URL:** "learningtimevr.com/ai-demo" - White, bottom left
-7. **Logo:** Learning Time VR white logo, bottom right
+5. **Brand Attribution:** "Powered by Ascent XR" - Red (#DC1625), 28px
+6. **URL:** "ascentxr.com/ai-demo" - White, bottom left
+7. **Logo:** Ascent XR white logo, bottom right
 
 ### Design Notes:
 - Tech-forward, innovative aesthetic
@@ -131,7 +131,7 @@
 ---
 
 ## 📸 IMAGE 3: SUPERINTENDENT'S DILEMMA
-**File:** `week1-post3-ltvr.png`
+**File:** `week1-post3-ascentxr.png`
 **Post Date:** Feb 7, 3:30 PM EST
 
 ### Layout:
@@ -156,10 +156,10 @@
 │  │ Clear data for renewal decisions    │    │
 │  └─────────────────────────────────────┘    │
 │                                             │
-│  learningtimevr.com/roi-template                  │
+│  ascentxr.com/roi-template                          │
 │    (Primary blue, bottom left)              │
 │                                             │
-│  [Learning Time VR Logo - bottom right]            │
+│  [Ascent XR Logo - bottom right]                   │
 └─────────────────────────────────────────────┘
 ```
 
@@ -172,8 +172,8 @@
    - Panel 2: Learning Outcomes (icon + bullet points)
    - Panel 3: Implementation Cost (icon + bullet points)
    - Panel 4: ROI Framework (summary graphic)
-5. **CTA URL:** "learningtimevr.com/roi-template" - Blue (#0052cc), bottom left
-6. **Logo:** Learning Time VR logo (on light background), bottom right
+5. **CTA URL:** "ascentxr.com/roi-template" - Blue (#0052cc), bottom left
+6. **Logo:** Ascent XR logo (on light background), bottom right
 
 ### Panel Content:
 **Panel 1 - Engagement:**
@@ -208,7 +208,7 @@
 ### Image Creation Tools:
 **Option 1: Canva (Recommended)**
 - Template: LinkedIn Post (1200x627)
-- Upload Learning Time VR logo
+- Upload Ascent XR logo
 - Use brand color palette
 - Export as PNG
 
@@ -239,13 +239,13 @@
 
 Before using each image:
 
-- [ ] Logo is Learning Time VR (not Learning Time VR)
+- [ ] Logo is Ascent XR (correct branding)
 - [ ] Colors match brand palette
 - [ ] Text is readable on mobile
 - [ ] Image dimensions are 1200x627
 - [ ] File size under 8MB
 - [ ] No spelling errors
-- [ ] CTA URL is correct (learningtimevr.com)
+- [ ] CTA URL is correct (ascentxr.com)
 - [ ] Professional appearance
 - [ ] Consistent with other images
 
@@ -255,9 +255,9 @@ Before using each image:
 
 1. Create images using specifications above
 2. Save as:
-   - `week1-post1-ltvr.png`
-   - `week1-post2-ltvr.png`
-   - `week1-post3-ltvr.png`
+   - `week1-post1-ascentxr.png`
+   - `week1-post2-ascentxr.png`
+   - `week1-post3-ascentxr.png`
 3. Upload to:
    - Local: `/home/jim/openclaw/branding/assets/linkedin/`
    - Server: FTP to `ctz.hzv.mybluehost.me/dev/branding/assets/linkedin/`
@@ -278,7 +278,7 @@ Example: Our food web ecosystem experience lets students manipulate predator-pre
 
 What's your biggest engagement challenge in the classroom? Let's discuss in the comments.
 
-📚 Learn more about our platform: learningtimevr.com/platform
+📚 Learn more about our platform: ascentxr.com/platform
 
 #EdTech #K12 #SpatialLearning #StudentEngagement #VRinEducation #ClassroomTechnology #InnovativeLearning #FutureOfEducation
 ```
@@ -297,7 +297,7 @@ The result? Custom spatial lessons delivered in one week, not one month.
 
 How much time could you save with AI lesson generation? Share your thoughts below.
 
-🤖 Request a demo of our AI generator: learningtimevr.com/ai-demo
+🤖 Request a demo of our AI generator: ascentxr.com/ai-demo
 
 #AI #EdTech #TeacherTools #LessonPlanning #ArtificialIntelligence #EducationTechnology #ClassroomInnovation #TimeSavingTools #EdChat
 ```
@@ -316,7 +316,7 @@ The result? Clear data for renewal decisions and expansion planning.
 
 What metrics matter most in your district's tech evaluation process? Let's continue this conversation.
 
-📊 Download our ROI documentation template: learningtimevr.com/roi-template
+📊 Download our ROI documentation template: ascentxr.com/roi-template
 
 #Leadership #K12Leadership #SchoolAdministration #EdTech #BudgetPlanning #DistrictLeadership #EducationFinance #ROI #StrategicPlanning
 ```

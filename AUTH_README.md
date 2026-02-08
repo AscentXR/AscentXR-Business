@@ -1,145 +1,122 @@
 # DASHBOARD AUTHENTICATION
-**Simple Custom Authentication for Ascent XR Dashboard**
+**Server-Side JWT Authentication for Ascent XR Dashboard**
 
 ---
 
-## 🔐 OVERVIEW
+## OVERVIEW
 
-Simple, lightweight authentication system with:
+Secure server-side authentication system with:
 - **2 Admin Users:** Jim (CEO) and Nick (CTO)
-- **Session-based:** 30-minute timeout
-- **Client-side storage:** LocalStorage for session tokens
-- **No database required:** Credentials stored in JavaScript (for this simple use case)
+- **JWT-based:** Tokens with 30-minute expiration
+- **Server-side validation:** Credentials stored as bcrypt hashes in environment variables
+- **Rate limiting:** Brute force protection (5 attempts per 15 minutes)
 
 ---
 
-## 👥 ADMIN CREDENTIALS
+## ADMIN CREDENTIALS
 
-| Username | Password | Role | Access |
-|----------|----------|------|--------|
-| `jim` | `ascent2026!` | CEO | Full Access |
-| `nick` | `ascent2026!` | CTO | Full Access |
+Credentials are stored securely as bcrypt hashes in `.env` file (never committed to git).
 
----
+| Username | Role | Access |
+|----------|------|--------|
+| `jim` | CEO | Full Access (Revenue-first dashboard view) |
+| `nick` | CTO | Full Access (Tech-first dashboard view) |
 
-## 🛡️ SECURITY FEATURES
-
-1. **Session Timeout:** Automatic logout after 30 minutes of inactivity
-2. **Token-based:** Encrypted session stored in localStorage
-3. **Auto-redirect:** Unauthenticated users sent to login page
-4. **Session validation:** Checked on every page load
-5. **Logout button:** Clear session and redirect
+**To set passwords:** Run `node -e "const bcrypt=require('bcrypt'); bcrypt.hash('YOUR_PASSWORD', 12).then(h => console.log(h))"` and add the hash to `.env`.
 
 ---
 
-## 📁 FILES
+## SECURITY FEATURES
+
+1. **JWT Tokens:** Signed with RS256/HS256, 30-minute expiration
+2. **Bcrypt Hashing:** Passwords hashed with cost factor 12
+3. **Rate Limiting:** 5 login attempts per 15 minutes per IP
+4. **HTTP-Only Cookies:** Optional secure cookie transport
+5. **CORS Protection:** Restricted to allowed origins
+6. **Helmet.js:** Security headers on all responses
+7. **Auto-redirect:** Unauthenticated users sent to login page
+8. **Session validation:** JWT verified on every API request
+
+---
+
+## FILES
 
 | File | Purpose |
 |------|---------|
-| `login.html` | Login page with authentication form |
-| `unified_dashboard.html` | Protected dashboard (auth required) |
+| `login.html` | Login page (sends POST to `/api/auth/login`) |
+| `backend/middleware/auth.js` | JWT verification middleware |
+| `backend/routes/auth.js` | Authentication endpoints |
+| `dashboard_v19.html` | Protected dashboard (auth required) |
+| `.env` | Credential hashes (never committed) |
 
 ---
 
-## 🚀 ACCESSING THE DASHBOARD
+## API ENDPOINTS
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/auth/login` | Authenticate with username/password, returns JWT |
+| `POST` | `/api/auth/logout` | Invalidate current session |
+| `GET` | `/api/auth/session` | Verify current JWT and return user info |
+
+---
+
+## ACCESSING THE DASHBOARD
 
 ### First Time:
 1. Navigate to: `https://ascentxr.com/dev/login.html`
-2. Enter username: `jim` or `nick`
-3. Enter password: `ascent2026!`
-4. Click "Sign In"
+2. Enter your username and password
+3. Click "Sign In"
+4. You'll be redirected to the dashboard based on your role
 
 ### Direct Access (will redirect if not logged in):
-- Dashboard: `https://ascentxr.com/dev/unified_dashboard.html`
+- Dashboard: `https://ascentxr.com/dev/dashboard_v19.html`
 
 ---
 
-## 🔧 HOW IT WORKS
+## HOW IT WORKS
 
 ### Login Process:
 ```
 1. User enters credentials on login.html
-2. JavaScript validates against ADMIN_USERS array
-3. If valid, creates session token with:
-   - Username
-   - Name
-   - Role
-   - Expiration time (30 min)
-4. Stores in localStorage
-5. Redirects to unified_dashboard.html
+2. Frontend sends POST /api/auth/login with username/password
+3. Server validates against bcrypt hashes from .env
+4. If valid, server returns signed JWT token
+5. Frontend stores token in localStorage
+6. Redirects to role-appropriate dashboard view
 ```
 
-### Session Validation:
+### API Authentication:
 ```
-1. Dashboard loads
-2. JavaScript checks localStorage for 'ascent_session'
-3. Validates expiration time
-4. If invalid/missing → redirect to login
-5. If valid → display user info
-```
-
-### Auto-Timeout:
-```
-- Every 60 seconds, session is checked
-- If expired → automatic logout
-- User must re-authenticate
+1. Client includes JWT in Authorization: Bearer <token> header
+2. auth middleware verifies token signature and expiration
+3. If invalid/expired -> 401 Unauthorized
+4. If valid -> request proceeds, req.user populated
 ```
 
 ---
 
-## 📝 CHANGING PASSWORDS
+## ENVIRONMENT SETUP
 
-To change passwords, edit `login.html`:
+Copy `.env.example` to `.env` and set your password hashes:
 
-```javascript
-const ADMIN_USERS = [
-    { username: 'jim', password: 'NEW_PASSWORD_HERE', name: 'Jim', role: 'CEO' },
-    { username: 'nick', password: 'NEW_PASSWORD_HERE', name: 'Nick', role: 'CTO' }
-];
-```
-
-**Note:** This is a simple client-side solution. For production with more users, use server-side authentication.
-
----
-
-## 🔄 SESSION FLOW
-
-```
-┌─────────────┐     Login      ┌─────────────┐
-│  login.html │ ─────────────▶ │  Dashboard  │
-│             │                │             │
-│ Credentials │ ◀───────────── │  Protected  │
-└─────────────┘   Invalid      └─────────────┘
-       │                               │
-       │                               │
-       │         30 min timeout        │
-       │ ◀─────────────────────────────┤
-       │                               │
-       │         Manual logout         │
-       │ ◀─────────────────────────────┘
+```bash
+cp backend/.env.example backend/.env
+# Generate password hashes:
+node -e "const bcrypt=require('bcrypt'); bcrypt.hash('your_password', 12).then(h => console.log(h))"
+# Add the hashes to .env as ADMIN_JIM_HASH and ADMIN_NICK_HASH
 ```
 
 ---
 
-## 🚨 IMPORTANT NOTES
+## FUTURE ENHANCEMENTS
 
-1. **Client-side only:** Credentials are in JavaScript (visible in source)
-2. **For 2 admins only:** Not scalable to many users
-3. **HTTPS required:** Always use HTTPS in production
-4. **Simple but effective:** Good for internal dashboards with limited access
-
----
-
-## 🔮 FUTURE ENHANCEMENTS
-
-If you need more security later:
-- Server-side authentication (Node.js/Express)
-- JWT tokens with refresh
-- OAuth (Google, GitHub)
+- OAuth (Google, GitHub) integration
 - Multi-factor authentication
-- Password hashing (bcrypt)
+- Refresh token rotation
+- Audit logging for all auth events
 
 ---
 
-**Last Updated:** February 3, 2026  
-**Status:** ✅ Active and Secure
+**Last Updated:** February 8, 2026
+**Status:** Active - Server-Side JWT Authentication

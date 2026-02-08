@@ -42,7 +42,7 @@
 ## 🔗 SYSTEMS INTEGRATION:
 - **Dashboard:** http://192.168.5.206:8087/
 - **CRM:** https://web-production-f0ae1.up.railway.app/
-- **LinkedIn:** Jim, Nick, Learning Time VR, Ascent XR pages
+- **LinkedIn:** Jim, Nick, Ascent XR pages
 - **Google Drive:** Folder shared for collaboration
 
 ## 📅 WEEK 1 PRIORITY ORDER:

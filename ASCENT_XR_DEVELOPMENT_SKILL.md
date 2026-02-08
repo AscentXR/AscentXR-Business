@@ -72,10 +72,10 @@ Specialized workflows for Ascent XR web development, deployment, and design syst
 ### FTP Upload to Production
 ```bash
 # Upload single file
-curl -T filename.html "ftp://Sam564564457844537%40ascentxr.com:2Cl%23%2Ah2cdl%40cKNCO@ctz.hzv.mybluehost.me/dev/filename.html"
+curl -T filename.html "ftp://${FTP_USER}:${FTP_PASS}@${FTP_HOST}/dev/filename.html"
 
 # Check uploaded files
-curl -s "ftp://Sam564564457844537%40ascentxr.com:2Cl%23%2Ah2cdl%40cKNCO@ctz.hzv.mybluehost.me/dev/" 2>/dev/null | grep filename
+curl -s "ftp://${FTP_USER}:${FTP_PASS}@${FTP_HOST}/dev/" 2>/dev/null | grep filename
 ```
 
 ### HTTP Verification

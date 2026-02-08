@@ -141,14 +141,14 @@
 
 ### 4. VISUAL DESIGN SPECIFICATIONS
 
-**Color Palette (Learning Time VR):**
+**Color Palette (Ascent XR):**
 ```css
---ltvr-blue: #0052cc;      /* Primary actions, headers */
---ltvr-blue-light: #007bff; /* Secondary, accents */
---ltvr-red: #DC1625;        /* Alerts, prospects, critical */
---ltvr-green: #22c55e;      /* Success, revenue, positive */
---ltvr-orange: #f59e0b;     /* Warnings, LinkedIn, medium priority */
---ltvr-purple: #8b5cf6;     /* CHARTS ONLY - data viz */
+--axr-blue: #0052cc;      /* Primary actions, headers */
+--axr-blue-light: #007bff; /* Secondary, accents */
+--axr-red: #DC1625;        /* Alerts, prospects, critical */
+--axr-green: #22c55e;      /* Success, revenue, positive */
+--axr-orange: #f59e0b;     /* Warnings, LinkedIn, medium priority */
+--axr-purple: #8b5cf6;     /* CHARTS ONLY - data viz */
 ```
 
 **Card Design:**

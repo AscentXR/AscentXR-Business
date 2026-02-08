@@ -5,7 +5,12 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "test:e2e": "npx playwright test",
+    "test:all": "npm run test && npm run test:e2e"
   },
   "keywords": [
     "dashboard",
@@ -20,6 +25,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "dotenv": "^17.2.4",
     "playwright": "^1.58.1"
   }
 }

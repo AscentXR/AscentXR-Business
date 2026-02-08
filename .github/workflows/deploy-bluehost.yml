@@ -14,43 +14,152 @@ on:
         type: choice
         options:
           - dev
+          - staging
           - production
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
-    name: Deploy to Bluehost FTP
-    
+    name: Run Tests
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+
+    - name: Install dependencies
+      working-directory: backend
+      run: npm ci
+
+    - name: Run test suite
+      working-directory: backend
+      run: npm test
+      env:
+        NODE_ENV: test
+        JWT_SECRET: test-secret-ci
+        DATABASE_URL: ''
+
+  security-scan:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Scan for hardcoded credentials
+      run: |
+        echo "=== Scanning for hardcoded credentials ==="
+        FOUND=0
+
+        # Check for known credential patterns
+        if grep -ri "ascent2026\|Sam564564457844537" --include="*.html" --include="*.js" --include="*.md" --include="*.sh" --include="*.css" . 2>/dev/null | grep -v "archive/" | grep -v "node_modules/"; then
+          echo "FAIL: Hardcoded passwords found!"
+          FOUND=1
+        fi
+
+        # Check for FTP credentials in scripts
+        if grep -ri "ftp://.*:.*@" --include="*.sh" --include="*.js" --include="*.md" . 2>/dev/null | grep -v "archive/" | grep -v "node_modules/" | grep -v '\${FTP'; then
+          echo "FAIL: FTP credentials found in scripts!"
+          FOUND=1
+        fi
+
+        # Check for .env files that shouldn't be committed
+        if [ -f ".env" ] || [ -f "backend/.env" ] || [ -f ".env.production" ]; then
+          echo "FAIL: .env file found in repository!"
+          FOUND=1
+        fi
+
+        # Check for private keys
+        if grep -ri "PRIVATE KEY" --include="*.pem" --include="*.key" --include="*.js" --include="*.json" . 2>/dev/null | grep -v "node_modules/"; then
+          echo "FAIL: Private keys found!"
+          FOUND=1
+        fi
+
+        if [ $FOUND -eq 1 ]; then
+          echo ""
+          echo "Security scan FAILED. Fix the above issues before deploying."
+          exit 1
+        fi
+
+        echo "Security scan PASSED. No credentials found."
+
+    - name: Scan for prohibited purple colors in active files
+      run: |
+        echo "=== Scanning for prohibited purple colors ==="
+        if grep -ri "#667eea\|#764ba2\|#8b5cf6\|#a855f7\|#d946ef" --include="*.html" --include="*.css" . 2>/dev/null | grep -v "archive/" | grep -v "node_modules/" | grep -v "validate_dashboard" | grep -v "unified_design_system" | grep -v "AGENT_DEPLOYMENT" | grep -v "ASCENT_XR_DEVELOPMENT" | grep -v "TASK_BUILD" | grep -v "DASHBOARD_UX_AGENT" | grep -v "agent_deployment_orders" | grep -v "overnight_agent"; then
+          echo "WARNING: Prohibited purple colors found in active files"
+        else
+          echo "Color scan PASSED."
+        fi
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    name: Lighthouse CI
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Run Lighthouse CI on dashboard
+      uses: treosh/lighthouse-ci-action@v12
+      with:
+        urls: |
+          file://${{ github.workspace }}/dashboard_v19.html
+        configPath: '.lighthouserc.json'
+        temporaryPublicStorage: true
+      continue-on-error: true
+
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Bluehost FTP
+    needs: [test, security-scan]
+    if: success()
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Setup deployment variables
       id: vars
       run: |
-        if [ "${{ github.event.inputs.environment }}" = "production" ]; then
+        ENV="${{ github.event.inputs.environment }}"
+        if [ "$ENV" = "production" ]; then
           echo "remote_path=/public_html/ascentxr-com/" >> $GITHUB_OUTPUT
           echo "environment=production" >> $GITHUB_OUTPUT
+        elif [ "$ENV" = "staging" ]; then
+          echo "remote_path=/public_html/ascentxr-com/staging/" >> $GITHUB_OUTPUT
+          echo "environment=staging" >> $GITHUB_OUTPUT
         else
           echo "remote_path=/public_html/ascentxr-com/dev/" >> $GITHUB_OUTPUT
           echo "environment=dev" >> $GITHUB_OUTPUT
         fi
         echo "timestamp=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
         echo "Deploying to ${{ steps.vars.outputs.environment }} environment"
-    
+
     - name: Create deployment info file
       run: |
-        cat > deploy_info.json << 'EOF'
+        cat > deploy_info.json << EOF
         {
           "deployment_time": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
           "git_commit": "${{ github.sha }}",
           "git_branch": "${{ github.ref_name }}",
           "deployed_by": "GitHub Actions",
           "environment": "${{ steps.vars.outputs.environment }}",
-          "version": "v19.0"
+          "version": "v19.0",
+          "tests_passed": true,
+          "security_scan": "clean"
         }
         EOF
-    
+
     - name: Backup current version on server
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
@@ -62,14 +171,13 @@ jobs:
         server-dir: ${{ steps.vars.outputs.remote_path }}backup/
         local-dir: ./
         include: |
-          dashboard_v18.html
+          dashboard_v19.html
           index.html
           agent_coordination_styles.css
-          agent_registry.json
           .htaccess
         dry-run: false
       continue-on-error: true
-    
+
     - name: Deploy to Bluehost
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
@@ -83,11 +191,16 @@ jobs:
         include: |
           dashboard_v19.html
           index.html
+          login.html
+          ASCENT_XR_ROI_TEMPLATE.html
           agent_coordination_styles.css
           shared_assets/tasks/agent_registry.json
           .htaccess
           deploy_info.json
           version.json
+          crm/index.html
+          crm/crm.js
+          crm/style.css
         exclude: |
           **/.git*/**
           **/node_modules/**
@@ -102,40 +215,46 @@ jobs:
           **/marketing_agents/**
           **/linkedin_week*/**
           **/memory/**
-          **/crm/**
           **/testing/**
           **/deploy*/**
           **/nginx/**
+          **/archive/**
           **/*.sh
           **/*.py
           **/*.json
           !agent_registry.json
           !deploy_info.json
           !version.json
-    
+          !crm/schema.json
+
     - name: Verify deployment
       run: |
         echo "Deployment completed at $(date)"
+        echo "Environment: ${{ steps.vars.outputs.environment }}"
+        echo ""
         echo "Files deployed:"
         echo "  - dashboard_v19.html"
         echo "  - index.html"
+        echo "  - login.html"
+        echo "  - ASCENT_XR_ROI_TEMPLATE.html"
         echo "  - agent_coordination_styles.css"
-        echo "  - agent_registry.json"
-        echo "  - .htaccess"
+        echo "  - crm/index.html, crm/crm.js, crm/style.css"
         echo ""
         echo "Verification URLs:"
         echo "  Dev: https://ascentxr.com/dev/"
         echo "  Dashboard: https://ascentxr.com/dev/dashboard_v19.html"
-    
+        echo "  CRM: https://ascentxr.com/dev/crm/"
+
     - name: Notify deployment status
       if: always()
       run: |
         if [ "${{ job.status }}" = "success" ]; then
-          echo "✅ Deployment successful!"
+          echo "Deployment successful!"
           echo "Commit: ${{ github.sha }}"
           echo "Branch: ${{ github.ref_name }}"
+          echo "Environment: ${{ steps.vars.outputs.environment }}"
           echo "Time: $(date)"
         else
-          echo "❌ Deployment failed!"
+          echo "Deployment failed!"
           echo "Check logs for details"
         fi

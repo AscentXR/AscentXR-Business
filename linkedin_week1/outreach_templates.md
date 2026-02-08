@@ -6,7 +6,7 @@
 
 Hi [First Name],
 
-I noticed your insightful comment on my post about [topic from post]. Your perspective on [specific point they made] resonated with our work at Learning Time VR.
+I noticed your insightful comment on my post about [topic from post]. Your perspective on [specific point they made] resonated with our work at Ascent XR.
 
 We're helping districts like [their district or similar district] leverage spatial learning to boost student engagement and streamline standards coverage. Our WebXR platform works across devices (tablets, VR, browsers) and aligns with Indiana Academic Standards.
 
@@ -14,7 +14,7 @@ Would you be open to a brief 15-minute demo to see how spatial learning could be
 
 Best regards,
 Jim/Nick
-Learning Time VR
+Ascent XR
 
 ---
 
@@ -34,7 +34,7 @@ Either way, I'll continue sharing valuable spatial learning insights on LinkedIn
 
 Respectfully,
 Jim/Nick
-Learning Time VR
+Ascent XR
 
 ---
 
@@ -57,7 +57,7 @@ Let me know what works for your schedule.
 
 Best,
 Jim/Nick
-Learning Time VR
+Ascent XR
 
 ---
 
@@ -67,7 +67,7 @@ Learning Time VR
 
 Hi [First Name],
 
-Thanks for your interest in learning more about Learning Time VR! I'd be happy to schedule a demo at your convenience.
+Thanks for your interest in learning more about Ascent XR! I'd be happy to schedule a demo at your convenience.
 
 Here are a few time slots I have available next week:
 - [Date 1] at [Time 1]
@@ -86,7 +86,7 @@ Looking forward to connecting!
 
 Best regards,
 Jim/Nick
-Learning Time VR
+Ascent XR
 
 ---
 
@@ -104,7 +104,7 @@ Keep up the great work at [District Name]!
 
 Best,
 Jim/Nick
-Learning Time VR
+Ascent XR
 
 ---
 
@@ -116,13 +116,13 @@ Hi [First Name],
 
 I just shared your excellent post about [topic] on LinkedIn. Your points about [specific insight] really resonate with what we're seeing in spatial learning.
 
-Your perspective on [another point] aligns well with our work at Learning Time VR, particularly around [related aspect].
+Your perspective on [another point] aligns well with our work at Ascent XR, particularly around [related aspect].
 
 Thanks for sharing such valuable insights - I'll be following your content closely.
 
 Best,
 Jim/Nick
-Learning Time VR
+Ascent XR
 
 ---
 

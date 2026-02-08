@@ -463,6 +463,28 @@
     40% { transform: scale(1); }
 }
 
+/* Focus-Visible Styles for Accessibility */
+*:focus-visible {
+    outline: 2px solid #ff6b00;
+    outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid #ff6b00;
+    outline-offset: 2px;
+}
+
+/* Fix color contrast: muted text on dark bg (WCAG AA 4.5:1) */
+.agent-task-meta,
+.agent-chat-message-header {
+    color: #7c8db5;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .priority-queue-columns {

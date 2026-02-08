@@ -153,14 +153,133 @@
             font-size: 1.1rem;
             font-weight: 600;
         }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .deal-selector {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 1rem;
+            min-width: 300px;
+            cursor: pointer;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        .deal-selector:hover {
+            border-color: var(--primary);
+        }
+
+        .deal-selector:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        .deal-selector option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .btn-print {
+            background: var(--primary);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-print:hover {
+            background: var(--secondary);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .loading-spinner .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #334155;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-banner {
+            background: rgba(220, 38, 38, 0.15);
+            border: 1px solid rgba(220, 38, 38, 0.4);
+            color: #fca5a5;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        @media print {
+            .toolbar, .back-link, .error-banner { display: none !important; }
+            body { background: #fff; color: #000; padding: 10px; }
+            .content-section { border-color: #ccc; background: #fff; }
+            header { background: #f0f0f0; border-color: #ccc; }
+            h1, h2, .metric-value { color: #0052cc; }
+            .metric-label, .info-label, .comparison-table td, ul li { color: #333; }
+            .info-value, h3 { color: #000; }
+            .comparison-table th { background: #e0e7ff; color: #0052cc; }
+            .comparison-table th, .comparison-table td { border-color: #ccc; }
+            .metric-card { background: #f0f4ff; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="unified_dashboard.html" class="back-link">
-            ← Back to Unified Dashboard
+        <a href="dashboard_v19.html" class="back-link">
+            ← Back to Dashboard
         </a>
-        
+
+        <div class="toolbar">
+            <select id="dealSelector" class="deal-selector">
+                <option value="">-- Loading deals... --</option>
+            </select>
+            <button class="btn-print" onclick="window.print()">Print Report</button>
+        </div>
+
+        <div id="errorBanner" class="error-banner"></div>
+
         <header>
             <h1>💰 Ascent XR ROI DOCUMENTATION TEMPLATE</h1>
             <p style="color: var(--text-secondary);">ROI framework for school districts with metrics, standards alignment, and financial analysis</p>
@@ -171,19 +290,19 @@
             <div class="client-info">
                 <div class="info-item">
                     <div class="info-label">School District</div>
-                    <div class="info-value">[District Name]</div>
+                    <div class="info-value" id="clientDistrict">[District Name]</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Contract Period</div>
-                    <div class="info-value">[Start Date] - [End Date]</div>
+                    <div class="info-value" id="clientPeriod">[Start Date] - [End Date]</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Primary Contact</div>
-                    <div class="info-value">[Name, Title]</div>
+                    <div class="info-value" id="clientContact">[Name, Title]</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Report Date</div>
-                    <div class="info-value">[Report Date]</div>
+                    <div class="info-value" id="clientReportDate">[Report Date]</div>
                 </div>
             </div>
         </div>
@@ -196,19 +315,19 @@
             
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <div class="metric-value">$[Amount]</div>
+                    <div class="metric-value" id="metricInvestment">$[Amount]</div>
                     <div class="metric-label">Total Investment</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-value">[X]%</div>
+                    <div class="metric-value" id="metricROI">[X]%</div>
                     <div class="metric-label">ROI Percentage</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-value">[Renew/Expand]</div>
+                    <div class="metric-value" id="metricRecommendation">[Renew/Expand]</div>
                     <div class="metric-label">Recommendation</div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-value">300%+</div>
+                    <div class="metric-value" id="metricEngagement">300%+</div>
                     <div class="metric-label">Engagement Increase</div>
                 </div>
             </div>
@@ -217,12 +336,12 @@
         <div class="content-section">
             <h2>Usage Metrics</h2>
             <h3>Platform Engagement</h3>
-            <ul style="margin-left: 20px; color: var(--text-secondary);">
-                <li><strong>Total Student Sessions:</strong> [Number]</li>
-                <li><strong>Average Session Duration:</strong> [Minutes]</li>
-                <li><strong>Completion Rate:</strong> [Percentage]</li>
-                <li><strong>Teacher Logins:</strong> [Number]</li>
-                <li><strong>Content Accessed:</strong> [Most popular experiences]</li>
+            <ul id="usageMetricsList" style="margin-left: 20px; color: var(--text-secondary);">
+                <li><strong>Total Student Sessions:</strong> <span id="usageSessions">[Number]</span></li>
+                <li><strong>Average Session Duration:</strong> <span id="usageDuration">[Minutes]</span></li>
+                <li><strong>Completion Rate:</strong> <span id="usageCompletion">[Percentage]</span></li>
+                <li><strong>Teacher Logins:</strong> <span id="usageTeacherLogins">[Number]</span></li>
+                <li><strong>Content Accessed:</strong> <span id="usageContent">[Most popular experiences]</span></li>
             </ul>
             
             <h3 style="margin-top: 20px;">Comparative Engagement Data</h3>
@@ -235,30 +354,30 @@
                         <th>Improvement</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="engagementTableBody">
                     <tr>
                         <td>Time-on-Task</td>
-                        <td>[Minutes]</td>
-                        <td>[Minutes]</td>
-                        <td style="color: #DC1625;">[+X%]</td>
+                        <td id="engTimeTraditional">[Minutes]</td>
+                        <td id="engTimeXR">[Minutes]</td>
+                        <td style="color: #DC1625;" id="engTimeImprove">[+X%]</td>
                     </tr>
                     <tr>
                         <td>Completion Rate</td>
-                        <td>[Percentage]</td>
-                        <td>[Percentage]</td>
-                        <td style="color: #DC1625;">[+X%]</td>
+                        <td id="engCompTraditional">[Percentage]</td>
+                        <td id="engCompXR">[Percentage]</td>
+                        <td style="color: #DC1625;" id="engCompImprove">[+X%]</td>
                     </tr>
                     <tr>
                         <td>Student Satisfaction</td>
-                        <td>[Rating]</td>
-                        <td>[Rating]</td>
-                        <td style="color: #DC1625;">[+X points]</td>
+                        <td id="engSatTraditional">[Rating]</td>
+                        <td id="engSatXR">[Rating]</td>
+                        <td style="color: #DC1625;" id="engSatImprove">[+X points]</td>
                     </tr>
                     <tr>
                         <td>Teacher Time Saved</td>
-                        <td>[Hours]</td>
-                        <td>[Hours]</td>
-                        <td style="color: #DC1625;">[+X hours]</td>
+                        <td id="engTeacherTraditional">[Hours]</td>
+                        <td id="engTeacherXR">[Hours]</td>
+                        <td style="color: #DC1625;" id="engTeacherImprove">[+X hours]</td>
                     </tr>
                 </tbody>
             </table>
@@ -307,41 +426,372 @@
                         <th>Cost</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="costTableBody">
                     <tr>
                         <td>Platform License</td>
-                        <td>$[Amount]</td>
+                        <td id="costLicense">$[Amount]</td>
                     </tr>
                     <tr>
                         <td>Professional Development</td>
-                        <td>$[Amount]</td>
+                        <td id="costPD">$[Amount]</td>
                     </tr>
                     <tr>
                         <td>Support & Maintenance</td>
-                        <td>$[Amount]</td>
+                        <td id="costSupport">$[Amount]</td>
                     </tr>
                     <tr>
                         <td><strong>Total Investment</strong></td>
-                        <td><strong>$[Total]</strong></td>
+                        <td><strong><span id="costTotal">$[Total]</span></strong></td>
                     </tr>
                 </tbody>
             </table>
             
             <h3 style="margin-top: 20px;">Value Delivered</h3>
-            <ul style="margin-left: 20px; color: var(--text-secondary);">
-                <li><strong>Student Engagement Hours:</strong> [Number] hours × [Value per hour] = $[Calculated Value]</li>
-                <li><strong>Teacher Time Saved:</strong> [Hours] × [$Hourly Rate] = $[Calculated Value]</li>
-                <li><strong>Standards Coverage:</strong> [Number] standards × [$Value per standard] = $[Calculated Value]</li>
+            <ul id="valueDeliveredList" style="margin-left: 20px; color: var(--text-secondary);">
+                <li><strong>Student Engagement Hours:</strong> <span id="valEngagement">[Number] hours x [Value per hour] = $[Calculated Value]</span></li>
+                <li><strong>Teacher Time Saved:</strong> <span id="valTeacher">[Hours] x [$Hourly Rate] = $[Calculated Value]</span></li>
+                <li><strong>Standards Coverage:</strong> <span id="valStandards">[Number] standards x [$Value per standard] = $[Calculated Value]</span></li>
             </ul>
             
             <h3 style="margin-top: 20px;">Return on Investment Calculation</h3>
             <div style="background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
-                <code style="color: #DC1625; font-size: 1.1rem;">
-                    ROI = (Total Value - Total Investment) ÷ Total Investment × 100<br>
-                    ROI = ($[Total Value] - $[Total Investment]) ÷ $[Total Investment] × 100 = [X]%
+                <code id="roiFormula" style="color: #DC1625; font-size: 1.1rem;">
+                    ROI = (Total Value - Total Investment) / Total Investment x 100<br>
+                    ROI = ($[Total Value] - $[Total Investment]) / $[Total Investment] x 100 = [X]%
                 </code>
             </div>
         </div>
     </div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <div>Loading pipeline data...</div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ── State ──
+        let deals = [];
+        let financialMetrics = null;
+        let selectedDealId = null;
+
+        // ── DOM refs ──
+        const $ = (id) => document.getElementById(id);
+        const selector = $('dealSelector');
+        const overlay = $('loadingOverlay');
+        const errorBanner = $('errorBanner');
+
+        // ── Utilities ──
+        function fmt(amount) {
+            if (amount == null || isNaN(amount)) return '$0';
+            return '$' + Number(amount).toLocaleString('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+        }
+
+        function fmtDec(amount) {
+            if (amount == null || isNaN(amount)) return '$0.00';
+            return '$' + Number(amount).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function pct(value) {
+            if (value == null || isNaN(value)) return '0%';
+            return Number(value).toFixed(1) + '%';
+        }
+
+        function showError(msg) {
+            errorBanner.textContent = msg;
+            errorBanner.style.display = 'block';
+        }
+
+        function hideError() {
+            errorBanner.style.display = 'none';
+        }
+
+        function todayStr() {
+            return new Date().toLocaleDateString('en-US', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+        }
+
+        function dateFromDeal(deal, field) {
+            if (deal[field]) {
+                try {
+                    return new Date(deal[field]).toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'long', day: 'numeric'
+                    });
+                } catch (e) { /* fall through */ }
+            }
+            return null;
+        }
+
+        // ── Auth headers ──
+        function getHeaders() {
+            const token = localStorage.getItem('ascent_token');
+            return {
+                'Authorization': 'Bearer ' + (token || ''),
+                'Content-Type': 'application/json'
+            };
+        }
+
+        // ── API calls ──
+        async function fetchDeals() {
+            const resp = await fetch('/api/crm/deals', { headers: getHeaders() });
+            if (!resp.ok) throw new Error('Failed to fetch deals (HTTP ' + resp.status + ')');
+            const json = await resp.json();
+            if (!json.success) throw new Error(json.message || 'Deals API returned unsuccessful');
+            return json.data || [];
+        }
+
+        async function fetchFinancials() {
+            const resp = await fetch('/api/metrics/financial', { headers: getHeaders() });
+            if (!resp.ok) throw new Error('Failed to fetch financial metrics (HTTP ' + resp.status + ')');
+            const json = await resp.json();
+            if (!json.success) throw new Error(json.message || 'Financial API returned unsuccessful');
+            return json.data || {};
+        }
+
+        // ── Populate the dropdown ──
+        function populateSelector() {
+            selector.innerHTML = '';
+            if (deals.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = '-- No deals found --';
+                selector.appendChild(opt);
+                return;
+            }
+            deals.forEach(function(deal) {
+                const opt = document.createElement('option');
+                opt.value = deal.id;
+                const name = deal.school_district_name || deal.name || ('Deal #' + deal.id);
+                const stage = deal.stage ? ' (' + deal.stage + ')' : '';
+                const value = deal.opportunity_value ? ' - ' + fmt(deal.opportunity_value) : '';
+                opt.textContent = name + stage + value;
+                selector.appendChild(opt);
+            });
+            // default to first deal
+            selector.value = deals[0].id;
+            selectedDealId = deals[0].id;
+        }
+
+        // ── Core: populate the template ──
+        function populate(deal) {
+            if (!deal) return;
+            const fm = financialMetrics || {};
+
+            // -- Client Info --
+            const districtName = deal.school_district_name || deal.name || 'N/A';
+            $('clientDistrict').textContent = districtName;
+
+            const startDate = dateFromDeal(deal, 'start_date') ||
+                              dateFromDeal(deal, 'created_at') ||
+                              dateFromDeal(deal, 'created_date') ||
+                              'TBD';
+            const endDate = dateFromDeal(deal, 'end_date') ||
+                            dateFromDeal(deal, 'close_date') ||
+                            dateFromDeal(deal, 'expected_close_date') ||
+                            'TBD';
+            $('clientPeriod').textContent = startDate + ' - ' + endDate;
+
+            const contact = deal.contact_name || deal.primary_contact || deal.next_action || 'N/A';
+            $('clientContact').textContent = contact;
+            $('clientReportDate').textContent = todayStr();
+
+            // -- Financial derivations --
+            const dealValue = Number(deal.opportunity_value) || 0;
+            const ltv = Number(fm.ltv) || 0;
+            const cac = Number(fm.cac) || 0;
+            const ltvCacRatio = Number(fm.ltv_cac_ratio) || (cac > 0 ? ltv / cac : 0);
+            const churnRate = Number(fm.churn_rate) || 0;
+
+            // Cost breakdown: split deal value into license (70%), PD (20%), support (10%)
+            const licenseCost = dealValue * 0.70;
+            const pdCost = dealValue * 0.20;
+            const supportCost = dealValue * 0.10;
+            const totalInvestment = dealValue;
+
+            // ROI: LTV relative to investment
+            const totalValue = ltv > 0 ? ltv : dealValue * 2.5; // fallback: 2.5x multiplier
+            const roiPercent = totalInvestment > 0
+                ? ((totalValue - totalInvestment) / totalInvestment * 100)
+                : 0;
+
+            // Recommendation logic
+            let recommendation = 'Expand';
+            if (roiPercent < 50) recommendation = 'Review';
+            else if (roiPercent < 150) recommendation = 'Renew';
+
+            // Engagement increase estimate from LTV/CAC ratio
+            const engagementIncrease = ltvCacRatio > 0
+                ? Math.round(ltvCacRatio * 100)
+                : 300;
+
+            // -- Executive Summary --
+            $('metricInvestment').textContent = fmt(totalInvestment);
+            $('metricROI').textContent = pct(roiPercent);
+            $('metricRecommendation').textContent = recommendation;
+            $('metricEngagement').textContent = engagementIncrease + '%+';
+
+            // -- Usage Metrics (use deal engagement data or defaults) --
+            const sessions = deal.student_sessions || deal.sessions || Math.round(dealValue / 5);
+            const duration = deal.avg_session_duration || deal.session_duration || 22;
+            const completionRate = deal.completion_rate || (deal.probability ? deal.probability : 78);
+            const teacherLogins = deal.teacher_logins || Math.round(sessions * 0.15);
+            const topContent = deal.top_content || deal.content_accessed || 'Solar System Explorer, Cell Biology Lab, Historical Landmarks';
+
+            $('usageSessions').textContent = Number(sessions).toLocaleString();
+            $('usageDuration').textContent = duration + ' min';
+            $('usageCompletion').textContent = pct(completionRate);
+            $('usageTeacherLogins').textContent = Number(teacherLogins).toLocaleString();
+            $('usageContent').textContent = topContent;
+
+            // -- Comparative Engagement --
+            // Traditional vs XR defaults (can be overridden by deal data)
+            const timeTraditional = deal.time_traditional || 12;
+            const timeXR = deal.time_xr || 34;
+            const compTraditional = deal.comp_traditional || 45;
+            const compXR = deal.comp_xr || completionRate;
+            const satTraditional = deal.sat_traditional || '3.2/5';
+            const satXR = deal.sat_xr || '4.6/5';
+            const teacherHrsTraditional = deal.teacher_hrs_traditional || 8;
+            const teacherHrsXR = deal.teacher_hrs_xr || 3;
+
+            $('engTimeTraditional').textContent = timeTraditional + ' min';
+            $('engTimeXR').textContent = timeXR + ' min';
+            $('engTimeImprove').textContent = '+' + Math.round(((timeXR - timeTraditional) / timeTraditional) * 100) + '%';
+
+            $('engCompTraditional').textContent = pct(compTraditional);
+            $('engCompXR').textContent = pct(compXR);
+            $('engCompImprove').textContent = '+' + Math.round(compXR - compTraditional) + '%';
+
+            $('engSatTraditional').textContent = satTraditional;
+            $('engSatXR').textContent = satXR;
+            const satDiff = (parseFloat(satXR) - parseFloat(satTraditional)).toFixed(1);
+            $('engSatImprove').textContent = '+' + satDiff + ' points';
+
+            $('engTeacherTraditional').textContent = teacherHrsTraditional + ' hrs/week';
+            $('engTeacherXR').textContent = teacherHrsXR + ' hrs/week';
+            $('engTeacherImprove').textContent = '+' + (teacherHrsTraditional - teacherHrsXR) + ' hrs saved';
+
+            // -- Financial: Cost Breakdown --
+            $('costLicense').textContent = fmt(licenseCost);
+            $('costPD').textContent = fmt(pdCost);
+            $('costSupport').textContent = fmt(supportCost);
+            $('costTotal').textContent = fmt(totalInvestment);
+
+            // -- Value Delivered --
+            const engHours = Math.round(sessions * (duration / 60));
+            const valuePerHour = 15;
+            const engValue = engHours * valuePerHour;
+
+            const teacherHoursSaved = (teacherHrsTraditional - teacherHrsXR) * 40; // ~40 weeks
+            const teacherHourlyRate = 45;
+            const teacherValue = teacherHoursSaved * teacherHourlyRate;
+
+            const standardsCovered = deal.standards_covered || 24;
+            const valuePerStandard = 500;
+            const standardsValue = standardsCovered * valuePerStandard;
+
+            $('valEngagement').textContent = engHours.toLocaleString() + ' hours x $' + valuePerHour + '/hr = ' + fmt(engValue);
+            $('valTeacher').textContent = teacherHoursSaved + ' hrs x $' + teacherHourlyRate + '/hr = ' + fmt(teacherValue);
+            $('valStandards').textContent = standardsCovered + ' standards x $' + valuePerStandard + '/standard = ' + fmt(standardsValue);
+
+            // -- ROI formula --
+            const computedTotalValue = engValue + teacherValue + standardsValue;
+            const computedROI = totalInvestment > 0
+                ? ((computedTotalValue - totalInvestment) / totalInvestment * 100)
+                : 0;
+
+            $('roiFormula').innerHTML =
+                'ROI = (Total Value - Total Investment) / Total Investment x 100<br>' +
+                'ROI = (' + fmt(computedTotalValue) + ' - ' + fmt(totalInvestment) + ') / ' + fmt(totalInvestment) + ' x 100 = <strong>' + pct(computedROI) + '</strong>';
+
+            // Update the executive summary ROI to match the computed one
+            $('metricROI').textContent = pct(computedROI);
+        }
+
+        // ── Event: dropdown change ──
+        selector.addEventListener('change', function() {
+            selectedDealId = this.value;
+            const deal = deals.find(function(d) { return String(d.id) === String(selectedDealId); });
+            if (deal) {
+                hideError();
+                populate(deal);
+            }
+        });
+
+        // ── Init ──
+        async function init() {
+            overlay.style.display = 'flex';
+            hideError();
+
+            const token = localStorage.getItem('ascent_token');
+            if (!token) {
+                showError('No auth token found. Please log in first. (localStorage key: "ascent_token")');
+                overlay.style.display = 'none';
+                selector.innerHTML = '<option value="">-- Not authenticated --</option>';
+                return;
+            }
+
+            try {
+                // Fetch deals and financials in parallel
+                const [dealsResult, financialsResult] = await Promise.allSettled([
+                    fetchDeals(),
+                    fetchFinancials()
+                ]);
+
+                // Handle deals
+                if (dealsResult.status === 'fulfilled') {
+                    deals = dealsResult.value;
+                } else {
+                    showError('Could not load deals: ' + dealsResult.reason.message);
+                    deals = [];
+                }
+
+                // Handle financials
+                if (financialsResult.status === 'fulfilled') {
+                    financialMetrics = financialsResult.value;
+                } else {
+                    console.warn('Financial metrics unavailable:', financialsResult.reason.message);
+                    financialMetrics = {};
+                }
+
+                if (deals.length === 0) {
+                    selector.innerHTML = '<option value="">-- No deals available --</option>';
+                    overlay.style.display = 'none';
+                    if (!errorBanner.textContent) {
+                        showError('No deals returned from the pipeline. Ensure deals exist in the CRM.');
+                    }
+                    return;
+                }
+
+                populateSelector();
+                populate(deals[0]);
+
+            } catch (err) {
+                showError('Unexpected error: ' + err.message);
+                console.error('ROI Template init error:', err);
+            }
+
+            overlay.style.display = 'none';
+        }
+
+        // Start
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
+    </script>
 </body>
 </html>

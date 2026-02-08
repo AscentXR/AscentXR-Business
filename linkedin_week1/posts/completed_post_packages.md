@@ -11,7 +11,7 @@ Example: Our food web ecosystem experience lets students manipulate predator-pre
 
 What's your biggest engagement challenge in the classroom? Let's discuss in the comments.
 
-📚 Learn more about our platform: learningtimevr.com/platform
+📚 Learn more about our platform: ascentxr.com/platform
 
 ### HASHTAGS:
 #EdTech #K12 #SpatialLearning #StudentEngagement #VRinEducation #ClassroomTechnology #InnovativeLearning #FutureOfEducation
@@ -20,7 +20,7 @@ What's your biggest engagement challenge in the classroom? Let's discuss in the 
 `/home/jim/openclaw/branding/assets/linkedin/2026-02-01-food-web-engagement-gap.png`
 
 ### IMAGE DESCRIPTION FOR ACCESSIBILITY:
-"A modern classroom scene with students engaged in VR learning. Large headline text 'From Worksheet to Immersive Learning: The Engagement Gap is Closing' overlays a blue gradient background (#0052cc to #007bff). Students wear VR headsets while interacting with digital content at their desks. Learning Time VR logo appears in bottom left corner. Bottom text reads: 'Engagement increases by 300% with spatial learning' in red (#DC1625)"
+"A modern classroom scene with students engaged in VR learning. Large headline text 'From Worksheet to Immersive Learning: The Engagement Gap is Closing' overlays a blue gradient background (#0052cc to #007bff). Students wear VR headsets while interacting with digital content at their desks. Ascent XR logo appears in bottom left corner. Bottom text reads: 'Engagement increases by 300% with spatial learning' in red (#DC1625)"
 
 ### POSTING INSTRUCTIONS:
 1. Upload image: `/home/jim/openclaw/branding/assets/linkedin/2026-02-01-food-web-engagement-gap.png`
@@ -46,7 +46,7 @@ The result? Custom spatial lessons delivered in one week, not one month.
 
 How much time could you save with AI lesson generation? Share your thoughts below.
 
-🤖 Request a demo of our AI generator: learningtimevr.com/ai-demo
+🤖 Request a demo of our AI generator: ascentxr.com/ai-demo
 
 ### HASHTAGS:
 #AI #EdTech #TeacherTools #LessonPlanning #ArtificialIntelligence #EducationTechnology #ClassroomInnovation #TimeSavingTools #EdChat
@@ -55,7 +55,7 @@ How much time could you save with AI lesson generation? Share your thoughts belo
 `/home/jim/openclaw/branding/assets/linkedin/2026-02-01-ai-spatial-learning.png`
 
 ### IMAGE DESCRIPTION FOR ACCESSIBILITY:
-"A futuristic holographic interface shows a 3D diorama of an archaeological site. A smiling woman engages with the holographic display in a modern office setting. Headline text reads 'AI + Spatial Learning = ❤️'. Learning Time VR branding appears in footer. The image conveys AI-generated immersive educational content."
+"A futuristic holographic interface shows a 3D diorama of an archaeological site. A smiling woman engages with the holographic display in a modern office setting. Headline text reads 'AI + Spatial Learning = ❤️'. Ascent XR branding appears in footer. The image conveys AI-generated immersive educational content."
 
 ### POSTING INSTRUCTIONS:
 1. Upload image: `/home/jim/openclaw/branding/assets/linkedin/2026-02-01-ai-spatial-learning.png`
@@ -81,7 +81,7 @@ The result? Clear data for renewal decisions and expansion planning.
 
 What metrics matter most in your district's tech evaluation process? Let's continue this conversation.
 
-📊 Download our ROI documentation template: learningtimevr.com/roi-template
+📊 Download our ROI documentation template: ascentxr.com/roi-template
 
 ### HASHTAGS:
 #Leadership #K12Leadership #SchoolAdministration #EdTech #BudgetPlanning #DistrictLeadership #EducationFinance #ROI #StrategicPlanning
@@ -90,7 +90,7 @@ What metrics matter most in your district's tech evaluation process? Let's conti
 `/home/jim/openclaw/branding/assets/linkedin/2026-02-01-superintendent-dilemma.png`
 
 ### IMAGE DESCRIPTION FOR ACCESSIBILITY:
-"Infographic titled 'The Superintendent's Dilemma: ROI Infographic for School Administrators' with 4 panels: 1) Engagement Metrics, 2) Learning Outcomes, 3) Implementation Cost, 4) ROI Framework. Blue (#0052cc) and red (#DC1625) headers with white panels showing metrics and data points. Learning Time VR logo in bottom right corner."
+"Infographic titled 'The Superintendent's Dilemma: ROI Infographic for School Administrators' with 4 panels: 1) Engagement Metrics, 2) Learning Outcomes, 3) Implementation Cost, 4) ROI Framework. Blue (#0052cc) and red (#DC1625) headers with white panels showing metrics and data points. Ascent XR logo in bottom right corner."
 
 ### POSTING INSTRUCTIONS:
 1. Upload image: `/home/jim/openclaw/branding/assets/linkedin/2026-02-01-superintendent-dilemma.png`
@@ -110,7 +110,7 @@ What metrics matter most in your district's tech evaluation process? Let's conti
 | Feb 7 | 3:30 PM | Superintendent's Dilemma | superintendent-dilemma.png | 9 |
 
 ## BRANDING VERIFICATION:
-✅ All images use Learning Time VR blue/red color palette
+✅ All images use Ascent XR blue/red color palette
 ✅ Consistent typography and visual style across all images
 ✅ Logo placement consistent (bottom corners)
 ✅ Professional yet approachable tone in all text

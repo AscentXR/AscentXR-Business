@@ -421,6 +421,34 @@
                             <label for="schoolBudget">Budget Range</label>
                             <input type="text" id="schoolBudget" placeholder="e.g., $500k - $1M">
                         </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="schoolGradeLevels">Grade Levels</label>
+                                <select id="schoolGradeLevels">
+                                    <option value="K-12">K-12</option>
+                                    <option value="K-5">K-5</option>
+                                    <option value="6-8">6-8</option>
+                                    <option value="9-12">9-12</option>
+                                    <option value="K-8">K-8</option>
+                                    <option value="5-12">5-12</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="schoolTechReadiness">Tech Readiness (1-10)</label>
+                                <input type="number" id="schoolTechReadiness" min="1" max="10" placeholder="1-10">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="schoolEsserFunding">ESSER Funding Status</label>
+                            <select id="schoolEsserFunding">
+                                <option value="">Select Status</option>
+                                <option value="not_applied">Not Applied</option>
+                                <option value="applied">Applied</option>
+                                <option value="approved">Approved</option>
+                                <option value="received">Received</option>
+                                <option value="spent">Funds Spent</option>
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label for="schoolNotes">Notes</label>
                             <textarea id="schoolNotes" rows="3"></textarea>

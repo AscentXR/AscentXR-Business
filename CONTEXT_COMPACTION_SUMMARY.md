@@ -7,11 +7,10 @@ Causing "context too large" errors on simple messages
 
 ### Critical Information Preserved
 
-**FTP Credentials (DEPLOYED & DELETED):**
-- Host: ctz.hzv.mybluehost.me
-- User: Sam564564457844537@ascentxr.com
+**FTP Credentials:**
+- Stored in .env file (see .env.example for variable names)
 - Path: /public_html/ascentxr-com/dev/
-- Status: ✅ Files uploaded successfully
+- Status: Files uploaded successfully
 
 **Files Deployed (v18):**
 1. unified_dashboard.html (134KB)

@@ -75,7 +75,7 @@ Hey Nick! The interactive dashboard for tracking our $300K revenue plan is live 
 We've deployed the first autonomous agent - **Content Creator Agent** - which has drafted 4 LinkedIn posts ready for review:
 1. Jim's profile (strategic/leadership focus)
 2. Your profile (technical/innovation focus)  
-3. Learning Time VR page (company history)
+3. Ascent XR page (company history)
 4. Ascent XR page (future vision)
 
 ### 🔐 **SECURITY NOTE:**

@@ -55,7 +55,7 @@ echo "=== UPLOADING TO SERVER ==="
 for img in week1-post1-ascentxr.png week1-post2-ascentxr.png week1-post3-ascentxr.png; do
     echo "Uploading: $img"
     curl -T "/home/jim/openclaw/branding/assets/linkedin/$img" \
-        "ftp://Sam564564457844537%40ascentxr.com:2Cl%23%2Ah2cdl%40cKNCO@ctz.hzv.mybluehost.me/dev/branding/assets/linkedin/$img" 2>&1 | tail -1
+        "ftp://${FTP_USER}:${FTP_PASS}@${FTP_HOST}/dev/branding/assets/linkedin/$img" 2>&1 | tail -1
 done
 
 echo ""

@@ -97,7 +97,7 @@ Based on 8px grid:
 - **Color**: Primary or secondary palette
 - **Stroke**: 1.5-2px weight
 
-## LearningTimeVR.com Design Principles (Analysis)
+## AscentXR.com Design Principles (Analysis)
 
 ### Color Usage
 - Dominant blues and purples create trustworthy yet creative atmosphere

@@ -80,8 +80,8 @@
 
 **Title Tag Formula:**
 ```
-Primary Keyword | Secondary Keyword - Learning Time VR
-Example: "VR in Education: Transforming Classrooms with Spatial Learning - Learning Time VR"
+Primary Keyword | Secondary Keyword - Ascent XR
+Example: "VR in Education: Transforming Classrooms with Spatial Learning - Ascent XR"
 ```
 
 **Meta Description Formula (150-160 chars):**
@@ -257,7 +257,7 @@ Bad: /p=vr-education
 - [ ] Internal links added
 - [ ] CTA is clear and relevant
 - [ ] Reading level appropriate (8th-10th grade)
-- [ ] Tone matches Learning Time VR brand
+- [ ] Tone matches Ascent XR brand
 
 ---
 

@@ -105,7 +105,7 @@ Campaign: Q1 2026 - Superintendent Awareness
 Headline: "300% Engagement Increase with Spatial Learning"
 Description: "See how Hamilton Southeastern Schools transformed their biology curriculum with immersive WebXR experiences. No VR headsets required."
 CTA: "Learn More"
-Destination: learningtimevr.com/case-study
+Destination: ascentxr.com/case-study
 ```
 
 **Carousel Ad (1080x1080 per card):**

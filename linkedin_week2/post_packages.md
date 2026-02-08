@@ -30,7 +30,7 @@ The biology teacher told us: "Students finally understood why the food web matte
 
 What subject in your curriculum could benefit from spatial transformation?
 
-📊 See the full case study: learningtimevr.com/case-studies/biology-transformation
+📊 See the full case study: ascentxr.com/case-studies/biology-transformation
 
 ### HASHTAGS:
 #CaseStudy #StudentOutcomes #K12Education #EdTech #SpatialLearning #BiologyEducation #StudentSuccess #DataDriven #EducationResearch
@@ -40,11 +40,11 @@ Split-screen infographic showing "Before/After" comparison:
 - Left side: Traditional worksheet with 62% score
 - Right side: VR experience with 89% score
 - Bottom: Quote from teacher
-- Color scheme: Learning Time VR blue/orange
+- Color scheme: Ascent XR blue/orange
 - Data visualization of improvement metrics
 
 ### CTA LINK:
-learningtimevr.com/case-studies/biology-transformation
+ascentxr.com/case-studies/biology-transformation
 
 ---
 
@@ -57,7 +57,7 @@ Industry partners, technology integrators, education consultants
 Build ecosystem credibility and attract partnership opportunities
 
 ### POST TEXT:
-🎉 Exciting news: Learning Time VR is officially partnering with [Partner Name] to bring spatial learning to 500+ classrooms across the Midwest.
+🎉 Exciting news: Ascent XR is officially partnering with [Partner Name] to bring spatial learning to 500+ classrooms across the Midwest.
 
 This partnership combines our WebXR platform with [Partner's] expertise in [their specialty] to deliver:
 
@@ -78,21 +78,21 @@ We're actively seeking additional partnership opportunities with:
 
 Interested in partnering? Let's talk.
 
-🤝 Partnership inquiry: learningtimevr.com/partnerships
+🤝 Partnership inquiry: ascentxr.com/partnerships
 
 ### HASHTAGS:
 #Partnership #EdTech #K12Education #BusinessDevelopment #ChannelPartners #EducationTechnology #Growth #StrategicPartnership #MidwestEducation
 
 ### IMAGE CONCEPT:
 Professional handshake photo with overlaid graphics:
-- Learning Time VR logo + Partner logo
+- Ascent XR logo + Partner logo
 - "500+ Classrooms" badge
 - Map highlighting Midwest region
 - Icons representing: hardware, software, training, support
 - Clean, corporate aesthetic
 
 ### CTA LINK:
-learningtimevr.com/partnerships
+ascentxr.com/partnerships
 
 ---
 
@@ -128,7 +128,7 @@ But don't take our word for it. Here's what teachers are saying:
 
 Ready to see what your students are capable of?
 
-📚 Teacher testimonials: learningtimevr.com/teacher-stories
+📚 Teacher testimonials: ascentxr.com/teacher-stories
 
 ### HASHTAGS:
 #TeacherVoice #EdChat #K12Education #StudentEngagement #TeacherTestimonial #ClassroomInnovation #ScienceEducation #TeacherLife #EdTech
@@ -137,11 +137,11 @@ Ready to see what your students are capable of?
 Grid of 4 teacher photos (diverse, authentic) with quotes overlaid:
 - Warm, approachable aesthetic
 - School/classroom backgrounds
-- Quote callouts with Learning Time VR branding
+- Quote callouts with Ascent XR branding
 - "200+ Teachers Can't Be Wrong" headline
 
 ### CTA LINK:
-learningtimevr.com/teacher-stories
+ascentxr.com/teacher-stories
 
 ---
 

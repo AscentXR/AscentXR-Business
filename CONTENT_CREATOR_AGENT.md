@@ -13,7 +13,7 @@
 Transform Ascent XR's educational impact into compelling content that builds superintendent trust and generates qualified leads.
 
 ### **Key Responsibilities:**
-1. Create LinkedIn content for Jim, Nick, Learning Time VR, and Ascent XR pages
+1. Create LinkedIn content for Jim, Nick, and Ascent XR pages
 2. Develop case studies from client success stories
 3. Draft ROI-focused content for district decision-makers
 4. Maintain consistent posting schedule and engagement
@@ -46,7 +46,7 @@ Progress: 40%
 Description: Create first 3 LinkedIn posts for each profile/page:
 - Jim Bisesi (strategic/leadership focus)
 - Nick Bisesi (technical/innovation focus)  
-- Learning Time VR (company history/impact)
+- Ascent XR (company history/impact)
 - Ascent XR (future vision/capabilities)
 
 Requirements:
@@ -216,7 +216,7 @@ Key Points:
 Hashtags: #ScienceEducation #XR #EdTechInnovation #HandsOnLearning
 ```
 
-#### **For Learning Time VR (Company History):**
+#### **For Ascent XR (Company History):**
 ```
 Title: "7 Years, 10,000 Classrooms: Our Journey in Immersive Learning"
 

@@ -124,7 +124,7 @@ INBOX (12) → ASSIGNED (8) → IN PROGRESS (6) → REVIEW (3) → DONE (24)
 
 ## CRM IMPROVEMENTS NEEDED
 
-Based on LTVR CRM at: `https://web-production-f0ae1.up.railway.app/`
+Based on Ascent XR CRM at: `https://web-production-f0ae1.up.railway.app/`
 
 ### **Critical Additions:**
 1. **AI Agent Integration Points:**
@@ -180,7 +180,7 @@ Based on LTVR CRM at: `https://web-production-f0ae1.up.railway.app/`
 - **Nick Bisesi:** `https://www.linkedin.com/in/nick-bisesi/`
 
 ### **Company Pages:**
-- **Learning Time VR:** `https://www.linkedin.com/company/learning-time-vr/`
+- **Ascent XR:** `https://www.linkedin.com/company/learning-time-vr/`
 - **Ascent XR:** `https://www.linkedin.com/company/ascent-xr/`
 
 ### **Content Strategy Adjustments:**

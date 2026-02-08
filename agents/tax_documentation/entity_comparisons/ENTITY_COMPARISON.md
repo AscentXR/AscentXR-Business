@@ -1,6 +1,6 @@
 # ENTITY STRUCTURE COMPARISON
 **LLC vs S-Corp vs C-Corp**
-**For Learning Time VR**
+**For Ascent XR**
 
 ---
 

@@ -30,9 +30,9 @@
 1. Open LinkedIn and verify account access
 2. Test image upload with Post 1 image
 3. Verify all CTA links work:
-   - learningtimevr.com/platform
-   - learningtimevr.com/ai-demo
-   - learningtimevr.com/roi-template
+   - ascentxr.com/platform
+   - ascentxr.com/ai-demo
+   - ascentxr.com/roi-template
 4. Set calendar reminders for all posting times
 5. Prepare 3 engagement comments for each post
 

@@ -5,6 +5,8 @@
 .env
 .env.local
 .env.*.local
+.env.production
+.env.staging
 
 # Credentials and secrets
 *_credentials*
@@ -14,10 +16,15 @@ ftp_credentials.txt
 ascentxr_key.pub
 ascentxr_key
 .htpasswd
+*.htpasswd
 
 # API keys
 *api_key*
 *apikey*
+
+# JWT and auth secrets
+jwt_secret*
+auth_secret*
 
 # Deployment scripts with credentials
 deploy_to_bluehost.sh
@@ -56,3 +63,18 @@ __pycache__/
 *.avi
 *.zip
 *.tar.gz
+
+# Build artifacts
+frontend/dist/
+frontend/tsconfig.tsbuildinfo
+
+# Test coverage
+backend/coverage/
+coverage/
+
+# Claude Code settings
+.claude/settings.json
+
+# Playwright
+test-results/
+playwright-report/

@@ -1,15 +1,18 @@
-/* Ascent XR CRM - Styles */
+/* Ascent XR CRM - Dark Theme Styles */
 :root {
-    --primary-color: #2196F3;
-    --secondary-color: #4CAF50;
-    --accent-color: #FF9800;
-    --danger-color: #F44336;
-    --light-color: #f8f9fa;
-    --dark-color: #343a40;
-    --gray-color: #6c757d;
-    --light-gray: #e9ecef;
-    --border-color: #dee2e6;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --primary-color: #0a1d45;
+    --secondary-color: #132e5e;
+    --accent-color: #ff6b00;
+    --danger-color: #ef4444;
+    --success-color: #22c55e;
+    --light-color: #1e293b;
+    --dark-color: #f8fafc;
+    --gray-color: #7c8db5;
+    --light-gray: #334155;
+    --border-color: #334155;
+    --dark-bg: #0f172a;
+    --dark-card: #1e293b;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     --transition: all 0.3s ease;
 }
 
@@ -19,10 +22,15 @@
     box-sizing: border-box;
 }
 
+*:focus-visible {
+    outline: 2px solid #ff6b00;
+    outline-offset: 2px;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background-color: #f5f7fa;
-    color: #333;
+    background-color: var(--dark-bg);
+    color: var(--dark-color);
     line-height: 1.6;
 }
 
@@ -136,7 +144,7 @@ body {
 }
 
 .stat-card {
-    background: white;
+    background: var(--dark-card);
     border-radius: 10px;
     padding: 20px;
     box-shadow: var(--shadow);
@@ -188,7 +196,7 @@ body {
 }
 
 .nav-menu {
-    background: white;
+    background: var(--dark-card);
     border-radius: 10px;
     padding: 20px;
     box-shadow: var(--shadow);
@@ -223,7 +231,7 @@ body {
 }
 
 .quick-stats {
-    background: white;
+    background: var(--dark-card);
     border-radius: 10px;
     padding: 20px;
     box-shadow: var(--shadow);
@@ -253,7 +261,7 @@ body {
 /* View Area */
 .view-area {
     flex: 1;
-    background: white;
+    background: var(--dark-card);
     border-radius: 10px;
     padding: 30px;
     box-shadow: var(--shadow);
@@ -309,7 +317,7 @@ body {
 }
 
 .chart-container {
-    background: white;
+    background: var(--dark-card);
     border-radius: 10px;
     padding: 20px;
     box-shadow: var(--shadow);
@@ -388,7 +396,7 @@ body {
 }
 
 .pipeline-stage {
-    background: white;
+    background: var(--dark-card);
     border-radius: 10px;
     padding: 20px;
     box-shadow: var(--shadow);
@@ -426,7 +434,7 @@ body {
 }
 
 .modal-content {
-    background: white;
+    background: var(--dark-card);
     border-radius: 10px;
     width: 90%;
     max-width: 700px;
@@ -522,7 +530,7 @@ body {
 /* Activity and Tasks */
 .recent-activity,
 .upcoming-tasks {
-    background: white;
+    background: var(--dark-card);
     border-radius: 10px;
     padding: 20px;
     margin-top: 30px;

@@ -33,7 +33,7 @@ A comprehensive social media strategy designed to position Ascent XR as a though
 - **Jim Bisesi:** Strategic leadership, ROI focus, superintendent perspectives
 - **Nick Bisesi:** Technical innovation, implementation insights, future trends
 - **Ascent XR Company:** Success stories, product updates, partnership announcements
-- **Learning Time VR:** Company history, impact stories, educational philosophy
+- **Ascent XR Company:** Company history, impact stories, educational philosophy
 
 ---
 
