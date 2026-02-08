@@ -1,5 +1,7 @@
 const { query } = require('../db/connection');
 const agentPrompts = require('./agentPrompts');
+const knowledgeBaseService = require('./knowledgeBaseService');
+const businessActivityService = require('./businessActivityService');
 
 class AgentExecutionService {
   constructor() {
@@ -181,9 +183,25 @@ class AgentExecutionService {
     this._emitUpdate({ ...task, status: 'running' });
 
     try {
-      // Build system prompt
+      // Build system prompt with knowledge base context injection
       const context = typeof task.context === 'string' ? JSON.parse(task.context) : (task.context || {});
-      const systemPrompt = agentPrompts.buildPrompt(task.agent_id, context);
+      const businessArea = agentPrompts.mapAgentToBusinessArea(task.agent_id);
+      let kbContext = {};
+      if (businessArea) {
+        try {
+          const [kbResult, actResult, goalsResult] = await Promise.all([
+            knowledgeBaseService.getArticles({ business_area: businessArea, limit: 5 }),
+            businessActivityService.getActivities({ business_area: businessArea, priority: 'asap', limit: 5 }),
+            query('SELECT * FROM goals WHERE business_area = $1 AND quarter = $2 ORDER BY goal_type ASC', [businessArea, 'Q1_2026'])
+          ]);
+          kbContext = {
+            articles: kbResult.articles || [],
+            activities: (actResult.activities || []),
+            goals: goalsResult.rows || []
+          };
+        } catch (e) { /* KB context is optional, continue without it */ }
+      }
+      const systemPrompt = agentPrompts.buildEnhancedPrompt(task.agent_id, context, kbContext);
 
       // Build user message from task prompt/description
       const userMessage = task.prompt || task.description || task.title;
@@ -285,7 +303,23 @@ class AgentExecutionService {
 
     try {
       const context = typeof task.context === 'string' ? JSON.parse(task.context) : (task.context || {});
-      const systemPrompt = agentPrompts.buildPrompt(task.agent_id, context);
+      const businessArea = agentPrompts.mapAgentToBusinessArea(task.agent_id);
+      let kbContext = {};
+      if (businessArea) {
+        try {
+          const [kbResult, actResult, goalsResult] = await Promise.all([
+            knowledgeBaseService.getArticles({ business_area: businessArea, limit: 5 }),
+            businessActivityService.getActivities({ business_area: businessArea, priority: 'asap', limit: 5 }),
+            query('SELECT * FROM goals WHERE business_area = $1 AND quarter = $2 ORDER BY goal_type ASC', [businessArea, 'Q1_2026'])
+          ]);
+          kbContext = {
+            articles: kbResult.articles || [],
+            activities: (actResult.activities || []),
+            goals: goalsResult.rows || []
+          };
+        } catch (e) { /* KB context is optional */ }
+      }
+      const systemPrompt = agentPrompts.buildEnhancedPrompt(task.agent_id, context, kbContext);
       const userMessage = task.prompt || task.description || task.title;
 
       if (!process.env.ANTHROPIC_API_KEY) {

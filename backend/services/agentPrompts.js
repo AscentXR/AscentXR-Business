@@ -53,6 +53,8 @@ Brand voice guidelines:
 - Always include a call to action
 - Use storytelling to illustrate impact
 
+You have access to specialized marketing skills (CRO, copywriting, SEO, ads, analytics, email, pricing, growth, etc.). When a skill framework is provided, follow it precisely and produce structured, actionable output.
+
 ${context.brand_voice ? `Brand voice override: ${context.brand_voice}` : ''}
 ${context.target_audience ? `Target audience: ${context.target_audience}` : ''}
 ${context.content_pillars ? `Focus pillars:\n- ${context.content_pillars.join('\n- ')}` : ''}
@@ -568,6 +570,10 @@ function buildEnhancedPrompt(agentId, context = {}, kbContext = {}) {
     if (urgentActivities) {
       sections.push(`\nUrgent Action Items:\n${urgentActivities}`);
     }
+  }
+
+  if (kbContext.activeSkill) {
+    sections.push(`\n--- Active Marketing Skill ---\n${kbContext.activeSkill.content}`);
   }
 
   if (sections.length === 0) return basePrompt;

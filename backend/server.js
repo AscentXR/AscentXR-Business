@@ -81,6 +81,7 @@ app.use('/api/products', authenticateToken, require('./routes/products'));
 app.use('/api/finance', authenticateToken, require('./routes/finance'));
 app.use('/api/goals', authenticateToken, require('./routes/goals'));
 app.use('/api/marketing', authenticateToken, require('./routes/marketing'));
+app.use('/api/marketing', authenticateToken, require('./routes/marketingSkills'));
 app.use('/api/taxes', authenticateToken, require('./routes/taxes'));
 app.use('/api/legal', authenticateToken, require('./routes/legal'));
 app.use('/api/team', authenticateToken, require('./routes/team'));

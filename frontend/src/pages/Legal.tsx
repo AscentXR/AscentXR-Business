@@ -40,7 +40,7 @@ export default function Legal() {
   const { data: kbData } = useApi<any>(() => knowledgeBase.getArticles({ business_area: 'legal' }), []);
   const { data: activitiesDataRaw } = useApi<any>(() => businessActivities.getActivities({ business_area: 'legal' }), []);
   const { data: forecastsDataRaw } = useApi<Forecast[]>(() => forecasts.getForecasts({ business_area: 'legal' }), []);
-  const { data: goalsDataRaw } = useApi<Goal[]>(() => goals.list({ business_area: 'legal', quarter: 'Q1 2026' }), []);
+  const { data: goalsDataRaw } = useApi<Goal[]>(() => goals.list({ business_area: 'legal', quarter: 'Q1_2026' }), []);
 
   const kbArticles: KnowledgeBaseArticle[] = kbData?.articles || kbData || [];
   const legalActivities: BusinessActivity[] = activitiesDataRaw?.activities || activitiesDataRaw || [];

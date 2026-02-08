@@ -35,7 +35,7 @@ export default function Finance() {
   const { data: kbData } = useApi<any>(() => knowledgeBase.getArticles({ business_area: 'finance' }), []);
   const { data: activitiesData } = useApi<any>(() => businessActivities.getActivities({ business_area: 'finance' }), []);
   const { data: forecastsData } = useApi<Forecast[]>(() => forecasts.getForecasts({ business_area: 'finance' }), []);
-  const { data: goalsData } = useApi<Goal[]>(() => goals.list({ business_area: 'finance', quarter: 'Q1 2026' }), []);
+  const { data: goalsData } = useApi<Goal[]>(() => goals.list({ business_area: 'finance', quarter: 'Q1_2026' }), []);
 
   const kbArticles: KnowledgeBaseArticle[] = kbData?.articles || kbData || [];
   const activities: BusinessActivity[] = activitiesData?.activities || activitiesData || [];

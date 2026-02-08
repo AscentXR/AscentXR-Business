@@ -6,11 +6,12 @@ import Modal from '../components/shared/Modal';
 import StatusBadge from '../components/shared/StatusBadge';
 import ErrorState from '../components/shared/ErrorState';
 import AgentTriggerButton from '../components/shared/AgentTriggerButton';
-import { documents, knowledgeBase, businessActivities } from '../api/endpoints';
+import ProgressBar from '../components/shared/ProgressBar';
+import { documents, knowledgeBase, businessActivities, forecasts, goals } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
-import type { Document, KnowledgeBaseArticle, BusinessActivity } from '../types';
+import type { Document, KnowledgeBaseArticle, BusinessActivity, Forecast, Goal } from '../types';
 
-const TABS = ['Documents', 'Knowledge Base', 'Activities'];
+const TABS = ['Documents', 'Knowledge Base', 'Goals', 'Forecasts', 'Activities'];
 
 const FILE_ICONS: Record<string, { icon: string; color: string }> = {
   'application/pdf': { icon: 'PDF', color: 'text-red-400 bg-red-500/20' },
@@ -42,17 +43,23 @@ export default function Documents() {
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [kbSearch, setKbSearch] = useState('');
   const [activityFilter, setActivityFilter] = useState('All');
+  const [scenarioFilter, setScenarioFilter] = useState('baseline');
   const [selectedArticle, setSelectedArticle] = useState<KnowledgeBaseArticle | null>(null);
 
   const { data: docsData, loading, error, refetch } = useApi<Document[]>(() => documents.list(), []);
   const { data: categoriesData } = useApi<string[]>(() => documents.getCategories(), []);
   const { data: kbData } = useApi<{ articles: KnowledgeBaseArticle[]; total: number }>(() => knowledgeBase.getArticles({ business_area: 'documents' }), []);
   const { data: activitiesData } = useApi<{ activities: BusinessActivity[]; total: number }>(() => businessActivities.getActivities({ business_area: 'documents' }), []);
+  const { data: forecastsData } = useApi<Forecast[]>(() => forecasts.getForecasts({ business_area: 'documents' }), []);
+  const { data: goalsData } = useApi<Goal[]>(() => goals.list({ business_area: 'documents', quarter: 'Q1_2026' }), []);
 
   const docs = docsData || [];
   const categories = categoriesData || [];
   const kbArticles = kbData?.articles || [];
   const activities = activitiesData?.activities || [];
+  const forecastItems: Forecast[] = forecastsData || [];
+  const goalItems: Goal[] = goalsData || [];
+  const filteredForecasts = forecastItems.filter(f => f.scenario === scenarioFilter);
 
   const filteredDocs = useMemo(() => {
     let filtered = docs;
@@ -286,6 +293,60 @@ export default function Documents() {
               <div className="col-span-full text-center py-12 text-gray-500 text-sm">No knowledge base articles yet.</div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Goals Tab */}
+      {tab === 'Goals' && (
+        <div className="space-y-4">
+          {goalItems.length === 0 ? <p className="text-gray-500 text-center py-8">No goals for this quarter.</p> : goalItems.filter(g => g.goal_type === 'objective').map((obj) => (
+            <div key={obj.id} className="bg-navy-800/60 border border-navy-700/50 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-medium text-white">{obj.title}</h4>
+                <StatusBadge status={obj.status} />
+              </div>
+              <ProgressBar value={obj.progress} color="blue" />
+              <div className="mt-3 space-y-2">
+                {goalItems.filter(kr => kr.parent_id === obj.id).map((kr) => (
+                  <div key={kr.id} className="flex items-center justify-between p-2 bg-navy-700/50 rounded-lg">
+                    <span className="text-xs text-gray-300 flex-1">{kr.title}</span>
+                    <div className="flex items-center gap-2 ml-2">
+                      <span className="text-xs text-gray-400">{kr.current_value}/{kr.target_value} {kr.unit}</span>
+                      <div className="w-16"><ProgressBar value={kr.progress} color="blue" size="sm" /></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Forecasts Tab */}
+      {tab === 'Forecasts' && (
+        <div className="space-y-4">
+          <div className="flex gap-2">
+            {['conservative', 'baseline', 'optimistic'].map((s) => (
+              <button key={s} onClick={() => setScenarioFilter(s)} className={`px-3 py-1 text-xs rounded-full capitalize ${scenarioFilter === s ? 'bg-[#2563EB] text-white' : 'bg-navy-700 text-gray-400 hover:text-white'}`}>{s}</button>
+            ))}
+          </div>
+          {filteredForecasts.length === 0 ? <p className="text-gray-500 text-center py-8">No forecasts available.</p> : (
+            <div className="bg-navy-800/60 border border-navy-700/50 rounded-xl overflow-hidden">
+              <div className="grid grid-cols-12 gap-2 px-4 py-2 border-b border-navy-700 text-xs text-gray-500 font-medium">
+                <div className="col-span-2">Period</div><div className="col-span-3">Type</div><div className="col-span-2">Metric</div><div className="col-span-2">Projected</div><div className="col-span-2">Actual</div><div className="col-span-1">Conf.</div>
+              </div>
+              {filteredForecasts.map((f) => (
+                <div key={f.id} className="grid grid-cols-12 gap-2 px-4 py-2 border-b border-navy-700/50 text-sm items-center">
+                  <div className="col-span-2 text-gray-400">{f.period}</div>
+                  <div className="col-span-3 text-white">{f.forecast_type}</div>
+                  <div className="col-span-2 text-gray-400">{f.metric || '-'}</div>
+                  <div className="col-span-2 text-white">{f.projected_value != null ? Number(f.projected_value).toLocaleString() : '-'}</div>
+                  <div className="col-span-2 text-gray-400">{f.actual_value != null ? Number(f.actual_value).toLocaleString() : '-'}</div>
+                  <div className="col-span-1"><span className={`text-xs px-1.5 py-0.5 rounded ${f.confidence === 'high' ? 'bg-emerald-500/20 text-emerald-400' : f.confidence === 'low' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>{f.confidence}</span></div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

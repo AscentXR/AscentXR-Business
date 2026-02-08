@@ -769,3 +769,24 @@ INSERT INTO business_activities (business_area, title, description, priority, st
 ('legal', 'Create DPA template', 'Data Processing Agreement using SDPC baseline template', 'medium', 'pending', '2026-04-15', 'jim'),
 ('legal', 'Build contract template library', 'Create MSA, SOW, NDA, and Pilot agreement templates', 'medium', 'pending', '2026-04-30', 'jim'),
 ('legal', 'SOC 2 readiness assessment', 'Evaluate current state and engage automation platform (Drata/Vanta)', 'medium', 'pending', '2026-06-30', 'jim');
+
+-- ############################################################
+-- DOCUMENTS GOALS
+-- ############################################################
+
+-- Objective: Establish document management system
+INSERT INTO goals (id, parent_id, title, description, goal_type, business_area, quarter, target_value, current_value, unit, progress, status, owner) VALUES
+  ('00000000-0000-0000-0000-000000000600', '00000000-0000-0000-0000-000000000001', 'Establish document management system', 'Organize all business documents with consistent structure, naming, and access controls.', 'objective', 'documents', 'Q1_2026', NULL, NULL, NULL, 0, 'on_track', 'jim'),
+  ('00000000-0000-0000-0000-000000000601', '00000000-0000-0000-0000-000000000600', 'Create folder structure and naming conventions', NULL, 'key_result', 'documents', 'Q1_2026', 1, 0, 'count', 0, 'on_track', 'jim'),
+  ('00000000-0000-0000-0000-000000000602', '00000000-0000-0000-0000-000000000600', 'Migrate all existing documents to organized library', NULL, 'key_result', 'documents', 'Q1_2026', 100, 0, 'percent', 0, 'on_track', 'jim'),
+  ('00000000-0000-0000-0000-000000000603', '00000000-0000-0000-0000-000000000600', 'Create 5 reusable document templates (proposal, SOW, invoice, NDA, pilot)', NULL, 'key_result', 'documents', 'Q1_2026', 5, 0, 'count', 0, 'on_track', 'jim');
+
+-- ############################################################
+-- DOCUMENTS FORECASTS
+-- ############################################################
+
+INSERT INTO forecasts (business_area, forecast_type, period, metric, projected_value, actual_value, confidence, scenario) VALUES
+('documents', 'templates', '2026-Q1', 'Templates Created', 5, NULL, 'high', 'baseline'),
+('documents', 'templates', '2026-Q2', 'Templates Created', 12, NULL, 'medium', 'baseline'),
+('documents', 'library_size', '2026-Q1', 'Total Documents', 30, NULL, 'medium', 'baseline'),
+('documents', 'library_size', '2026-Q2', 'Total Documents', 75, NULL, 'low', 'baseline');

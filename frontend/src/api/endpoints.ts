@@ -7,6 +7,8 @@ import type {
   BrandAsset, AgentTask, Notification, SearchResult,
   Contact, Deal, SchoolDistrict, LinkedInPost, Document, Agent,
   KnowledgeBaseArticle, BusinessActivity, Forecast,
+  MarketingSkill, SkillCategory, MarketingWorkflow, MarketingWorkflowDetail,
+  WorkflowRun, WorkflowRunDetail,
 } from '../types';
 
 // Auth
@@ -224,6 +226,28 @@ export const forecasts = {
   getBurnRate: () => api.get('/forecasts/burn-rate'),
   getRunway: () => api.get('/forecasts/runway'),
   getRevenueTarget: () => api.get('/forecasts/revenue-target'),
+};
+
+// Marketing Skills & Workflows
+export const marketingSkills = {
+  getSkills: (params?: { category?: string; search?: string; agent_id?: string }) =>
+    api.get<ApiResponse<{ skills: MarketingSkill[]; total: number }>>('/marketing/skills', { params }),
+  getCategories: () => api.get<ApiResponse<SkillCategory[]>>('/marketing/skills/categories'),
+  getSkill: (id: string) => api.get<ApiResponse<MarketingSkill>>(`/marketing/skills/${id}`),
+  executeSkill: (id: string, context?: any) =>
+    api.post<ApiResponse<{ task_id: string; skill: string; agent_id: string }>>(`/marketing/skills/${id}/execute`, { context }),
+  getWorkflows: (params?: { category?: string }) =>
+    api.get<ApiResponse<MarketingWorkflow[]>>('/marketing/workflows', { params }),
+  getWorkflow: (id: string) => api.get<ApiResponse<MarketingWorkflowDetail>>(`/marketing/workflows/${id}`),
+  startWorkflowRun: (id: string, data?: { context?: any }) =>
+    api.post<ApiResponse<WorkflowRun>>(`/marketing/workflows/${id}/run`, data),
+  getWorkflowRuns: (params?: { status?: string }) =>
+    api.get<ApiResponse<WorkflowRun[]>>('/marketing/workflow-runs', { params }),
+  getWorkflowRun: (id: string) => api.get<ApiResponse<WorkflowRunDetail>>(`/marketing/workflow-runs/${id}`),
+  advanceWorkflowRun: (id: string) =>
+    api.post<ApiResponse<any>>(`/marketing/workflow-runs/${id}/advance`),
+  cancelWorkflowRun: (id: string) =>
+    api.post<ApiResponse<WorkflowRun>>(`/marketing/workflow-runs/${id}/cancel`),
 };
 
 // Documents (existing)

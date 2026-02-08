@@ -49,7 +49,7 @@ export default function CustomerSuccess() {
   const { data: kbData } = useApi<any>(() => knowledgeBase.getArticles({ business_area: 'customer_success' }), []);
   const { data: activitiesData } = useApi<any>(() => businessActivities.getActivities({ business_area: 'customer_success' }), []);
   const { data: forecastsData } = useApi<Forecast[]>(() => forecasts.getForecasts({ business_area: 'customer_success' }), []);
-  const { data: goalsData } = useApi<Goal[]>(() => goals.list({ business_area: 'customer_success', quarter: 'Q1 2026' }), []);
+  const { data: goalsData } = useApi<Goal[]>(() => goals.list({ business_area: 'customer_success', quarter: 'Q1_2026' }), []);
 
   const kbArticles: KnowledgeBaseArticle[] = kbData?.articles || kbData || [];
   const activities: BusinessActivity[] = activitiesData?.activities || activitiesData || [];

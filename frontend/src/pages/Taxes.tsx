@@ -40,7 +40,7 @@ export default function Taxes() {
   const { data: kbData } = useApi<any>(() => knowledgeBase.getArticles({ business_area: 'taxes' }), []);
   const { data: activitiesDataRaw } = useApi<any>(() => businessActivities.getActivities({ business_area: 'taxes' }), []);
   const { data: forecastsDataRaw } = useApi<Forecast[]>(() => forecasts.getForecasts({ business_area: 'taxes' }), []);
-  const { data: goalsDataRaw } = useApi<Goal[]>(() => goals.list({ business_area: 'taxes', quarter: 'Q1 2026' }), []);
+  const { data: goalsDataRaw } = useApi<Goal[]>(() => goals.list({ business_area: 'taxes', quarter: 'Q1_2026' }), []);
 
   const kbArticles: KnowledgeBaseArticle[] = kbData?.articles || kbData || [];
   const taxActivities: BusinessActivity[] = activitiesDataRaw?.activities || activitiesDataRaw || [];

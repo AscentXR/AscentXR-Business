@@ -38,7 +38,7 @@ export default function CommandCenter() {
   const { connected, subscribe } = useWebSocket();
 
   const { data: goalsData, loading: goalsLoading } = useApi<Goal[]>(
-    () => goals.list({ quarter: 'Q1 2026' }),
+    () => goals.list({ quarter: 'Q1_2026' }),
     []
   );
 

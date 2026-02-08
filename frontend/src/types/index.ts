@@ -547,6 +547,101 @@ export interface BrandDashboardMetrics {
 }
 
 // ============================================================
+// Marketing Skills & Workflows
+// ============================================================
+
+export interface MarketingSkill {
+  id: string;
+  skill_id: string;
+  name: string;
+  category: string;
+  description?: string;
+  content: string;
+  applicable_agents: string[];
+  edtech_relevance: number;
+  estimated_duration_minutes: number;
+  output_format: string;
+  tags: string[];
+  is_active: boolean;
+  source_repo?: string;
+  source_version?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SkillCategory {
+  category: string;
+  count: number;
+}
+
+export interface MarketingWorkflow {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  category?: string;
+  is_template: boolean;
+  estimated_total_minutes: number;
+  is_active: boolean;
+  step_count: number;
+  created_at: string;
+}
+
+export interface WorkflowStep {
+  id: string;
+  workflow_id: string;
+  skill_id: string;
+  step_order: number;
+  is_optional: boolean;
+  custom_prompt_override?: string;
+  depends_on_step?: number;
+  agent_id?: string;
+  skill_slug: string;
+  skill_name: string;
+  skill_category: string;
+  skill_duration: number;
+  skill_description?: string;
+}
+
+export interface MarketingWorkflowDetail extends MarketingWorkflow {
+  steps: WorkflowStep[];
+}
+
+export interface WorkflowRun {
+  id: string;
+  workflow_id: string;
+  workflow_name: string;
+  workflow_slug: string;
+  status: 'pending' | 'running' | 'paused' | 'completed' | 'failed' | 'cancelled';
+  current_step: number;
+  total_steps: number;
+  context: any;
+  created_by?: string;
+  started_at?: string;
+  completed_at?: string;
+  created_at: string;
+}
+
+export interface WorkflowRunStep {
+  id: string;
+  run_id: string;
+  step_id: string;
+  task_id?: string;
+  status: 'pending' | 'running' | 'completed' | 'failed' | 'skipped';
+  result_summary?: string;
+  step_order: number;
+  skill_name: string;
+  skill_slug: string;
+  skill_category: string;
+  started_at?: string;
+  completed_at?: string;
+}
+
+export interface WorkflowRunDetail extends WorkflowRun {
+  steps: WorkflowRunStep[];
+}
+
+// ============================================================
 // Documents (existing)
 // ============================================================
 

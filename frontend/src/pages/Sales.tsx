@@ -51,7 +51,7 @@ export default function Sales() {
   const { data: kbData } = useApi<any>(() => knowledgeBase.getArticles({ business_area: 'sales' }), []);
   const { data: activitiesData } = useApi<any>(() => businessActivities.getActivities({ business_area: 'sales' }), []);
   const { data: forecastsData } = useApi<Forecast[]>(() => forecasts.getForecasts({ business_area: 'sales' }), []);
-  const { data: goalsData } = useApi<Goal[]>(() => goals.list({ business_area: 'sales', quarter: 'Q1 2026' }), []);
+  const { data: goalsData } = useApi<Goal[]>(() => goals.list({ business_area: 'sales', quarter: 'Q1_2026' }), []);
 
   const kbArticles: KnowledgeBaseArticle[] = kbData?.articles || kbData || [];
   const bActivities: BusinessActivity[] = activitiesData?.activities || activitiesData || [];

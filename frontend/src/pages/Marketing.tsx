@@ -8,12 +8,23 @@ import ProgressBar from '../components/shared/ProgressBar';
 import Modal from '../components/shared/Modal';
 import AgentTriggerButton from '../components/shared/AgentTriggerButton';
 import ErrorState from '../components/shared/ErrorState';
-import { marketing, linkedin, knowledgeBase, businessActivities, forecasts, goals } from '../api/endpoints';
+import { marketing, linkedin, knowledgeBase, businessActivities, forecasts, goals, marketingSkills } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
 import { useToast } from '../context/ToastContext';
-import type { Campaign, ContentCalendarItem, LinkedInPost, KnowledgeBaseArticle, BusinessActivity, Forecast, Goal } from '../types';
+import type { Campaign, ContentCalendarItem, LinkedInPost, KnowledgeBaseArticle, BusinessActivity, Forecast, Goal, MarketingSkill, MarketingWorkflow, WorkflowRun } from '../types';
 
-const TABS = ['Content Calendar', 'Campaigns', 'LinkedIn Posts', 'Knowledge Base', 'Goals', 'Forecasts', 'Activities'];
+const TABS = ['Content Calendar', 'Campaigns', 'LinkedIn Posts', 'Skills & Workflows', 'Knowledge Base', 'Goals', 'Forecasts', 'Activities'];
+
+const SKILL_CATEGORY_COLORS: Record<string, string> = {
+  'Conversion Optimization': 'bg-orange-500/20 text-orange-400',
+  'Content & Copy': 'bg-blue-500/20 text-blue-400',
+  'SEO & Discovery': 'bg-green-500/20 text-green-400',
+  'Paid & Distribution': 'bg-purple-500/20 text-purple-400',
+  'Measurement & Testing': 'bg-cyan-500/20 text-cyan-400',
+  'Growth Engineering': 'bg-pink-500/20 text-pink-400',
+  'Strategy & Monetization': 'bg-amber-500/20 text-amber-400',
+  'Foundation': 'bg-gray-500/20 text-gray-400',
+};
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export default function Marketing() {
@@ -27,6 +38,9 @@ export default function Marketing() {
   const [activityFilter, setActivityFilter] = useState('');
   const [scenarioFilter, setScenarioFilter] = useState('baseline');
   const [selectedArticle, setSelectedArticle] = useState<KnowledgeBaseArticle | null>(null);
+  const [skillCategoryFilter, setSkillCategoryFilter] = useState('');
+  const [executingSkill, setExecutingSkill] = useState<string | null>(null);
+  const [startingWorkflow, setStartingWorkflow] = useState<string | null>(null);
   const { showToast } = useToast();
   const [calendarMonth, setCalendarMonth] = useState(() => {
     const now = new Date();
@@ -40,7 +54,17 @@ export default function Marketing() {
   const { data: kbData } = useApi<any>(() => knowledgeBase.getArticles({ business_area: 'marketing' }), []);
   const { data: activitiesData } = useApi<any>(() => businessActivities.getActivities({ business_area: 'marketing' }), []);
   const { data: forecastsData } = useApi<Forecast[]>(() => forecasts.getForecasts({ business_area: 'marketing' }), []);
-  const { data: goalsData } = useApi<Goal[]>(() => goals.list({ business_area: 'marketing', quarter: 'Q1 2026' }), []);
+  const { data: goalsData } = useApi<Goal[]>(() => goals.list({ business_area: 'marketing', quarter: 'Q1_2026' }), []);
+
+  const { data: skillsData } = useApi<any>(() => marketingSkills.getSkills(skillCategoryFilter ? { category: skillCategoryFilter } : {}), [skillCategoryFilter]);
+  const { data: categoriesData } = useApi<any>(() => marketingSkills.getCategories(), []);
+  const { data: workflowsData } = useApi<MarketingWorkflow[]>(() => marketingSkills.getWorkflows(), []);
+  const { data: activeRunsData, refetch: refetchRuns } = useApi<WorkflowRun[]>(() => marketingSkills.getWorkflowRuns(), []);
+
+  const skillItems: MarketingSkill[] = skillsData?.skills || skillsData || [];
+  const categoryItems = categoriesData || [];
+  const workflowItems: MarketingWorkflow[] = workflowsData || [];
+  const runItems: WorkflowRun[] = activeRunsData || [];
 
   const kbArticles: KnowledgeBaseArticle[] = kbData?.articles || kbData || [];
   const mActivities: BusinessActivity[] = activitiesData?.activities || activitiesData || [];
@@ -104,6 +128,57 @@ export default function Marketing() {
       showToast('Campaign saved successfully', 'success');
       setShowModal(false); setEditingCampaign({}); refetchCampaigns();
     } catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); } finally { setSaving(false); }
+  }
+
+  async function handleExecuteSkill(skill: MarketingSkill) {
+    setExecutingSkill(skill.id);
+    try {
+      await marketingSkills.executeSkill(skill.id, {});
+      showToast(`Skill "${skill.name}" started — check Agents page for results`, 'success');
+    } catch (err: any) { showToast(err.response?.data?.error?.message || 'Failed to execute skill', 'error'); }
+    finally { setExecutingSkill(null); }
+  }
+
+  async function handleStartWorkflow(workflow: MarketingWorkflow) {
+    setStartingWorkflow(workflow.id);
+    try {
+      await marketingSkills.startWorkflowRun(workflow.id, {});
+      showToast(`Workflow "${workflow.name}" started`, 'success');
+      refetchRuns();
+    } catch (err: any) { showToast(err.response?.data?.error?.message || 'Failed to start workflow', 'error'); }
+    finally { setStartingWorkflow(null); }
+  }
+
+  async function handleAdvanceRun(runId: string) {
+    try {
+      await marketingSkills.advanceWorkflowRun(runId);
+      showToast('Advanced to next step', 'success');
+      refetchRuns();
+    } catch (err: any) { showToast(err.response?.data?.error?.message || 'Failed to advance', 'error'); }
+  }
+
+  async function handleCancelRun(runId: string) {
+    try {
+      await marketingSkills.cancelWorkflowRun(runId);
+      showToast('Workflow cancelled', 'success');
+      refetchRuns();
+    } catch (err: any) { showToast(err.response?.data?.error?.message || 'Failed to cancel', 'error'); }
+  }
+
+  function renderRelevanceStars(score: number) {
+    const full = Math.min(score, 10);
+    return (
+      <div className="flex items-center gap-0.5" title={`EdTech relevance: ${full}/10`}>
+        {Array.from({ length: 5 }, (_, i) => {
+          const starValue = (i + 1) * 2;
+          return (
+            <span key={i} className={`text-xs ${full >= starValue ? 'text-amber-400' : full >= starValue - 1 ? 'text-amber-400/50' : 'text-gray-600'}`}>
+              {full >= starValue ? '\u2605' : full >= starValue - 1 ? '\u2605' : '\u2606'}
+            </span>
+          );
+        })}
+      </div>
+    );
   }
 
   const campaignColumns: Column<Campaign>[] = [
@@ -191,6 +266,116 @@ export default function Marketing() {
 
       {tab === 'LinkedIn Posts' && (
         <DataTable columns={postColumns} data={posts} loading={postsLoading} searchable pagination />
+      )}
+
+      {tab === 'Skills & Workflows' && (
+        <div className="space-y-8">
+          {/* Section A: Skills Grid */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-white">Marketing Skills</h3>
+            <div className="flex flex-wrap gap-2">
+              <button onClick={() => setSkillCategoryFilter('')} className={`px-3 py-1 text-xs rounded-full ${!skillCategoryFilter ? 'bg-[#2563EB] text-white' : 'bg-navy-700 text-gray-400 hover:text-white'}`}>All</button>
+              {categoryItems.map((cat: any) => (
+                <button key={cat.category} onClick={() => setSkillCategoryFilter(cat.category)} className={`px-3 py-1 text-xs rounded-full ${skillCategoryFilter === cat.category ? 'bg-[#2563EB] text-white' : SKILL_CATEGORY_COLORS[cat.category] || 'bg-navy-700 text-gray-400'} hover:opacity-80`}>
+                  {cat.category} ({cat.count})
+                </button>
+              ))}
+            </div>
+            {skillItems.length === 0 ? <p className="text-gray-500 text-center py-8">No skills found.</p> : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {skillItems.map((skill) => (
+                  <div key={skill.id} className="bg-navy-800/60 border border-navy-700/50 rounded-xl p-4 flex flex-col">
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="text-sm font-medium text-white flex-1">{skill.name}</h4>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ml-2 whitespace-nowrap ${SKILL_CATEGORY_COLORS[skill.category] || 'bg-navy-700 text-gray-400'}`}>{skill.category}</span>
+                    </div>
+                    {skill.description && <p className="text-xs text-gray-400 mb-3 line-clamp-2">{skill.description}</p>}
+                    <div className="flex items-center justify-between mt-auto pt-2">
+                      <div className="flex items-center gap-3">
+                        {renderRelevanceStars(skill.edtech_relevance)}
+                        <span className="text-xs text-gray-500">{skill.estimated_duration_minutes}min</span>
+                      </div>
+                      <button onClick={() => handleExecuteSkill(skill)} disabled={executingSkill === skill.id} className="px-3 py-1 text-xs bg-[#2563EB] text-white rounded-lg hover:bg-[#2563EB]/80 disabled:opacity-50">
+                        {executingSkill === skill.id ? 'Starting...' : 'Run Skill'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Section B: Workflows */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-white">Workflow Templates</h3>
+            {workflowItems.length === 0 ? <p className="text-gray-500 text-center py-8">No workflows available.</p> : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {workflowItems.map((wf) => (
+                  <div key={wf.id} className="bg-navy-800/60 border border-navy-700/50 rounded-xl p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="text-sm font-medium text-white">{wf.name}</h4>
+                      {wf.category && <span className="text-xs px-2 py-0.5 rounded-full bg-navy-700 text-gray-400 ml-2">{wf.category}</span>}
+                    </div>
+                    {wf.description && <p className="text-xs text-gray-400 mb-3">{wf.description}</p>}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 text-xs text-gray-500">
+                        <span>{wf.step_count} steps</span>
+                        <span>{wf.estimated_total_minutes}min total</span>
+                      </div>
+                      <button onClick={() => handleStartWorkflow(wf)} disabled={startingWorkflow === wf.id} className="px-3 py-1 text-xs bg-emerald-600 text-white rounded-lg hover:bg-emerald-600/80 disabled:opacity-50">
+                        {startingWorkflow === wf.id ? 'Starting...' : 'Start Workflow'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Active Workflow Runs */}
+          {runItems.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-white">Workflow Runs</h3>
+              <div className="space-y-3">
+                {runItems.map((run) => (
+                  <div key={run.id} className="bg-navy-800/60 border border-navy-700/50 rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <h4 className="text-sm font-medium text-white">{run.workflow_name}</h4>
+                        <span className="text-xs text-gray-500">Started {run.created_at?.slice(0, 10)}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <StatusBadge status={run.status} />
+                        {(run.status === 'running' || run.status === 'paused') && (
+                          <>
+                            <button onClick={() => handleAdvanceRun(run.id)} className="px-3 py-1 text-xs bg-[#2563EB] text-white rounded-lg hover:bg-[#2563EB]/80">Advance</button>
+                            <button onClick={() => handleCancelRun(run.id)} className="px-3 py-1 text-xs bg-red-600/80 text-white rounded-lg hover:bg-red-600">Cancel</button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: run.total_steps }, (_, i) => {
+                        const stepNum = i + 1;
+                        const isCompleted = stepNum < run.current_step;
+                        const isCurrent = stepNum === run.current_step && run.status === 'running';
+                        return (
+                          <div key={i} className="flex items-center">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${isCompleted ? 'bg-emerald-500 text-white' : isCurrent ? 'bg-[#2563EB] text-white ring-2 ring-[#2563EB]/30' : 'bg-navy-700 text-gray-500'}`}>
+                              {isCompleted ? '\u2713' : stepNum}
+                            </div>
+                            {i < run.total_steps - 1 && <div className={`w-4 h-0.5 ${isCompleted ? 'bg-emerald-500' : 'bg-navy-700'}`} />}
+                          </div>
+                        );
+                      })}
+                      <span className="text-xs text-gray-500 ml-2">Step {run.current_step}/{run.total_steps}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
       {tab === 'Knowledge Base' && (
