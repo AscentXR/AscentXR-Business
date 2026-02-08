@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PageShell from '../components/layout/PageShell';
 import TabBar from '../components/shared/TabBar';
 import StatusBadge from '../components/shared/StatusBadge';
 import Modal from '../components/shared/Modal';
 import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../context/ToastContext';
 
 const TABS = ['General', 'Integrations', 'API Keys', 'Users'];
 
@@ -48,24 +49,41 @@ const STATUS_ICON_COLORS: Record<string, string> = {
   error: 'bg-red-500/20 text-red-400',
 };
 
+function loadSettings() {
+  try {
+    const saved = localStorage.getItem('settings');
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return null;
+}
+
 export default function Settings() {
   const [tab, setTab] = useState('General');
   const { user } = useAuth();
+  const { showToast } = useToast();
+
+  const saved = loadSettings();
 
   // General settings state
-  const [companyName, setCompanyName] = useState('Ascent XR');
-  const [timezone, setTimezone] = useState('America/New_York');
-  const [currency, setCurrency] = useState('USD');
-  const [dateFormat, setDateFormat] = useState('MM/DD/YYYY');
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [pushNotifications, setPushNotifications] = useState(true);
-  const [weeklyDigest, setWeeklyDigest] = useState(true);
-  const [agentAlerts, setAgentAlerts] = useState(true);
-  const [darkMode, setDarkMode] = useState(true);
+  const [companyName, setCompanyName] = useState(saved?.companyName ?? 'Ascent XR');
+  const [timezone, setTimezone] = useState(saved?.timezone ?? 'America/New_York');
+  const [currency, setCurrency] = useState(saved?.currency ?? 'USD');
+  const [dateFormat, setDateFormat] = useState(saved?.dateFormat ?? 'MM/DD/YYYY');
+  const [emailNotifications, setEmailNotifications] = useState(saved?.emailNotifications ?? true);
+  const [pushNotifications, setPushNotifications] = useState(saved?.pushNotifications ?? true);
+  const [weeklyDigest, setWeeklyDigest] = useState(saved?.weeklyDigest ?? true);
+  const [agentAlerts, setAgentAlerts] = useState(saved?.agentAlerts ?? true);
+  const [darkMode, setDarkMode] = useState(saved?.darkMode ?? true);
 
   // API Key modal state
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [newKeyName, setNewKeyName] = useState('');
+
+  function handleSaveSettings() {
+    const settings = { companyName, timezone, currency, dateFormat, emailNotifications, pushNotifications, weeklyDigest, agentAlerts, darkMode };
+    localStorage.setItem('settings', JSON.stringify(settings));
+    showToast('Settings saved successfully', 'success');
+  }
 
   return (
     <PageShell title="Settings" subtitle="Application configuration and preferences">
@@ -158,7 +176,7 @@ export default function Settings() {
 
           {/* Save */}
           <div className="flex justify-end">
-            <button className="px-6 py-2 bg-[#2563EB] text-white text-sm rounded-lg hover:bg-[#2563EB]/80">Save Changes</button>
+            <button onClick={handleSaveSettings} className="px-6 py-2 bg-[#2563EB] text-white text-sm rounded-lg hover:bg-[#2563EB]/80">Save Changes</button>
           </div>
         </div>
       )}
@@ -166,6 +184,9 @@ export default function Settings() {
       {/* Integrations */}
       {tab === 'Integrations' && (
         <div className="space-y-6">
+          <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+            <p className="text-xs text-amber-400">Demo mode -- integration connections are simulated. Connect real services in production.</p>
+          </div>
           {['Productivity', 'Communication', 'Marketing', 'CRM', 'Finance', 'Development'].map((category) => {
             const items = MOCK_INTEGRATIONS.filter((i) => i.category === category);
             if (items.length === 0) return null;
@@ -206,6 +227,9 @@ export default function Settings() {
       {/* API Keys */}
       {tab === 'API Keys' && (
         <div className="max-w-3xl space-y-4">
+          <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+            <p className="text-xs text-amber-400">Demo mode -- API keys shown are simulated. Generate real keys in production.</p>
+          </div>
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-400">Manage API keys for external integrations.</p>
             <button onClick={() => setShowApiKeyModal(true)} className="px-4 py-2 bg-[#2563EB] text-white text-sm rounded-lg hover:bg-[#2563EB]/80">+ Generate Key</button>

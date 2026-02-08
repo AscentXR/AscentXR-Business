@@ -10,7 +10,7 @@ export default defineConfig({
   timeout: 30_000,
 
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:3456',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -45,11 +45,14 @@ export default defineConfig({
 
   webServer: {
     command: 'cd backend && node server.js',
-    port: 3000,
+    port: 3456,
     reuseExistingServer: !process.env.CI,
+    timeout: 30_000,
     env: {
       NODE_ENV: 'test',
-      PORT: '3000',
+      PORT: '3456',
+      DEV_PASSWORD: 'admin',
+      JWT_SECRET: 'test-secret',
     },
   },
 });

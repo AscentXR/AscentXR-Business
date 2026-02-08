@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import PageShell from '../components/layout/PageShell';
 import AgentTriggerButton from '../components/shared/AgentTriggerButton';
+import ErrorState from '../components/shared/ErrorState';
 import { brand } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
 import type { BrandAsset } from '../types';
@@ -26,7 +27,7 @@ const ASSET_TYPES = ['All', 'logo', 'color', 'font', 'template', 'guideline', 'i
 export default function Brand() {
   const [assetFilter, setAssetFilter] = useState('All');
 
-  const { data: assetsData, loading } = useApi<BrandAsset[]>(() => brand.list(), []);
+  const { data: assetsData, loading, error, refetch } = useApi<BrandAsset[]>(() => brand.list(), []);
   const assets = assetsData || [];
 
   const filteredAssets = useMemo(() => {
@@ -45,6 +46,8 @@ export default function Brand() {
         <AgentTriggerButton agentId="brand" label="Audit Brand Consistency" prompt="Audit our brand assets and marketing materials for consistency with brand guidelines" businessArea="marketing" />
       }
     >
+      {error && <ErrorState error={error} onRetry={refetch} />}
+      {!error && <>
       {/* Color Palette */}
       <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-5 mb-6">
         <h3 className="text-sm font-medium text-white mb-4">Color Palette</h3>
@@ -177,6 +180,7 @@ export default function Brand() {
           </div>
         )}
       </div>
+      </>}
     </PageShell>
   );
 }

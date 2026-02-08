@@ -3,6 +3,7 @@ import PageShell from '../components/layout/PageShell';
 import SearchInput from '../components/shared/SearchInput';
 import Modal from '../components/shared/Modal';
 import StatusBadge from '../components/shared/StatusBadge';
+import ErrorState from '../components/shared/ErrorState';
 import { documents } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
 import type { Document } from '../types';
@@ -35,7 +36,7 @@ export default function Documents() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
 
-  const { data: docsData, loading } = useApi<Document[]>(() => documents.list(), []);
+  const { data: docsData, loading, error, refetch } = useApi<Document[]>(() => documents.list(), []);
   const { data: categoriesData } = useApi<string[]>(() => documents.getCategories(), []);
 
   const docs = docsData || [];
@@ -68,6 +69,8 @@ export default function Documents() {
 
   return (
     <PageShell title="Documents" subtitle="Document library and file management">
+      {error && <ErrorState error={error} onRetry={refetch} />}
+      {!error && <>
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar */}
         <div className="lg:w-64 flex-shrink-0">
@@ -225,6 +228,7 @@ export default function Documents() {
         </div>
       </div>
 
+      </>}
       {/* Document Detail Modal */}
       <Modal isOpen={!!selectedDoc} onClose={() => setSelectedDoc(null)} title="Document Details">
         {selectedDoc && (

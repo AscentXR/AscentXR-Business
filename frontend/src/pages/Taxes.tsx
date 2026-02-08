@@ -4,8 +4,10 @@ import DataTable from '../components/shared/DataTable';
 import type { Column } from '../components/shared/DataTable';
 import StatusBadge from '../components/shared/StatusBadge';
 import AgentTriggerButton from '../components/shared/AgentTriggerButton';
+import ErrorState from '../components/shared/ErrorState';
 import { taxes } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
+import { useToast } from '../context/ToastContext';
 import type { TaxEvent, TaxDeduction } from '../types';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -16,15 +18,18 @@ export default function Taxes() {
     return { year: now.getFullYear(), month: now.getMonth() };
   });
   const [summary, setSummary] = useState<any>(null);
+  const { showToast } = useToast();
 
-  const { data: eventsData, loading: eventsLoading } = useApi<TaxEvent[]>(() => taxes.getEvents(), []);
-  const { data: deductionsData, loading: deductionsLoading } = useApi<TaxDeduction[]>(() => taxes.getDeductions({ tax_year: 2026 }), []);
+  const { data: eventsData, loading: eventsLoading, error: eventsError, refetch: refetchEvents } = useApi<TaxEvent[]>(() => taxes.getEvents(), []);
+  const { data: deductionsData, loading: deductionsLoading, error: deductionsError, refetch: refetchDeductions } = useApi<TaxDeduction[]>(() => taxes.getDeductions({ tax_year: 2026 }), []);
+
+  const primaryError = eventsError || deductionsError;
 
   const events = eventsData || [];
   const deductions = deductionsData || [];
 
   useEffect(() => {
-    taxes.getSummary(2026).then((r) => setSummary(r.data.data || r.data)).catch(() => {});
+    taxes.getSummary(2026).then((r) => setSummary(r.data.data || r.data)).catch((err: any) => { showToast(err.response?.data?.error || 'Failed to load tax summary', 'error'); });
   }, []);
 
   const calendarGrid = useMemo(() => {
@@ -78,6 +83,8 @@ export default function Taxes() {
         </div>
       }
     >
+      {primaryError && <ErrorState error={primaryError} onRetry={eventsError ? refetchEvents : refetchDeductions} />}
+      {!primaryError && <>
       {/* Tax Calendar */}
       <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl overflow-hidden mb-6">
         <div className="flex items-center justify-between p-4 border-b border-navy-700">
@@ -163,6 +170,7 @@ export default function Taxes() {
         <h3 className="text-sm font-medium text-white mb-3">Deduction Tracker</h3>
         <DataTable columns={deductionColumns} data={deductions} loading={deductionsLoading} searchable pagination />
       </div>
+      </>}
     </PageShell>
   );
 }

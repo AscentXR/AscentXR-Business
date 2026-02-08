@@ -6,8 +6,10 @@ import StatusBadge from '../components/shared/StatusBadge';
 import KPICard from '../components/shared/KPICard';
 import Modal from '../components/shared/Modal';
 import AgentTriggerButton from '../components/shared/AgentTriggerButton';
+import ErrorState from '../components/shared/ErrorState';
 import { partnerships } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
+import { useToast } from '../context/ToastContext';
 import type { Partner, PartnerDeal } from '../types';
 import { Handshake, DollarSign, TrendingUp, Users } from 'lucide-react';
 
@@ -17,9 +19,12 @@ export default function Partnerships() {
   const [editingPartner, setEditingPartner] = useState<Partial<Partner>>({});
   const [editingDeal, setEditingDeal] = useState<Partial<PartnerDeal>>({});
   const [saving, setSaving] = useState(false);
+  const { showToast } = useToast();
 
-  const { data: partnersData, loading: partnersLoading, refetch: refetchPartners } = useApi<Partner[]>(() => partnerships.list(), []);
-  const { data: dealsData, loading: dealsLoading, refetch: refetchDeals } = useApi<PartnerDeal[]>(() => partnerships.getDeals(), []);
+  const { data: partnersData, loading: partnersLoading, error: partnersError, refetch: refetchPartners } = useApi<Partner[]>(() => partnerships.list(), []);
+  const { data: dealsData, loading: dealsLoading, error: dealsError, refetch: refetchDeals } = useApi<PartnerDeal[]>(() => partnerships.getDeals(), []);
+
+  const primaryError = partnersError || dealsError;
 
   const partners = partnersData || [];
   const deals = dealsData || [];
@@ -46,16 +51,18 @@ export default function Partnerships() {
     try {
       if (editingPartner.id) await partnerships.update(editingPartner.id, editingPartner);
       else await partnerships.create(editingPartner);
+      showToast('Partner saved successfully', 'success');
       setShowPartnerModal(false); setEditingPartner({}); refetchPartners();
-    } catch {} finally { setSaving(false); }
+    } catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); } finally { setSaving(false); }
   }
 
   async function handleSaveDeal() {
     setSaving(true);
     try {
       await partnerships.createDeal(editingDeal);
+      showToast('Deal saved successfully', 'success');
       setShowDealModal(false); setEditingDeal({}); refetchDeals();
-    } catch {} finally { setSaving(false); }
+    } catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); } finally { setSaving(false); }
   }
 
   const dealColumns: Column<PartnerDeal>[] = [
@@ -77,6 +84,8 @@ export default function Partnerships() {
         </div>
       }
     >
+      {primaryError && <ErrorState error={primaryError} onRetry={partnersError ? refetchPartners : refetchDeals} />}
+      {!primaryError && <>
       {/* KPI Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <KPICard label="Active Partners" value={String(activePartners)} icon={Handshake} />
@@ -169,6 +178,7 @@ export default function Partnerships() {
         <DataTable columns={dealColumns} data={deals} loading={dealsLoading} searchable pagination pageSize={10} />
       </div>
 
+      </>}
       {/* Partner Modal */}
       <Modal isOpen={showPartnerModal} onClose={() => setShowPartnerModal(false)} title={editingPartner.id ? 'Edit Partner' : 'New Partner'}>
         <div className="space-y-4">

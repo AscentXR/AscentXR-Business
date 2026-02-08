@@ -6,8 +6,10 @@ import type { Column } from '../components/shared/DataTable';
 import StatusBadge from '../components/shared/StatusBadge';
 import Modal from '../components/shared/Modal';
 import AgentTriggerButton from '../components/shared/AgentTriggerButton';
+import ErrorState from '../components/shared/ErrorState';
 import { legal } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
+import { useToast } from '../context/ToastContext';
 import type { Contract, ComplianceItem } from '../types';
 
 const TABS = ['Contracts', 'Compliance'];
@@ -20,9 +22,12 @@ export default function Legal() {
   const [editingContract, setEditingContract] = useState<Partial<Contract>>({});
   const [editingCompliance, setEditingCompliance] = useState<Partial<ComplianceItem>>({});
   const [saving, setSaving] = useState(false);
+  const { showToast } = useToast();
 
-  const { data: contractsData, loading: contractsLoading, refetch: refetchContracts } = useApi<Contract[]>(() => legal.getContracts(), []);
-  const { data: complianceData, loading: complianceLoading, refetch: refetchCompliance } = useApi<ComplianceItem[]>(() => legal.getCompliance(), []);
+  const { data: contractsData, loading: contractsLoading, error: contractsError, refetch: refetchContracts } = useApi<Contract[]>(() => legal.getContracts(), []);
+  const { data: complianceData, loading: complianceLoading, error: complianceError, refetch: refetchCompliance } = useApi<ComplianceItem[]>(() => legal.getCompliance(), []);
+
+  const primaryError = contractsError || complianceError;
 
   const contracts = contractsData || [];
   const complianceItems = complianceData || [];
@@ -45,8 +50,9 @@ export default function Legal() {
     try {
       if (editingContract.id) await legal.updateContract(editingContract.id, editingContract);
       else await legal.createContract(editingContract);
+      showToast('Contract saved successfully', 'success');
       setShowModal(false); setEditingContract({}); refetchContracts();
-    } catch {} finally { setSaving(false); }
+    } catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); } finally { setSaving(false); }
   }
 
   async function handleSaveCompliance() {
@@ -54,8 +60,9 @@ export default function Legal() {
     try {
       if (editingCompliance.id) await legal.updateComplianceItem(editingCompliance.id, editingCompliance);
       else await legal.createComplianceItem(editingCompliance);
+      showToast('Compliance item saved successfully', 'success');
       setShowModal(false); setEditingCompliance({}); refetchCompliance();
-    } catch {} finally { setSaving(false); }
+    } catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); } finally { setSaving(false); }
   }
 
   const contractColumns: Column<Contract>[] = [
@@ -92,6 +99,8 @@ export default function Legal() {
     >
       <TabBar tabs={TABS} active={tab} onChange={setTab} />
 
+      {primaryError && <ErrorState error={primaryError} onRetry={contractsError ? refetchContracts : refetchCompliance} />}
+      {!primaryError && <>
       {tab === 'Contracts' && (
         <DataTable columns={contractColumns} data={contracts} loading={contractsLoading} searchable pagination onRowClick={(c) => { setEditingContract(c); setModalType('contract'); setShowModal(true); }} />
       )}
@@ -138,6 +147,7 @@ export default function Legal() {
         </div>
       )}
 
+      </>}
       <Modal isOpen={showModal && modalType === 'contract'} onClose={() => setShowModal(false)} title={editingContract.id ? 'Edit Contract' : 'New Contract'}>
         <div className="space-y-4">
           <div>

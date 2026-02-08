@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { notifications as notifApi } from '../api/endpoints';
 import { useWebSocket } from '../hooks/useWebSocket';
+import { useAuth } from '../hooks/useAuth';
 import type { Notification } from '../types';
 
 interface NotificationContextType {
@@ -19,6 +20,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const { subscribe } = useWebSocket();
+  const { isAuthenticated } = useAuth();
 
   const fetchNotifications = useCallback(async () => {
     setLoading(true);
@@ -35,8 +37,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
+    if (isAuthenticated) {
+      fetchNotifications();
+    }
+  }, [isAuthenticated, fetchNotifications]);
 
   useEffect(() => {
     const unsub = subscribe('notification', (notif: Notification) => {

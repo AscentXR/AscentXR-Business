@@ -1,9 +1,18 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import Agents from '../../pages/Agents';
 import { AgentContext } from '../../context/AgentContext';
+
+// recharts ResponsiveContainer requires ResizeObserver in jsdom
+beforeAll(() => {
+  global.ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as any;
+});
 
 let apiCallCount = 0;
 vi.mock('../../hooks/useApi', () => ({

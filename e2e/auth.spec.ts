@@ -6,7 +6,7 @@ test.use({ storageState: { cookies: [], origins: [] } });
 test.describe('Authentication', () => {
   test('should show login page with branding', async ({ page }) => {
     await page.goto('/login');
-    await expect(page.getByText('Ascent XR')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Ascent XR' })).toBeVisible();
     await expect(page.getByText('Business Control Center')).toBeVisible();
     await expect(page.getByLabel('Username')).toBeVisible();
     await expect(page.getByLabel('Password')).toBeVisible();
@@ -39,7 +39,7 @@ test.describe('Authentication', () => {
     await page.getByLabel('Password').fill(process.env.TEST_PASSWORD || 'admin');
     await page.getByRole('button', { name: 'Sign In' }).click();
     await page.waitForURL('/');
-    await expect(page.getByText('Command Center')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Command Center' })).toBeVisible();
   });
 
   test('should protect all routes when not authenticated', async ({ page }) => {

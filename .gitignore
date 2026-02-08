@@ -78,3 +78,6 @@ coverage/
 # Playwright
 test-results/
 playwright-report/
+
+# Playwright auth state
+e2e/.auth/

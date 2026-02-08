@@ -4,8 +4,10 @@ import StatusBadge from '../components/shared/StatusBadge';
 import ProgressBar from '../components/shared/ProgressBar';
 import Modal from '../components/shared/Modal';
 import AgentTriggerButton from '../components/shared/AgentTriggerButton';
+import ErrorState from '../components/shared/ErrorState';
 import { goals } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
+import { useToast } from '../context/ToastContext';
 import type { Goal } from '../types';
 
 const QUARTERS = ['Q1 2026', 'Q2 2026'];
@@ -17,8 +19,9 @@ export default function Goals() {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<Partial<Goal>>({});
   const [saving, setSaving] = useState(false);
+  const { showToast } = useToast();
 
-  const { data: goalsData, loading, refetch } = useApi<Goal[]>(() => goals.getTree({ quarter }), [quarter]);
+  const { data: goalsData, loading, error, refetch } = useApi<Goal[]>(() => goals.getTree({ quarter }), [quarter]);
   const goalTree = goalsData || [];
 
   const filteredGoals = useMemo(() => {
@@ -42,8 +45,9 @@ export default function Goals() {
     try {
       if (editing.id) await goals.update(editing.id, editing);
       else await goals.create(editing);
+      showToast('Goal saved successfully', 'success');
       setShowModal(false); setEditing({}); refetch();
-    } catch {} finally { setSaving(false); }
+    } catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); } finally { setSaving(false); }
   }
 
   function renderGoalNode(goal: Goal, depth: number = 0) {
@@ -81,6 +85,8 @@ export default function Goals() {
         </div>
       }
     >
+      {error && <ErrorState error={error} onRetry={refetch} />}
+      {!error && <>
       {/* Controls */}
       <div className="flex items-center gap-4 mb-6">
         <div className="flex gap-2">
@@ -144,6 +150,7 @@ export default function Goals() {
         </div>
       </div>
 
+      </>}
       {/* Goal Modal */}
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editing.id ? 'Edit Goal' : 'New Goal'}>
         <div className="space-y-4">

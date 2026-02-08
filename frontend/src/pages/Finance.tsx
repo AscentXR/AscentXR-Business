@@ -9,8 +9,10 @@ import StatusBadge from '../components/shared/StatusBadge';
 import ProgressBar from '../components/shared/ProgressBar';
 import Modal from '../components/shared/Modal';
 import AgentTriggerButton from '../components/shared/AgentTriggerButton';
+import ErrorState from '../components/shared/ErrorState';
 import { finance } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
+import { useToast } from '../context/ToastContext';
 import type { Invoice, Expense, Budget } from '../types';
 
 const TABS = ['Overview', 'Invoices', 'Expenses', 'Budgets'];
@@ -25,17 +27,20 @@ export default function Finance() {
   const [saving, setSaving] = useState(false);
   const [summary, setSummary] = useState<any>(null);
   const [expenseFilter, setExpenseFilter] = useState('');
+  const { showToast } = useToast();
 
-  const { data: invoicesData, loading: invoicesLoading, refetch: refetchInvoices } = useApi<Invoice[]>(() => finance.getInvoices(), []);
-  const { data: expensesData, loading: expensesLoading, refetch: refetchExpenses } = useApi<Expense[]>(() => finance.getExpenses(), []);
-  const { data: budgetsData, loading: budgetsLoading, refetch: refetchBudgets } = useApi<Budget[]>(() => finance.getBudgets(), []);
+  const { data: invoicesData, loading: invoicesLoading, error: invoicesError, refetch: refetchInvoices } = useApi<Invoice[]>(() => finance.getInvoices(), []);
+  const { data: expensesData, loading: expensesLoading, error: expensesError, refetch: refetchExpenses } = useApi<Expense[]>(() => finance.getExpenses(), []);
+  const { data: budgetsData, loading: budgetsLoading, error: budgetsError, refetch: refetchBudgets } = useApi<Budget[]>(() => finance.getBudgets(), []);
+
+  const primaryError = invoicesError || expensesError || budgetsError;
 
   const invoices = invoicesData || [];
   const expenses = expensesData || [];
   const budgets = budgetsData || [];
 
   useEffect(() => {
-    finance.getSummary().then((r) => setSummary(r.data.data || r.data)).catch(() => {});
+    finance.getSummary().then((r) => setSummary(r.data.data || r.data)).catch((err: any) => { showToast(err.response?.data?.error || 'Failed to load financial summary', 'error'); });
   }, []);
 
   const totalRevenue = invoices.filter((i) => i.status === 'paid').reduce((s, i) => s + i.total, 0);
@@ -53,14 +58,15 @@ export default function Finance() {
     try {
       if (editingInvoice.id) await finance.updateInvoice(editingInvoice.id, editingInvoice);
       else await finance.createInvoice(editingInvoice);
+      showToast('Invoice saved successfully', 'success');
       setShowModal(false); setEditingInvoice({}); refetchInvoices();
-    } catch {} finally { setSaving(false); }
+    } catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); } finally { setSaving(false); }
   }
 
   async function handleSaveExpense() {
     setSaving(true);
-    try { await finance.createExpense(editingExpense); setShowModal(false); setEditingExpense({}); refetchExpenses(); }
-    catch {} finally { setSaving(false); }
+    try { await finance.createExpense(editingExpense); showToast('Expense saved successfully', 'success'); setShowModal(false); setEditingExpense({}); refetchExpenses(); }
+    catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); } finally { setSaving(false); }
   }
 
   async function handleSaveBudget() {
@@ -68,8 +74,9 @@ export default function Finance() {
     try {
       if (editingBudget.id) await finance.updateBudget(editingBudget.id, editingBudget);
       else await finance.createBudget(editingBudget);
+      showToast('Budget saved successfully', 'success');
       setShowModal(false); setEditingBudget({}); refetchBudgets();
-    } catch {} finally { setSaving(false); }
+    } catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); } finally { setSaving(false); }
   }
 
   const invoiceColumns: Column<Invoice>[] = [
@@ -105,6 +112,8 @@ export default function Finance() {
     >
       <TabBar tabs={TABS} active={tab} onChange={setTab} />
 
+      {primaryError && <ErrorState error={primaryError} onRetry={invoicesError ? refetchInvoices : expensesError ? refetchExpenses : refetchBudgets} />}
+      {!primaryError && <>
       {tab === 'Overview' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -195,6 +204,7 @@ export default function Finance() {
         </div>
       )}
 
+      </>}
       <Modal isOpen={showModal && modalType === 'invoice'} onClose={() => setShowModal(false)} title="Invoice Details">
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">

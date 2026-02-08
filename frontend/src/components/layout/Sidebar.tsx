@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -20,6 +20,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import clsx from 'clsx';
+import { metrics } from '../../api/endpoints';
 
 interface NavItem {
   path: string;
@@ -44,13 +45,28 @@ const navItems: NavItem[] = [
   { path: '/documents', label: 'Documents', icon: FileText },
 ];
 
-const REVENUE_TARGET = 300000;
-const REVENUE_CURRENT = 47500; // Will be replaced with live data
+const DEFAULT_REVENUE_TARGET = 300000;
+const DEFAULT_REVENUE_CURRENT = 47500;
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [revenueTarget, setRevenueTarget] = useState(DEFAULT_REVENUE_TARGET);
+  const [revenueCurrent, setRevenueCurrent] = useState(DEFAULT_REVENUE_CURRENT);
+  const [revenueLoading, setRevenueLoading] = useState(true);
   const location = useLocation();
-  const revenuePercent = Math.min(100, Math.round((REVENUE_CURRENT / REVENUE_TARGET) * 100));
+
+  useEffect(() => {
+    metrics.all()
+      .then((r) => {
+        const data = r.data.data || r.data;
+        if (data.revenue != null) setRevenueCurrent(data.revenue);
+        if (data.revenueTarget != null) setRevenueTarget(data.revenueTarget);
+      })
+      .catch(() => {})
+      .finally(() => setRevenueLoading(false));
+  }, []);
+
+  const revenuePercent = Math.min(100, Math.round((revenueCurrent / revenueTarget) * 100));
 
   return (
     <aside
@@ -81,13 +97,16 @@ export default function Sidebar() {
             </div>
             <div className="w-full bg-navy-900 rounded-full h-2">
               <div
-                className="bg-ascent-blue h-2 rounded-full transition-all duration-500"
+                className={clsx(
+                  'bg-ascent-blue h-2 rounded-full transition-all duration-500',
+                  revenueLoading && 'animate-pulse'
+                )}
                 style={{ width: `${revenuePercent}%` }}
               />
             </div>
             <div className="flex items-center justify-between text-xs mt-1 text-gray-500">
-              <span>${(REVENUE_CURRENT / 1000).toFixed(0)}K</span>
-              <span>${(REVENUE_TARGET / 1000).toFixed(0)}K</span>
+              <span>${(revenueCurrent / 1000).toFixed(0)}K</span>
+              <span>${(revenueTarget / 1000).toFixed(0)}K</span>
             </div>
           </div>
         )}

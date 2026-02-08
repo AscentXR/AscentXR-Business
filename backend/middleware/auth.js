@@ -103,8 +103,8 @@ async function authenticateUser(username, password) {
   try {
     const isValid = await bcrypt.compare(password, user.passwordHash);
     if (!isValid) {
-      // Allow dev password fallback when hash is a placeholder
-      if (process.env.NODE_ENV === 'development' && process.env.DEV_PASSWORD) {
+      // Allow dev/test password fallback when hash is a placeholder
+      if (['development', 'test'].includes(process.env.NODE_ENV) && process.env.DEV_PASSWORD) {
         if (password !== process.env.DEV_PASSWORD) {
           return null;
         }
@@ -113,8 +113,8 @@ async function authenticateUser(username, password) {
       }
     }
   } catch (err) {
-    // If bcrypt comparison throws (e.g. malformed hash), allow fallback for dev
-    if (process.env.NODE_ENV === 'development' && process.env.DEV_PASSWORD) {
+    // If bcrypt comparison throws (e.g. malformed hash), allow fallback for dev/test
+    if (['development', 'test'].includes(process.env.NODE_ENV) && process.env.DEV_PASSWORD) {
       if (password !== process.env.DEV_PASSWORD) {
         return null;
       }

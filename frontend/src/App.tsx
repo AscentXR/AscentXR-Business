@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import Layout from './components/layout/Layout';
+import ErrorBoundary from './components/shared/ErrorBoundary';
 import Login from './pages/Login';
 import CommandCenter from './pages/CommandCenter';
 import Sales from './pages/Sales';
@@ -34,21 +35,21 @@ export default function App() {
           <ProtectedRoute>
             <Layout>
               <Routes>
-                <Route path="/" element={<CommandCenter />} />
-                <Route path="/sales" element={<Sales />} />
-                <Route path="/marketing" element={<Marketing />} />
-                <Route path="/products" element={<Products />} />
-                <Route path="/finance" element={<Finance />} />
-                <Route path="/taxes" element={<Taxes />} />
-                <Route path="/brand" element={<Brand />} />
-                <Route path="/agents" element={<Agents />} />
-                <Route path="/goals" element={<Goals />} />
-                <Route path="/team" element={<Team />} />
-                <Route path="/legal" element={<Legal />} />
-                <Route path="/documents" element={<Documents />} />
-                <Route path="/customer-success" element={<CustomerSuccess />} />
-                <Route path="/partnerships" element={<Partnerships />} />
-                <Route path="/settings" element={<Settings />} />
+                <Route path="/" element={<ErrorBoundary><CommandCenter /></ErrorBoundary>} />
+                <Route path="/sales" element={<ErrorBoundary><Sales /></ErrorBoundary>} />
+                <Route path="/marketing" element={<ErrorBoundary><Marketing /></ErrorBoundary>} />
+                <Route path="/products" element={<ErrorBoundary><Products /></ErrorBoundary>} />
+                <Route path="/finance" element={<ErrorBoundary><Finance /></ErrorBoundary>} />
+                <Route path="/taxes" element={<ErrorBoundary><Taxes /></ErrorBoundary>} />
+                <Route path="/brand" element={<ErrorBoundary><Brand /></ErrorBoundary>} />
+                <Route path="/agents" element={<ErrorBoundary><Agents /></ErrorBoundary>} />
+                <Route path="/goals" element={<ErrorBoundary><Goals /></ErrorBoundary>} />
+                <Route path="/team" element={<ErrorBoundary><Team /></ErrorBoundary>} />
+                <Route path="/legal" element={<ErrorBoundary><Legal /></ErrorBoundary>} />
+                <Route path="/documents" element={<ErrorBoundary><Documents /></ErrorBoundary>} />
+                <Route path="/customer-success" element={<ErrorBoundary><CustomerSuccess /></ErrorBoundary>} />
+                <Route path="/partnerships" element={<ErrorBoundary><Partnerships /></ErrorBoundary>} />
+                <Route path="/settings" element={<ErrorBoundary><Settings /></ErrorBoundary>} />
               </Routes>
             </Layout>
           </ProtectedRoute>

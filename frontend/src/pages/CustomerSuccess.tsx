@@ -8,8 +8,10 @@ import KPICard from '../components/shared/KPICard';
 import ProgressBar from '../components/shared/ProgressBar';
 import Modal from '../components/shared/Modal';
 import AgentTriggerButton from '../components/shared/AgentTriggerButton';
+import ErrorState from '../components/shared/ErrorState';
 import { customerSuccess } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
+import { useToast } from '../context/ToastContext';
 import type { CustomerHealth, SupportTicket } from '../types';
 import { Heart, AlertTriangle, Users, RotateCcw } from 'lucide-react';
 
@@ -34,10 +36,13 @@ export default function CustomerSuccess() {
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [editingTicket, setEditingTicket] = useState<Partial<SupportTicket>>({});
   const [saving, setSaving] = useState(false);
+  const { showToast } = useToast();
 
-  const { data: healthData, loading: healthLoading } = useApi<CustomerHealth[]>(() => customerSuccess.getHealthScores(), []);
-  const { data: ticketsData, loading: ticketsLoading, refetch: refetchTickets } = useApi<SupportTicket[]>(() => customerSuccess.getTickets(), []);
+  const { data: healthData, loading: healthLoading, error: healthError, refetch: refetchHealth } = useApi<CustomerHealth[]>(() => customerSuccess.getHealthScores(), []);
+  const { data: ticketsData, loading: ticketsLoading, error: ticketsError, refetch: refetchTickets } = useApi<SupportTicket[]>(() => customerSuccess.getTickets(), []);
   const { data: renewalsData, loading: renewalsLoading } = useApi<any>(() => customerSuccess.getRenewals(), []);
+
+  const primaryError = healthError || ticketsError;
 
   const healthScores = healthData || [];
   const tickets = ticketsData || [];
@@ -62,8 +67,9 @@ export default function CustomerSuccess() {
     try {
       if (editingTicket.id) await customerSuccess.updateTicket(editingTicket.id, editingTicket);
       else await customerSuccess.createTicket(editingTicket);
+      showToast('Ticket saved successfully', 'success');
       setShowTicketModal(false); setEditingTicket({}); refetchTickets();
-    } catch {} finally { setSaving(false); }
+    } catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); } finally { setSaving(false); }
   }
 
   const ticketColumns: Column<SupportTicket>[] = [
@@ -100,6 +106,8 @@ export default function CustomerSuccess() {
         </div>
       }
     >
+      {primaryError && <ErrorState error={primaryError} onRetry={healthError ? refetchHealth : refetchTickets} />}
+      {!primaryError && <>
       {/* KPI Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <KPICard label="Avg Health Score" value={`${avgHealth}%`} icon={Heart} />
@@ -222,6 +230,7 @@ export default function CustomerSuccess() {
         </div>
       )}
 
+      </>}
       {/* Ticket Modal */}
       <Modal isOpen={showTicketModal} onClose={() => setShowTicketModal(false)} title={editingTicket.id ? 'Edit Ticket' : 'New Ticket'}>
         <div className="space-y-4">

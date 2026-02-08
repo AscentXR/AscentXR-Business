@@ -7,8 +7,10 @@ import StatusBadge from '../components/shared/StatusBadge';
 import Modal from '../components/shared/Modal';
 import SearchInput from '../components/shared/SearchInput';
 import AgentTriggerButton from '../components/shared/AgentTriggerButton';
+import ErrorState from '../components/shared/ErrorState';
 import { crm } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
+import { useToast } from '../context/ToastContext';
 import type { Contact, Deal } from '../types';
 
 const TABS = ['Pipeline', 'Contacts', 'Deals', 'Proposals'];
@@ -29,16 +31,19 @@ export default function Sales() {
   const [editingContact, setEditingContact] = useState<Partial<Contact>>({});
   const [editingDeal, setEditingDeal] = useState<Partial<Deal>>({});
   const [saving, setSaving] = useState(false);
+  const { showToast } = useToast();
 
-  const { data: contactsData, loading: contactsLoading, refetch: refetchContacts } = useApi<{ contacts: Contact[]; total: number }>(
+  const { data: contactsData, loading: contactsLoading, error: contactsError, refetch: refetchContacts } = useApi<{ contacts: Contact[]; total: number }>(
     () => crm.getContacts({ limit: 100 }),
     []
   );
 
-  const { data: dealsData, loading: dealsLoading } = useApi<Deal[]>(
+  const { data: dealsData, loading: dealsLoading, error: dealsError, refetch: refetchDeals } = useApi<Deal[]>(
     () => crm.getDeals(),
     []
   );
+
+  const primaryError = contactsError || dealsError;
 
   const contacts = contactsData?.contacts || [];
   const deals = dealsData || [];
@@ -76,10 +81,11 @@ export default function Sales() {
       } else {
         await crm.createContact(editingContact);
       }
+      showToast('Contact saved successfully', 'success');
       setShowContactModal(false);
       setEditingContact({});
       refetchContacts();
-    } catch { /* error handled */ }
+    } catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); }
     finally { setSaving(false); }
   }
 
@@ -120,6 +126,8 @@ export default function Sales() {
     >
       <TabBar tabs={TABS} active={tab} onChange={setTab} />
 
+      {primaryError && <ErrorState error={primaryError} onRetry={contactsError ? refetchContacts : refetchDeals} />}
+      {!primaryError && <>
       {/* Pipeline Tab */}
       {tab === 'Pipeline' && (
         <div className="flex gap-4 overflow-x-auto pb-4">
@@ -222,6 +230,7 @@ export default function Sales() {
         </div>
       )}
 
+      </>}
       {/* Contact Modal */}
       <Modal isOpen={showContactModal} onClose={() => setShowContactModal(false)} title={editingContact.id ? 'Edit Contact' : 'New Contact'}>
         <div className="space-y-4">

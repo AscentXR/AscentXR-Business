@@ -6,8 +6,10 @@ import type { Column } from '../components/shared/DataTable';
 import StatusBadge from '../components/shared/StatusBadge';
 import Modal from '../components/shared/Modal';
 import AgentTriggerButton from '../components/shared/AgentTriggerButton';
+import ErrorState from '../components/shared/ErrorState';
 import { marketing, linkedin } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
+import { useToast } from '../context/ToastContext';
 import type { Campaign, ContentCalendarItem, LinkedInPost } from '../types';
 
 const TABS = ['Content Calendar', 'Campaigns', 'LinkedIn Posts'];
@@ -20,14 +22,17 @@ export default function Marketing() {
   const [editingContent, setEditingContent] = useState<Partial<ContentCalendarItem>>({});
   const [editingCampaign, setEditingCampaign] = useState<Partial<Campaign>>({});
   const [saving, setSaving] = useState(false);
+  const { showToast } = useToast();
   const [calendarMonth, setCalendarMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
   });
 
-  const { data: calendarData, loading: calendarLoading, refetch: refetchCalendar } = useApi<ContentCalendarItem[]>(() => marketing.getCalendar(), []);
-  const { data: campaignsData, loading: campaignsLoading, refetch: refetchCampaigns } = useApi<Campaign[]>(() => marketing.getCampaigns(), []);
+  const { data: calendarData, loading: calendarLoading, error: calendarError, refetch: refetchCalendar } = useApi<ContentCalendarItem[]>(() => marketing.getCalendar(), []);
+  const { data: campaignsData, loading: campaignsLoading, error: campaignsError, refetch: refetchCampaigns } = useApi<Campaign[]>(() => marketing.getCampaigns(), []);
   const { data: postsData, loading: postsLoading } = useApi<LinkedInPost[]>(() => linkedin.getPosts(), []);
+
+  const primaryError = calendarError || campaignsError;
 
   const calendarItems = calendarData || [];
   const campaigns = campaignsData || [];
@@ -58,8 +63,9 @@ export default function Marketing() {
     try {
       if (editingContent.id) await marketing.updateCalendarItem(editingContent.id, editingContent);
       else await marketing.createCalendarItem(editingContent);
+      showToast('Content saved successfully', 'success');
       setShowModal(false); setEditingContent({}); refetchCalendar();
-    } catch { /* handled */ } finally { setSaving(false); }
+    } catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); } finally { setSaving(false); }
   }
 
   async function handleSaveCampaign() {
@@ -67,8 +73,9 @@ export default function Marketing() {
     try {
       if (editingCampaign.id) await marketing.updateCampaign(editingCampaign.id, editingCampaign);
       else await marketing.createCampaign(editingCampaign);
+      showToast('Campaign saved successfully', 'success');
       setShowModal(false); setEditingCampaign({}); refetchCampaigns();
-    } catch { /* handled */ } finally { setSaving(false); }
+    } catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); } finally { setSaving(false); }
   }
 
   const campaignColumns: Column<Campaign>[] = [
@@ -107,6 +114,8 @@ export default function Marketing() {
     >
       <TabBar tabs={TABS} active={tab} onChange={setTab} />
 
+      {primaryError && <ErrorState error={primaryError} onRetry={calendarError ? refetchCalendar : refetchCampaigns} />}
+      {!primaryError && <>
       {tab === 'Content Calendar' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -156,6 +165,7 @@ export default function Marketing() {
         <DataTable columns={postColumns} data={posts} loading={postsLoading} searchable pagination />
       )}
 
+      </>}
       <Modal isOpen={showModal && modalType === 'content'} onClose={() => setShowModal(false)} title={editingContent.id ? 'Edit Content' : 'New Content Item'}>
         <div className="space-y-4">
           <div>

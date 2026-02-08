@@ -2,16 +2,19 @@ import { useState } from 'react';
 import PageShell from '../components/layout/PageShell';
 import StatusBadge from '../components/shared/StatusBadge';
 import Modal from '../components/shared/Modal';
+import ErrorState from '../components/shared/ErrorState';
 import { team } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
+import { useToast } from '../context/ToastContext';
 import type { TeamMember } from '../types';
 
 export default function Team() {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<Partial<TeamMember>>({});
   const [saving, setSaving] = useState(false);
+  const { showToast } = useToast();
 
-  const { data: membersData, loading, refetch } = useApi<TeamMember[]>(() => team.list(), []);
+  const { data: membersData, loading, error, refetch } = useApi<TeamMember[]>(() => team.list(), []);
   const members = membersData || [];
 
   const humans = members.filter((m) => m.type === 'human');
@@ -22,8 +25,9 @@ export default function Team() {
     try {
       if (editing.id) await team.update(editing.id, editing);
       else await team.create(editing);
+      showToast('Team member saved successfully', 'success');
       setShowModal(false); setEditing({}); refetch();
-    } catch {} finally { setSaving(false); }
+    } catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); } finally { setSaving(false); }
   }
 
   function renderMemberCard(member: TeamMember) {
@@ -69,6 +73,8 @@ export default function Team() {
 
   return (
     <PageShell title="Team" subtitle="Human team members and AI agents">
+      {error && <ErrorState error={error} onRetry={refetch} />}
+      {!error && <>
       {/* Human Team */}
       <div className="mb-8">
         <h3 className="text-sm font-medium text-white mb-4">Human Team</h3>
@@ -101,6 +107,7 @@ export default function Team() {
         )}
       </div>
 
+      </>}
       {/* Edit Modal */}
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editing.id ? 'Edit Profile' : 'New Team Member'}>
         <div className="space-y-4">

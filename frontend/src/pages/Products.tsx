@@ -2,8 +2,10 @@ import { useState } from 'react';
 import PageShell from '../components/layout/PageShell';
 import StatusBadge from '../components/shared/StatusBadge';
 import Modal from '../components/shared/Modal';
+import ErrorState from '../components/shared/ErrorState';
 import { products } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
+import { useToast } from '../context/ToastContext';
 import type { Product, ProductFeature } from '../types';
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -18,8 +20,9 @@ export default function Products() {
   const [editing, setEditing] = useState<Partial<Product>>({});
   const [features, setFeatures] = useState<ProductFeature[]>([]);
   const [featuresLoading, setFeaturesLoading] = useState(false);
+  const { showToast } = useToast();
 
-  const { data: productsData, loading, refetch } = useApi<Product[]>(() => products.list(), []);
+  const { data: productsData, loading, error, refetch } = useApi<Product[]>(() => products.list(), []);
   const productList = productsData || [];
 
   async function loadFeatures(productId: string) {
@@ -27,7 +30,7 @@ export default function Products() {
     try {
       const resp = await products.getFeatures(productId);
       setFeatures(resp.data.data || []);
-    } catch { setFeatures([]); }
+    } catch (err: any) { setFeatures([]); showToast(err.response?.data?.error || 'Failed to load features', 'error'); }
     finally { setFeaturesLoading(false); }
   }
 
@@ -37,11 +40,12 @@ export default function Products() {
     setShowModal(true);
   }
 
-  // Collect all features from all products for roadmap
-  const allFeatures = productList.flatMap((p) => (p.features || []) as ProductFeature[]);
+  // Features are loaded per-product via the modal, not from the list endpoint
 
   return (
     <PageShell title="Products & Services" subtitle="Product catalog and feature roadmap">
+      {error && <ErrorState error={error} onRetry={refetch} />}
+      {!error && <>
       {/* Product Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {loading ? (
@@ -82,39 +86,10 @@ export default function Products() {
       {/* Feature Roadmap */}
       <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-5">
         <h3 className="text-sm font-medium text-white mb-4">Feature Roadmap</h3>
-        {loading ? (
-          <div className="space-y-3 animate-pulse">
-            {[1, 2, 3].map((i) => <div key={i} className="h-10 bg-navy-700 rounded" />)}
-          </div>
-        ) : allFeatures.length === 0 ? (
-          <p className="text-gray-500 text-sm">No features in roadmap yet.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(['planned', 'in_progress', 'released'] as const).map((status) => {
-              const items = allFeatures.filter((f) => f.status === status);
-              return (
-                <div key={status}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <StatusBadge status={status} size="md" />
-                    <span className="text-xs text-gray-500">{items.length} items</span>
-                  </div>
-                  <div className="space-y-2">
-                    {items.map((f, i) => (
-                      <div key={f.id || i} className="p-3 bg-navy-700/50 rounded-lg">
-                        <p className="text-sm text-white">{f.name}</p>
-                        {f.description && <p className="text-xs text-gray-400 mt-1">{f.description}</p>}
-                        {f.target_date && <p className="text-xs text-gray-500 mt-1">Target: {f.target_date.slice(0, 10)}</p>}
-                      </div>
-                    ))}
-                    {items.length === 0 && <p className="text-xs text-gray-600">No items</p>}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        <p className="text-gray-400 text-sm">Select a product above to view its roadmap features.</p>
       </div>
 
+      </>}
       {/* Product Detail Modal */}
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editing.name || 'Product Details'} size="lg">
         <div className="space-y-4">
