@@ -2,6 +2,8 @@ import { createContext, useState, useEffect, ReactNode } from 'react';
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut as firebaseSignOut,
 } from 'firebase/auth';
 import { auth as firebaseAuth } from '../config/firebase';
@@ -13,6 +15,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   logout: () => void;
 }
 
@@ -74,13 +77,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  async function loginWithGoogle() {
+    const provider = new GoogleAuthProvider();
+    const credential = await signInWithPopup(firebaseAuth, provider);
+    const tokenResult = await credential.user.getIdTokenResult();
+    const role = (tokenResult.claims.role as 'admin' | 'viewer') || 'viewer';
+    setUser({
+      uid: credential.user.uid,
+      email: credential.user.email || '',
+      name: credential.user.displayName || credential.user.email || '',
+      role,
+    });
+
+    try {
+      await authApi.syncSession();
+    } catch {
+      // Non-critical
+    }
+  }
+
   function logout() {
     firebaseSignOut(firebaseAuth);
     setUser(null);
   }
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, loginWithGoogle, logout }}>
       {children}
     </AuthContext.Provider>
   );
