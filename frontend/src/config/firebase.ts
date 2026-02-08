@@ -2,9 +2,9 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  apiKey: 'AIzaSyDSgGJd_xl5a9fYG5hdDituPWWboSDB_84',
+  authDomain: 'ascent-xr-business.firebaseapp.com',
+  projectId: 'ascent-xr-business',
 };
 
 const app = initializeApp(firebaseConfig);
