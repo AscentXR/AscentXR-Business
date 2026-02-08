@@ -95,6 +95,50 @@ class BrandService {
     });
     return byType;
   }
+
+  // ========================
+  // ENHANCED DASHBOARD
+  // ========================
+
+  async getDashboardMetrics() {
+    const result = await query(
+      `SELECT
+        COUNT(*) as total_assets,
+        COUNT(*) FILTER (WHERE status = 'active') as active_assets,
+        COUNT(DISTINCT asset_type) as asset_types,
+        COUNT(DISTINCT category) as categories
+       FROM brand_assets`
+    );
+
+    const byType = await query(
+      `SELECT asset_type, COUNT(*) as count FROM brand_assets WHERE status = 'active' GROUP BY asset_type ORDER BY count DESC`
+    );
+
+    const r = result.rows[0];
+    // Simple consistency score based on asset coverage
+    const requiredTypes = ['logo', 'color', 'font', 'template', 'guideline'];
+    const existingTypes = byType.rows.map(t => t.asset_type);
+    const coverage = requiredTypes.filter(t => existingTypes.includes(t)).length / requiredTypes.length;
+
+    return {
+      total_assets: parseInt(r.total_assets),
+      active_assets: parseInt(r.active_assets),
+      asset_types: parseInt(r.asset_types),
+      consistency_score: Math.round(coverage * 100),
+      coverage_by_type: byType.rows
+    };
+  }
+
+  async getConsistencyScore() {
+    const metrics = await this.getDashboardMetrics();
+    return {
+      score: metrics.consistency_score,
+      coverage_by_type: metrics.coverage_by_type,
+      recommendations: metrics.consistency_score < 80
+        ? ['Add missing brand asset types', 'Ensure all core brand elements are documented']
+        : ['Brand assets are well-documented', 'Consider adding seasonal variations']
+    };
+  }
 }
 
 // Route-compatible aliases

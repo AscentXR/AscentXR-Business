@@ -24,9 +24,10 @@ export function useToast() {
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = useCallback((message: string, type: ToastType = 'info') => {
+  const showToast = useCallback((message: any, type: ToastType = 'info') => {
     const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type }]);
+    const msg = typeof message === 'string' ? message : message?.message || 'An error occurred';
+    setToasts((prev) => [...prev, { id, message: msg, type }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 5000);

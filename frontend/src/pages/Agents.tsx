@@ -81,17 +81,16 @@ export default function Agents() {
   const agentCtx = useContext(AgentContext);
   const { showToast } = useToast();
 
-  const { data: agentsResponse, loading: agentsLoading, error: agentsError, refetch: refetchAgents } = useApi<{
-    agents: Agent[];
-    systemMetrics: any;
-  }>(() => agents.list(), []);
+  const { data: agentList, loading: agentsLoading, error: agentsError, refetch: refetchAgents } = useApi<Agent[]>(
+    () => agents.list(), []
+  );
   const {
     data: tasksData,
     loading: tasksLoading,
     refetch: refetchTasks,
   } = useApi<AgentTask[]>(() => agents.getTasks(), []);
 
-  const agentList = agentsResponse?.agents || [];
+  const safeAgentList = agentList || [];
   const tasks = tasksData || [];
 
   async function handleExecute() {
@@ -186,7 +185,7 @@ export default function Agents() {
   }
 
   // Analytics data
-  const tasksPerAgent = agentList.map((a) => ({
+  const tasksPerAgent = safeAgentList.map((a) => ({
     name: a.name,
     completed: a.tasks_completed,
     total: a.total_tasks,
@@ -235,7 +234,7 @@ export default function Agents() {
                     <div className="h-2 bg-navy-700 rounded w-3/4" />
                   </div>
                 ))
-              : agentList.map((agent) => (
+              : safeAgentList.map((agent) => (
                   <div
                     key={agent.id}
                     className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-5"
@@ -503,7 +502,7 @@ export default function Agents() {
               className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#7C3AED]"
             >
               <option value="">Select an agent...</option>
-              {agentList.map((a) => (
+              {safeAgentList.map((a) => (
                 <option key={a.id} value={a.id}>
                   {a.name}
                 </option>

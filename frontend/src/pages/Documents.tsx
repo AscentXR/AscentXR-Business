@@ -1,12 +1,16 @@
 import { useState, useMemo } from 'react';
 import PageShell from '../components/layout/PageShell';
+import TabBar from '../components/shared/TabBar';
 import SearchInput from '../components/shared/SearchInput';
 import Modal from '../components/shared/Modal';
 import StatusBadge from '../components/shared/StatusBadge';
 import ErrorState from '../components/shared/ErrorState';
-import { documents } from '../api/endpoints';
+import AgentTriggerButton from '../components/shared/AgentTriggerButton';
+import { documents, knowledgeBase, businessActivities } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
-import type { Document } from '../types';
+import type { Document, KnowledgeBaseArticle, BusinessActivity } from '../types';
+
+const TABS = ['Documents', 'Knowledge Base', 'Activities'];
 
 const FILE_ICONS: Record<string, { icon: string; color: string }> = {
   'application/pdf': { icon: 'PDF', color: 'text-red-400 bg-red-500/20' },
@@ -31,16 +35,24 @@ function formatFileSize(bytes?: number) {
 }
 
 export default function Documents() {
+  const [tab, setTab] = useState('Documents');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
+  const [kbSearch, setKbSearch] = useState('');
+  const [activityFilter, setActivityFilter] = useState('All');
+  const [selectedArticle, setSelectedArticle] = useState<KnowledgeBaseArticle | null>(null);
 
   const { data: docsData, loading, error, refetch } = useApi<Document[]>(() => documents.list(), []);
   const { data: categoriesData } = useApi<string[]>(() => documents.getCategories(), []);
+  const { data: kbData } = useApi<{ articles: KnowledgeBaseArticle[]; total: number }>(() => knowledgeBase.getArticles({ business_area: 'documents' }), []);
+  const { data: activitiesData } = useApi<{ activities: BusinessActivity[]; total: number }>(() => businessActivities.getActivities({ business_area: 'documents' }), []);
 
   const docs = docsData || [];
   const categories = categoriesData || [];
+  const kbArticles = kbData?.articles || [];
+  const activities = activitiesData?.activities || [];
 
   const filteredDocs = useMemo(() => {
     let filtered = docs;
@@ -69,8 +81,11 @@ export default function Documents() {
 
   return (
     <PageShell title="Documents" subtitle="Document library and file management">
+      <TabBar tabs={TABS} active={tab} onChange={setTab} />
       {error && <ErrorState error={error} onRetry={refetch} />}
-      {!error && <>
+
+      {/* Documents Tab */}
+      {tab === 'Documents' && !error && <>
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar */}
         <div className="lg:w-64 flex-shrink-0">
@@ -229,6 +244,101 @@ export default function Documents() {
       </div>
 
       </>}
+
+      {/* Knowledge Base Tab */}
+      {tab === 'Knowledge Base' && (
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <SearchInput value={kbSearch} onChange={setKbSearch} placeholder="Search knowledge base..." />
+            </div>
+            <AgentTriggerButton agentId="content-creator" label="Research Document Management" prompt="Research best practices for document management and organization for an EdTech startup" businessArea="documents" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {kbArticles
+              .filter((a) => {
+                if (!kbSearch.trim()) return true;
+                const q = kbSearch.toLowerCase();
+                return a.title.toLowerCase().includes(q) || a.summary?.toLowerCase().includes(q) || a.tags?.some((t) => t.toLowerCase().includes(q));
+              })
+              .sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0) || (b.priority || 0) - (a.priority || 0))
+              .map((article) => (
+                <div
+                  key={article.id}
+                  className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-4 hover:border-[#2563EB]/30 transition-colors cursor-pointer"
+                  onClick={() => setSelectedArticle(article)}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <h4 className="text-sm font-medium text-white line-clamp-2">{article.title}</h4>
+                    {article.is_pinned && <span className="text-yellow-400 text-xs ml-2">Pinned</span>}
+                  </div>
+                  {article.summary && <p className="text-xs text-gray-400 line-clamp-2 mb-3">{article.summary}</p>}
+                  {article.tags && article.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {article.tags.slice(0, 3).map((tag, i) => (
+                        <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-navy-700 text-gray-400">{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            {kbArticles.length === 0 && (
+              <div className="col-span-full text-center py-12 text-gray-500 text-sm">No knowledge base articles yet.</div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Activities Tab */}
+      {tab === 'Activities' && (
+        <div className="space-y-6">
+          <div className="flex flex-wrap gap-2">
+            {['All', 'asap', 'high', 'medium', 'low'].map((p) => (
+              <button
+                key={p}
+                onClick={() => setActivityFilter(p)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  activityFilter === p
+                    ? p === 'asap' ? 'bg-red-500/20 text-red-400 ring-1 ring-red-500/40'
+                    : p === 'high' ? 'bg-orange-500/20 text-orange-400 ring-1 ring-orange-500/40'
+                    : p === 'medium' ? 'bg-yellow-500/20 text-yellow-400 ring-1 ring-yellow-500/40'
+                    : p === 'low' ? 'bg-green-500/20 text-green-400 ring-1 ring-green-500/40'
+                    : 'bg-[#2563EB]/20 text-[#2563EB] ring-1 ring-[#2563EB]/40'
+                    : 'bg-navy-800 text-gray-400 hover:text-white'
+                }`}
+              >
+                {p === 'All' ? 'All' : p.toUpperCase()}
+              </button>
+            ))}
+          </div>
+          <div className="space-y-3">
+            {activities
+              .filter((a) => activityFilter === 'All' || a.priority === activityFilter)
+              .map((activity) => (
+                <div key={activity.id} className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <StatusBadge status={activity.priority} />
+                        <h4 className="text-sm font-medium text-white">{activity.title}</h4>
+                      </div>
+                      {activity.description && <p className="text-xs text-gray-400 mt-1">{activity.description}</p>}
+                      <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                        {activity.due_date && <span>Due: {activity.due_date.slice(0, 10)}</span>}
+                        {activity.assigned_to && <span>Assigned: {activity.assigned_to}</span>}
+                      </div>
+                    </div>
+                    <StatusBadge status={activity.status} />
+                  </div>
+                </div>
+              ))}
+            {activities.length === 0 && (
+              <div className="text-center py-12 text-gray-500 text-sm">No activities yet.</div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Document Detail Modal */}
       <Modal isOpen={!!selectedDoc} onClose={() => setSelectedDoc(null)} title="Document Details">
         {selectedDoc && (
@@ -279,6 +389,21 @@ export default function Documents() {
             <div className="flex justify-end gap-3 pt-2">
               <button onClick={() => setSelectedDoc(null)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Close</button>
             </div>
+          </div>
+        )}
+      </Modal>
+      {/* KB Article Detail Modal */}
+      <Modal isOpen={!!selectedArticle} onClose={() => setSelectedArticle(null)} title={selectedArticle?.title || ''}>
+        {selectedArticle && (
+          <div className="space-y-4">
+            {selectedArticle.tags && selectedArticle.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {selectedArticle.tags.map((tag, i) => (
+                  <span key={i} className="text-xs px-2 py-1 rounded-full bg-[#2563EB]/20 text-[#2563EB]">{tag}</span>
+                ))}
+              </div>
+            )}
+            <div className="prose prose-invert prose-sm max-w-none text-gray-300 whitespace-pre-wrap">{selectedArticle.content}</div>
           </div>
         )}
       </Modal>

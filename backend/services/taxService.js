@@ -208,6 +208,46 @@ class TaxService {
       estimated_savings: Math.round(totalDeductions * 0.25 * 100) / 100 // approximate 25% tax rate
     };
   }
+
+  // ========================
+  // ENHANCED DASHBOARD
+  // ========================
+
+  async getDashboardMetrics() {
+    const [upcoming, deductions, rdCredits] = await Promise.all([
+      query(`SELECT COUNT(*) as count FROM tax_events WHERE status != 'completed' AND due_date >= CURRENT_DATE`),
+      query(`SELECT COALESCE(SUM(amount), 0) as total FROM tax_deductions WHERE tax_year = EXTRACT(YEAR FROM CURRENT_DATE)`),
+      query(`SELECT COALESCE(SUM(amount), 0) as total FROM tax_deductions WHERE tax_year = EXTRACT(YEAR FROM CURRENT_DATE) AND is_r_and_d = true`)
+    ]);
+
+    const totalDeductions = parseFloat(deductions.rows[0].total);
+    const rdTotal = parseFloat(rdCredits.rows[0].total);
+
+    return {
+      upcoming_deadlines: parseInt(upcoming.rows[0].count),
+      total_deductions: totalDeductions,
+      r_and_d_credits: Math.round(rdTotal * 0.20),
+      estimated_liability: Math.round(totalDeductions * 0.25),
+      estimated_savings: Math.round(totalDeductions * 0.25)
+    };
+  }
+
+  async getStateObligations() {
+    return [
+      { state: 'Indiana', corporate_rate: 4.9, individual_rate: 3.05, sales_tax: 7.0, filing_required: true, nexus: true },
+      { state: 'Ohio', corporate_rate: 0, individual_rate: 0, sales_tax: 5.75, filing_required: false, nexus: false, notes: 'No income tax on pass-through, CAT applies at $150K+ revenue' },
+      { state: 'Illinois', corporate_rate: 9.5, individual_rate: 4.95, sales_tax: 6.25, filing_required: false, nexus: false },
+      { state: 'Michigan', corporate_rate: 6.0, individual_rate: 4.25, sales_tax: 6.0, filing_required: false, nexus: false }
+    ];
+  }
+
+  async getEntityComparison() {
+    return [
+      { entity_type: 'LLC (Current)', tax_treatment: 'Pass-through', self_employment_tax: '15.3% on all profit', liability_protection: 'Yes', complexity: 'Low', annual_cost: '$31 biennial', recommended_when: 'Revenue under $60K' },
+      { entity_type: 'S-Corporation', tax_treatment: 'Pass-through', self_employment_tax: '15.3% on salary only', liability_protection: 'Yes', complexity: 'Medium', annual_cost: '$1,500-3,000/yr accounting', recommended_when: 'Revenue $60K-$500K' },
+      { entity_type: 'C-Corporation', tax_treatment: 'Double taxation (21% + dividends)', self_employment_tax: 'None (salary taxed)', liability_protection: 'Yes', complexity: 'High', annual_cost: '$3,000-5,000/yr accounting', recommended_when: 'VC funding or revenue $500K+' }
+    ];
+  }
 }
 
 // Route-compatible aliases

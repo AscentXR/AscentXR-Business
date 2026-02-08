@@ -89,6 +89,9 @@ app.use('/api/customer-success', authenticateToken, require('./routes/customerSu
 app.use('/api/partnerships', authenticateToken, require('./routes/partnerships'));
 app.use('/api/notifications', authenticateToken, require('./routes/notifications'));
 app.use('/api/search', authenticateToken, require('./routes/search'));
+app.use('/api/knowledge-base', authenticateToken, require('./routes/knowledgeBase'));
+app.use('/api/business-activities', authenticateToken, require('./routes/businessActivities'));
+app.use('/api/forecasts', authenticateToken, require('./routes/forecasts'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

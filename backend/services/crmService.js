@@ -168,6 +168,58 @@ class CRMService {
       createdAt: new Date().toISOString()
     };
   }
+
+  // ========================
+  // ENHANCED METRICS
+  // ========================
+
+  async getPipelineForecast() {
+    const result = await query(
+      `SELECT stage,
+        COUNT(*) as deal_count,
+        SUM(opportunity_value) as total_value,
+        AVG(probability) as avg_probability,
+        SUM(opportunity_value * probability / 100) as weighted_value
+       FROM pipeline
+       GROUP BY stage
+       ORDER BY MIN(probability) ASC`
+    );
+
+    const totalWeighted = result.rows.reduce((s, r) => s + parseFloat(r.weighted_value || 0), 0);
+
+    return {
+      stages: result.rows,
+      total_weighted_value: totalWeighted,
+      forecast_confidence: totalWeighted > 100000 ? 'high' : totalWeighted > 50000 ? 'medium' : 'low'
+    };
+  }
+
+  async getPipelineVelocity() {
+    // Calculate average deal cycle time and velocity
+    const result = await query(
+      `SELECT
+        COUNT(*) as total_deals,
+        AVG(opportunity_value) as avg_deal_size,
+        SUM(opportunity_value) as total_pipeline,
+        AVG(probability) as avg_win_rate
+       FROM pipeline`
+    );
+
+    const r = result.rows[0];
+    const avgDealSize = parseFloat(r.avg_deal_size || 0);
+    const winRate = parseFloat(r.avg_win_rate || 0) / 100;
+    const totalDeals = parseInt(r.total_deals || 0);
+    // Estimated sales cycle: 9 months for K-12
+    const salesCycleMonths = 9;
+
+    return {
+      total_deals: totalDeals,
+      avg_deal_size: Math.round(avgDealSize),
+      avg_win_rate: Math.round(winRate * 100),
+      sales_cycle_months: salesCycleMonths,
+      monthly_velocity: Math.round((totalDeals * avgDealSize * winRate) / salesCycleMonths)
+    };
+  }
 }
 
 module.exports = new CRMService();

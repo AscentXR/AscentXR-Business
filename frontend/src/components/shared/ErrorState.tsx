@@ -12,7 +12,7 @@ export default function ErrorState({ error, onRetry }: ErrorStateProps) {
         <AlertTriangle size={24} className="text-red-400" />
       </div>
       <h3 className="text-sm font-medium text-white mb-1">Failed to load data</h3>
-      <p className="text-xs text-gray-400 text-center max-w-sm mb-4">{error}</p>
+      <p className="text-xs text-gray-400 text-center max-w-sm mb-4">{typeof error === 'string' ? error : (error as any)?.message || 'An error occurred'}</p>
       {onRetry && (
         <button
           onClick={onRetry}

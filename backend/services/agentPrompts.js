@@ -488,6 +488,31 @@ ${context.pipeline ? `Joint pipeline:\n${context.pipeline}` : ''}`
 };
 
 /**
+ * Map agent IDs to their primary business area for knowledge base lookups.
+ */
+const AGENT_BUSINESS_AREA_MAP = {
+  'content-creator': 'marketing',
+  'crm-specialist': 'sales',
+  'financial-controller': 'finance',
+  'sdr-agent': 'sales',
+  'proposal-agent': 'sales',
+  'analytics-agent': null, // cross-functional
+  'tax-agent': 'taxes',
+  'cs-agent': 'customer_success',
+  'mission-director': null, // cross-functional
+  'brand-agent': 'brand',
+  'compliance-agent': 'legal',
+  'partner-agent': 'partnerships',
+};
+
+/**
+ * Get the business area for an agent.
+ */
+function mapAgentToBusinessArea(agentId) {
+  return AGENT_BUSINESS_AREA_MAP[agentId] || null;
+}
+
+/**
  * Build the system prompt for an agent given its ID and context.
  * Falls back to a generic prompt if the agent ID is not recognized.
  */
@@ -497,6 +522,57 @@ function buildPrompt(agentId, context = {}) {
     return `${BASE_IDENTITY}\n\nYou are an AI assistant for Ascent XR. Complete the requested task professionally and thoroughly.\n\n${context ? `Context:\n${JSON.stringify(context, null, 2)}` : ''}`;
   }
   return agent.systemPrompt(context);
+}
+
+/**
+ * Build an enhanced prompt that injects relevant knowledge base articles,
+ * goals, and activities for the agent's business area.
+ *
+ * @param {string} agentId - The agent identifier
+ * @param {object} context - Existing context data
+ * @param {object} kbContext - Knowledge base context { articles, goals, activities }
+ * @returns {string} Enhanced system prompt
+ */
+function buildEnhancedPrompt(agentId, context = {}, kbContext = {}) {
+  const basePrompt = buildPrompt(agentId, context);
+
+  const sections = [];
+
+  if (kbContext.articles && kbContext.articles.length > 0) {
+    const articleSummaries = kbContext.articles
+      .sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0) || (b.priority || 0) - (a.priority || 0))
+      .slice(0, 5)
+      .map(a => `- ${a.title}: ${a.summary || a.content.substring(0, 150)}`)
+      .join('\n');
+    sections.push(`\nRelevant Knowledge Base:\n${articleSummaries}`);
+  }
+
+  if (kbContext.goals && kbContext.goals.length > 0) {
+    const goalSummaries = kbContext.goals
+      .filter(g => g.goal_type === 'objective')
+      .slice(0, 3)
+      .map(g => `- ${g.title} (${g.status}, ${g.progress}% complete)`)
+      .join('\n');
+    if (goalSummaries) {
+      sections.push(`\nCurrent Goals:\n${goalSummaries}`);
+    }
+  }
+
+  if (kbContext.activities && kbContext.activities.length > 0) {
+    const urgentActivities = kbContext.activities
+      .filter(a => a.status !== 'completed' && a.status !== 'cancelled')
+      .filter(a => a.priority === 'asap' || a.priority === 'high')
+      .slice(0, 5)
+      .map(a => `- [${a.priority.toUpperCase()}] ${a.title}${a.due_date ? ` (due: ${a.due_date})` : ''}`)
+      .join('\n');
+    if (urgentActivities) {
+      sections.push(`\nUrgent Action Items:\n${urgentActivities}`);
+    }
+  }
+
+  if (sections.length === 0) return basePrompt;
+
+  return basePrompt + '\n\n--- Agent Knowledge Context ---' + sections.join('\n');
 }
 
 /**
@@ -517,4 +593,4 @@ function listAgents() {
   }));
 }
 
-module.exports = { buildPrompt, getAgentRole, listAgents, AGENT_PROMPTS };
+module.exports = { buildPrompt, buildEnhancedPrompt, getAgentRole, listAgents, mapAgentToBusinessArea, AGENT_PROMPTS };

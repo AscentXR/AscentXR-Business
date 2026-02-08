@@ -6,6 +6,7 @@ import type {
   Partner, PartnerDeal, TeamMember, Contract, ComplianceItem,
   BrandAsset, AgentTask, Notification, SearchResult,
   Contact, Deal, SchoolDistrict, LinkedInPost, Document, Agent,
+  KnowledgeBaseArticle, BusinessActivity, Forecast,
 } from '../types';
 
 // Auth
@@ -51,6 +52,11 @@ export const finance = {
   createBudget: (data: Partial<Budget>) => api.post<ApiResponse<Budget>>('/finance/budgets', data),
   updateBudget: (id: string, data: Partial<Budget>) => api.put<ApiResponse<Budget>>(`/finance/budgets/${id}`, data),
   getSummary: () => api.get('/finance/summary'),
+  getDashboardMetrics: () => api.get('/finance/dashboard-metrics'),
+  getPnL: (period?: string) => api.get('/finance/pnl', { params: { period } }),
+  getRevenueTarget: () => api.get('/finance/revenue-target'),
+  getBurnRate: () => api.get('/finance/burn-rate'),
+  getRunway: () => api.get('/finance/runway'),
 };
 
 // Goals
@@ -81,6 +87,9 @@ export const taxes = {
   getDeductions: (params?: { tax_year?: number; category?: string }) => api.get<ApiResponse<TaxDeduction[]>>('/taxes/deductions', { params }),
   createDeduction: (data: Partial<TaxDeduction>) => api.post<ApiResponse<TaxDeduction>>('/taxes/deductions', data),
   getSummary: (tax_year?: number) => api.get('/taxes/summary', { params: { tax_year } }),
+  getDashboardMetrics: () => api.get('/taxes/dashboard-metrics'),
+  getStateObligations: () => api.get('/taxes/state-obligations'),
+  getEntityComparison: () => api.get('/taxes/entity-comparison'),
 };
 
 // Customer Success
@@ -94,6 +103,9 @@ export const customerSuccess = {
   createTicket: (data: Partial<SupportTicket>) => api.post<ApiResponse<SupportTicket>>('/customer-success/tickets', data),
   updateTicket: (id: string, data: Partial<SupportTicket>) => api.put<ApiResponse<SupportTicket>>(`/customer-success/tickets/${id}`, data),
   getRenewals: () => api.get('/customer-success/renewals'),
+  getChurnPrediction: () => api.get('/customer-success/churn-prediction'),
+  getNPSSummary: () => api.get('/customer-success/nps-summary'),
+  getCustomerJourney: (districtId: string) => api.get(`/customer-success/journey/${districtId}`),
 };
 
 // Partnerships
@@ -130,6 +142,8 @@ export const brand = {
   create: (data: Partial<BrandAsset>) => api.post<ApiResponse<BrandAsset>>('/brand', data),
   update: (id: string, data: Partial<BrandAsset>) => api.put<ApiResponse<BrandAsset>>(`/brand/${id}`, data),
   delete: (id: string) => api.delete(`/brand/${id}`),
+  getDashboardMetrics: () => api.get('/brand/dashboard-metrics'),
+  getConsistencyScore: () => api.get('/brand/consistency-score'),
 };
 
 // Agents
@@ -174,6 +188,42 @@ export const linkedin = {
   getPosts: () => api.get<ApiResponse<LinkedInPost[]>>('/linkedin/posts'),
   schedulePost: (data: { text: string; scheduledTime: string }) => api.post('/linkedin/schedule', data),
   deletePost: (id: string) => api.delete(`/linkedin/posts/${id}`),
+};
+
+// Knowledge Base
+export const knowledgeBase = {
+  getArticles: (params?: { business_area?: string; category?: string; search?: string; page?: number; limit?: number }) =>
+    api.get<ApiResponse<{ articles: KnowledgeBaseArticle[]; total: number }>>('/knowledge-base', { params }),
+  getArticle: (id: string) => api.get<ApiResponse<KnowledgeBaseArticle>>(`/knowledge-base/${id}`),
+  createArticle: (data: Partial<KnowledgeBaseArticle>) => api.post<ApiResponse<KnowledgeBaseArticle>>('/knowledge-base', data),
+  updateArticle: (id: string, data: Partial<KnowledgeBaseArticle>) => api.put<ApiResponse<KnowledgeBaseArticle>>(`/knowledge-base/${id}`, data),
+  deleteArticle: (id: string) => api.delete(`/knowledge-base/${id}`),
+  search: (q: string) => api.get<ApiResponse<KnowledgeBaseArticle[]>>('/knowledge-base/search', { params: { q } }),
+};
+
+// Business Activities
+export const businessActivities = {
+  getActivities: (params?: { business_area?: string; status?: string; priority?: string; page?: number; limit?: number }) =>
+    api.get<ApiResponse<{ activities: BusinessActivity[]; total: number }>>('/business-activities', { params }),
+  getActivity: (id: string) => api.get<ApiResponse<BusinessActivity>>(`/business-activities/${id}`),
+  createActivity: (data: Partial<BusinessActivity>) => api.post<ApiResponse<BusinessActivity>>('/business-activities', data),
+  updateActivity: (id: string, data: Partial<BusinessActivity>) => api.put<ApiResponse<BusinessActivity>>(`/business-activities/${id}`, data),
+  deleteActivity: (id: string) => api.delete(`/business-activities/${id}`),
+  getOverdue: () => api.get<ApiResponse<BusinessActivity[]>>('/business-activities/overdue'),
+  getUpcoming: (days?: number) => api.get<ApiResponse<BusinessActivity[]>>('/business-activities/upcoming', { params: { days } }),
+};
+
+// Forecasts
+export const forecasts = {
+  getForecasts: (params?: { business_area?: string; forecast_type?: string; scenario?: string }) =>
+    api.get<ApiResponse<Forecast[]>>('/forecasts', { params }),
+  getForecast: (id: string) => api.get<ApiResponse<Forecast>>(`/forecasts/${id}`),
+  createForecast: (data: Partial<Forecast>) => api.post<ApiResponse<Forecast>>('/forecasts', data),
+  updateForecast: (id: string, data: Partial<Forecast>) => api.put<ApiResponse<Forecast>>(`/forecasts/${id}`, data),
+  deleteForecast: (id: string) => api.delete(`/forecasts/${id}`),
+  getBurnRate: () => api.get('/forecasts/burn-rate'),
+  getRunway: () => api.get('/forecasts/runway'),
+  getRevenueTarget: () => api.get('/forecasts/revenue-target'),
 };
 
 // Documents (existing)

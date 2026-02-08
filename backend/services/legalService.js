@@ -244,6 +244,62 @@ class LegalService {
       expiring_contracts: expiringContracts.rows
     };
   }
+
+  // ========================
+  // ENHANCED METRICS
+  // ========================
+
+  async getRiskAssessment() {
+    const [compliance, contracts, overdue] = await Promise.all([
+      query(`SELECT
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE status = 'non_compliant') as non_compliant,
+        COUNT(*) FILTER (WHERE status = 'needs_review') as needs_review,
+        COUNT(*) FILTER (WHERE priority IN ('critical', 'high') AND status != 'compliant') as high_priority_gaps
+       FROM compliance_items`),
+      query(`SELECT
+        COUNT(*) FILTER (WHERE end_date < CURRENT_DATE AND status IN ('active', 'signed')) as expired,
+        COUNT(*) FILTER (WHERE end_date <= CURRENT_DATE + INTERVAL '30 days' AND end_date >= CURRENT_DATE AND status IN ('active', 'signed')) as expiring_soon
+       FROM contracts`),
+      query(`SELECT COUNT(*) as count FROM compliance_items WHERE next_review_date < CURRENT_DATE AND status != 'compliant'`)
+    ]);
+
+    const c = compliance.rows[0];
+    const ct = contracts.rows[0];
+    const totalIssues = parseInt(c.non_compliant) + parseInt(c.needs_review) + parseInt(ct.expired) + parseInt(overdue.rows[0].count);
+    const riskScore = Math.max(0, 100 - (totalIssues * 10));
+
+    return {
+      risk_score: riskScore,
+      risk_level: riskScore >= 80 ? 'low' : riskScore >= 50 ? 'medium' : 'high',
+      non_compliant_items: parseInt(c.non_compliant),
+      needs_review: parseInt(c.needs_review),
+      high_priority_gaps: parseInt(c.high_priority_gaps),
+      expired_contracts: parseInt(ct.expired),
+      expiring_contracts: parseInt(ct.expiring_soon),
+      overdue_reviews: parseInt(overdue.rows[0].count)
+    };
+  }
+
+  async getComplianceByFramework() {
+    const result = await query(
+      `SELECT framework,
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE status = 'compliant') as compliant,
+        COUNT(*) FILTER (WHERE status = 'in_progress') as in_progress,
+        COUNT(*) FILTER (WHERE status = 'non_compliant') as non_compliant,
+        COUNT(*) FILTER (WHERE status = 'not_started') as not_started,
+        COUNT(*) FILTER (WHERE status = 'needs_review') as needs_review
+       FROM compliance_items
+       GROUP BY framework
+       ORDER BY framework`
+    );
+
+    return result.rows.map(r => ({
+      ...r,
+      compliance_rate: parseInt(r.total) > 0 ? Math.round((parseInt(r.compliant) / parseInt(r.total)) * 100) : 0
+    }));
+  }
 }
 
 module.exports = new LegalService();

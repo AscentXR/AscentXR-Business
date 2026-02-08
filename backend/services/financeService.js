@@ -397,6 +397,123 @@ class FinanceService {
 
     return cashFlow;
   }
+
+  // ========================
+  // ENHANCED DASHBOARD METRICS
+  // ========================
+
+  async getDashboardMetrics() {
+    const [revenue, expenses, outstanding, burnRate] = await Promise.all([
+      query(`SELECT COALESCE(SUM(total), 0) as total FROM invoices WHERE status = 'paid'`),
+      query(`SELECT COALESCE(SUM(amount), 0) as total FROM expenses`),
+      query(`SELECT COALESCE(SUM(total - paid_amount), 0) as total FROM invoices WHERE status NOT IN ('paid', 'cancelled')`),
+      query(`SELECT COALESCE(AVG(monthly_total), 0) as avg_burn FROM (
+        SELECT SUM(amount) as monthly_total FROM expenses
+        WHERE expense_date >= CURRENT_DATE - INTERVAL '3 months'
+        GROUP BY to_char(expense_date, 'YYYY-MM')
+      ) m`)
+    ]);
+
+    const totalRevenue = parseFloat(revenue.rows[0].total);
+    const totalExpenses = parseFloat(expenses.rows[0].total);
+    const monthlyBurn = parseFloat(burnRate.rows[0].avg_burn);
+    const cashPosition = totalRevenue - totalExpenses;
+
+    return {
+      total_revenue: totalRevenue,
+      total_expenses: totalExpenses,
+      net_income: totalRevenue - totalExpenses,
+      outstanding: parseFloat(outstanding.rows[0].total),
+      monthly_burn: monthlyBurn,
+      runway_months: monthlyBurn > 0 ? Math.round((cashPosition / monthlyBurn) * 10) / 10 : 999,
+      cash_position: cashPosition,
+      revenue_target: 300000,
+      revenue_progress: Math.round((totalRevenue / 300000) * 10000) / 100
+    };
+  }
+
+  async getPnL({ period = '' } = {}) {
+    let revenueCondition = "status = 'paid'";
+    let expenseCondition = '1=1';
+    const params = [];
+
+    if (period) {
+      revenueCondition += ` AND to_char(paid_date, 'YYYY-MM') = $1`;
+      expenseCondition = `to_char(expense_date, 'YYYY-MM') = $1`;
+      params.push(period);
+    }
+
+    const [revenueResult, expenseResult, expenseBreakdown] = await Promise.all([
+      query(`SELECT COALESCE(SUM(total), 0) as revenue FROM invoices WHERE ${revenueCondition}`, params),
+      query(`SELECT COALESCE(SUM(amount), 0) as expenses FROM expenses WHERE ${expenseCondition}`, params),
+      query(`SELECT category, COALESCE(SUM(amount), 0) as total FROM expenses WHERE ${expenseCondition} GROUP BY category ORDER BY total DESC`, params)
+    ]);
+
+    const revenue = parseFloat(revenueResult.rows[0].revenue);
+    const expenses = parseFloat(expenseResult.rows[0].expenses);
+
+    return {
+      revenue,
+      expenses,
+      net_income: revenue - expenses,
+      margin: revenue > 0 ? Math.round(((revenue - expenses) / revenue) * 10000) / 100 : 0,
+      expense_breakdown: expenseBreakdown.rows,
+      period: period || 'all-time'
+    };
+  }
+
+  async getRevenueTarget() {
+    const target = 300000;
+    const [revenueResult, pipelineResult] = await Promise.all([
+      query(`SELECT COALESCE(SUM(total), 0) as current FROM invoices WHERE status = 'paid'`),
+      query(`SELECT COALESCE(SUM(opportunity_value * probability / 100), 0) as weighted FROM pipeline`)
+    ]);
+
+    const current = parseFloat(revenueResult.rows[0].current);
+    const weighted = parseFloat(pipelineResult.rows[0].weighted);
+
+    return {
+      target,
+      current,
+      percentage: Math.round((current / target) * 10000) / 100,
+      remaining: target - current,
+      weighted_pipeline: weighted,
+      projected: current + weighted
+    };
+  }
+
+  async getBurnRate() {
+    const result = await query(
+      `SELECT to_char(expense_date, 'YYYY-MM') as month, SUM(amount) as total
+       FROM expenses WHERE expense_date >= CURRENT_DATE - INTERVAL '6 months'
+       GROUP BY to_char(expense_date, 'YYYY-MM') ORDER BY month DESC`
+    );
+    const months = result.rows;
+    const avg3 = months.slice(0, 3).reduce((s, m) => s + parseFloat(m.total), 0) / Math.max(months.slice(0, 3).length, 1);
+    const avg6 = months.reduce((s, m) => s + parseFloat(m.total), 0) / Math.max(months.length, 1);
+
+    return {
+      monthly_data: months,
+      avg_3_month: Math.round(avg3),
+      avg_6_month: Math.round(avg6),
+      trend: months.length >= 2 ? (parseFloat(months[0]?.total || 0) > parseFloat(months[1]?.total || 0) ? 'increasing' : 'decreasing') : 'stable'
+    };
+  }
+
+  async getRunway() {
+    const [cashResult, burnResult] = await Promise.all([
+      query(`SELECT (SELECT COALESCE(SUM(total), 0) FROM invoices WHERE status = 'paid') - (SELECT COALESCE(SUM(amount), 0) FROM expenses) as cash`),
+      this.getBurnRate()
+    ]);
+    const cash = parseFloat(cashResult.rows[0].cash);
+    const burn = burnResult.avg_3_month || 1;
+
+    return {
+      cash_on_hand: cash,
+      monthly_burn: burn,
+      months_remaining: burn > 0 ? Math.round((cash / burn) * 10) / 10 : 999
+    };
+  }
 }
 
 const instance = new FinanceService();

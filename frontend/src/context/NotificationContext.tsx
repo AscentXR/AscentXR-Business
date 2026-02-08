@@ -26,7 +26,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       const response = await notifApi.list();
-      setNotifications(response.data.data || []);
+      const raw: any = response.data.data;
+      setNotifications(Array.isArray(raw) ? raw : raw?.notifications || []);
       const countResp = await notifApi.getUnreadCount();
       setUnreadCount(countResp.data.data?.count || 0);
     } catch {

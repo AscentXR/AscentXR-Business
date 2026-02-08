@@ -433,6 +433,120 @@ export interface LinkedInPost {
 }
 
 // ============================================================
+// Knowledge Base
+// ============================================================
+
+export interface KnowledgeBaseArticle {
+  id: string;
+  business_area: string;
+  category: string;
+  title: string;
+  summary?: string;
+  content: string;
+  tags: string[];
+  is_pinned: boolean;
+  priority: number;
+  author?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// ============================================================
+// Business Activities
+// ============================================================
+
+export interface BusinessActivity {
+  id: string;
+  business_area: string;
+  title: string;
+  description?: string;
+  priority: 'asap' | 'high' | 'medium' | 'low';
+  status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+  due_date?: string;
+  assigned_to?: string;
+  recurrence?: string;
+  completed_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// ============================================================
+// Forecasts
+// ============================================================
+
+export interface Forecast {
+  id: string;
+  business_area: string;
+  forecast_type: string;
+  period: string;
+  metric?: string;
+  projected_value?: number;
+  actual_value?: number;
+  confidence: 'high' | 'medium' | 'low';
+  scenario: 'conservative' | 'baseline' | 'optimistic';
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BurnRateData {
+  monthly_burn: number;
+  last_month: number;
+  max_monthly: number;
+  min_monthly: number;
+}
+
+export interface RunwayData {
+  cash_on_hand: number;
+  monthly_burn: number;
+  months_remaining: number;
+}
+
+export interface RevenueTarget {
+  target: number;
+  current: number;
+  percentage: number;
+  remaining: number;
+  weighted_pipeline: number;
+  projected: number;
+}
+
+export interface PnLSummary {
+  revenue: number;
+  expenses: number;
+  net_income: number;
+  margin: number;
+  expense_breakdown: { category: string; total: number }[];
+  period: string;
+}
+
+export interface TaxDashboardMetrics {
+  upcoming_deadlines: number;
+  total_deductions: number;
+  r_and_d_credits: number;
+  estimated_liability: number;
+  estimated_savings: number;
+}
+
+export interface EntityComparison {
+  entity_type: string;
+  tax_treatment: string;
+  self_employment_tax: string;
+  liability_protection: string;
+  complexity: string;
+  annual_cost: string;
+  recommended_when: string;
+}
+
+export interface BrandDashboardMetrics {
+  total_assets: number;
+  active_assets: number;
+  asset_types: number;
+  consistency_score: number;
+  coverage_by_type: { asset_type: string; count: number }[];
+}
+
+// ============================================================
 // Documents (existing)
 // ============================================================
 

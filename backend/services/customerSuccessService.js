@@ -437,6 +437,71 @@ class CustomerSuccessService {
       onboarding: onboardingStats.rows[0]
     };
   }
+
+  // ========================
+  // ENHANCED METRICS
+  // ========================
+
+  async getChurnPrediction() {
+    const result = await query(
+      `SELECT ch.*, sd.name as school_district_name, sd.state
+       FROM customer_health ch
+       LEFT JOIN school_districts sd ON ch.school_district_id = sd.id
+       WHERE ch.risk_level IN ('at_risk', 'critical')
+       ORDER BY ch.overall_score ASC`
+    );
+
+    const atRiskValue = result.rows.reduce((s, r) => s + parseFloat(r.contract_value || 0), 0);
+
+    return {
+      at_risk_customers: result.rows,
+      at_risk_count: result.rows.length,
+      at_risk_revenue: atRiskValue,
+      churn_probability: result.rows.length > 0 ? Math.round((result.rows.filter(r => r.risk_level === 'critical').length / result.rows.length) * 100) : 0
+    };
+  }
+
+  async getNPSSummary() {
+    const result = await query(
+      `SELECT
+        COUNT(*) FILTER (WHERE nps_score >= 9) as promoters,
+        COUNT(*) FILTER (WHERE nps_score >= 7 AND nps_score <= 8) as passives,
+        COUNT(*) FILTER (WHERE nps_score <= 6) as detractors,
+        COUNT(*) FILTER (WHERE nps_score IS NOT NULL) as total_responses,
+        AVG(nps_score) as avg_score
+       FROM customer_health WHERE nps_score IS NOT NULL`
+    );
+
+    const r = result.rows[0];
+    const total = parseInt(r.total_responses) || 1;
+    const promoterPct = parseInt(r.promoters) / total * 100;
+    const detractorPct = parseInt(r.detractors) / total * 100;
+
+    return {
+      nps_score: Math.round(promoterPct - detractorPct),
+      promoters: parseInt(r.promoters),
+      passives: parseInt(r.passives),
+      detractors: parseInt(r.detractors),
+      total_responses: parseInt(r.total_responses),
+      avg_score: r.avg_score ? parseFloat(r.avg_score).toFixed(1) : null
+    };
+  }
+
+  async getCustomerJourney(districtId) {
+    const [health, milestones, tickets, communications] = await Promise.all([
+      query('SELECT * FROM customer_health WHERE school_district_id = $1', [districtId]),
+      query('SELECT * FROM onboarding_milestones WHERE school_district_id = $1 ORDER BY milestone_order ASC', [districtId]),
+      query('SELECT * FROM support_tickets WHERE school_district_id = $1 ORDER BY created_at DESC LIMIT 20', [districtId]),
+      query('SELECT * FROM communications WHERE school_district_id = $1 ORDER BY date DESC LIMIT 20', [districtId])
+    ]);
+
+    return {
+      health: health.rows[0] || null,
+      milestones: milestones.rows,
+      tickets: tickets.rows,
+      communications: communications.rows
+    };
+  }
 }
 
 // Route-compatible aliases
