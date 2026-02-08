@@ -71,7 +71,7 @@ router.post('/workflows/:id/run', async (req, res, next) => {
   try {
     const data = await marketingSkillsService.startWorkflowRun(req.params.id, {
       context: req.body.context || {},
-      created_by: req.body.created_by || req.user?.username || 'system'
+      created_by: req.body.created_by || req.user?.email || 'system'
     });
     res.status(201).json({ success: true, data });
   } catch (err) { next(err); }

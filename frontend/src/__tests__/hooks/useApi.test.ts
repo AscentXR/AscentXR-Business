@@ -21,7 +21,8 @@ describe('useApi', () => {
       expect(result.current.loading).toBe(false);
     });
 
-    expect(result.current.data).toEqual(mockData);
+    // useApi auto-unwraps objects that contain an array key, so { items: ['a','b'] } becomes ['a','b']
+    expect(result.current.data).toEqual(['a', 'b']);
     expect(result.current.error).toBeNull();
   });
 

@@ -32,7 +32,7 @@ vi.mock('../../hooks/useWebSocket', () => ({
 }));
 
 vi.mock('../../hooks/useAuth', () => ({
-  useAuth: vi.fn().mockReturnValue({ user: { username: 'admin', name: 'Admin', role: 'CEO' }, token: 'tok', isAuthenticated: true, login: vi.fn(), logout: vi.fn() }),
+  useAuth: vi.fn().mockReturnValue({ user: { uid: 'test-uid', email: 'admin@ascentxr.com', name: 'Admin', role: 'admin' }, isAuthenticated: true, loading: false, login: vi.fn(), logout: vi.fn() }),
 }));
 
 vi.mock('../../components/shared/AgentTriggerButton', () => ({

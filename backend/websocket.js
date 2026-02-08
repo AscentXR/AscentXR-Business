@@ -1,28 +1,34 @@
 const { Server } = require('socket.io');
-const jwt = require('jsonwebtoken');
-
-const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-production';
 
 let io = null;
 
 function initWebSocket(server) {
+  const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || 'http://localhost:5173,http://localhost:3000').split(',').map(o => o.trim());
+
   io = new Server(server, {
     cors: {
-      origin: '*',
+      origin: allowedOrigins,
       methods: ['GET', 'POST'],
+      credentials: true
     },
     transports: ['websocket', 'polling'],
   });
 
   // Authentication middleware
-  io.use((socket, next) => {
+  io.use(async (socket, next) => {
     const token = socket.handshake.auth.token;
     if (!token) {
       return next(new Error('Authentication required'));
     }
     try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      socket.user = decoded;
+      const { getAuth } = require('./config/firebase');
+      const decoded = await getAuth().verifyIdToken(token, true);
+      socket.user = {
+        uid: decoded.uid,
+        email: decoded.email,
+        name: decoded.name || decoded.email,
+        role: decoded.role || 'viewer'
+      };
       next();
     } catch (err) {
       next(new Error('Invalid token'));
@@ -31,25 +37,40 @@ function initWebSocket(server) {
 
   io.on('connection', (socket) => {
     const user = socket.user;
-    console.log(`WebSocket connected: ${user.username} (${socket.id})`);
+    console.log(`WebSocket connected: ${user.email} (${socket.id})`);
 
     // Join user-specific room
-    socket.join(`user:${user.username}`);
+    socket.join(`user:${user.email}`);
 
     // Join role-based room
     socket.join(`role:${user.role}`);
 
+    // Track rooms per socket for limits
+    let taskRoomCount = 0;
+    const MAX_TASK_ROOMS = 10;
+
     // Subscribe to agent task updates
     socket.on('agent:subscribe', (taskId) => {
+      if (typeof taskId !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(taskId) || taskId.length > 100) {
+        return;
+      }
+      if (taskRoomCount >= MAX_TASK_ROOMS) {
+        return;
+      }
+      taskRoomCount++;
       socket.join(`task:${taskId}`);
     });
 
     socket.on('agent:unsubscribe', (taskId) => {
+      if (typeof taskId !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(taskId) || taskId.length > 100) {
+        return;
+      }
+      taskRoomCount = Math.max(0, taskRoomCount - 1);
       socket.leave(`task:${taskId}`);
     });
 
     socket.on('disconnect', () => {
-      console.log(`WebSocket disconnected: ${user.username} (${socket.id})`);
+      console.log(`WebSocket disconnected: ${user.email} (${socket.id})`);
     });
   });
 
@@ -68,9 +89,9 @@ function broadcast(event, data) {
 }
 
 // Emit to a specific user
-function emitToUser(username, event, data) {
+function emitToUser(email, event, data) {
   if (io) {
-    io.to(`user:${username}`).emit(event, data);
+    io.to(`user:${email}`).emit(event, data);
   }
 }
 

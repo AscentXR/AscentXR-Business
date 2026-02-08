@@ -9,14 +9,26 @@ import type {
   KnowledgeBaseArticle, BusinessActivity, Forecast,
   MarketingSkill, SkillCategory, MarketingWorkflow, MarketingWorkflowDetail,
   WorkflowRun, WorkflowRunDetail,
+  SalesSkill, SalesWorkflow, SalesWorkflowRun, SalesWorkflowRunDetail,
 } from '../types';
 
 // Auth
 export const auth = {
-  login: (username: string, password: string) =>
-    api.post('/auth/login', { username, password }),
   logout: () => api.post('/auth/logout'),
   session: () => api.get('/auth/session'),
+  syncSession: () => api.post('/auth/session/sync'),
+};
+
+// Admin User Management
+export const adminUsers = {
+  list: () => api.get('/admin/users'),
+  create: (data: { email: string; displayName: string; password: string; role: string }) =>
+    api.post('/admin/users', data),
+  updateRole: (uid: string, role: string) => api.put(`/admin/users/${uid}`, { role }),
+  disable: (uid: string) => api.put(`/admin/users/${uid}/disable`),
+  enable: (uid: string) => api.put(`/admin/users/${uid}/enable`),
+  resetPassword: (uid: string) => api.post(`/admin/users/${uid}/reset-password`),
+  delete: (uid: string) => api.delete(`/admin/users/${uid}`),
 };
 
 // CRM / Sales
@@ -248,6 +260,28 @@ export const marketingSkills = {
     api.post<ApiResponse<any>>(`/marketing/workflow-runs/${id}/advance`),
   cancelWorkflowRun: (id: string) =>
     api.post<ApiResponse<WorkflowRun>>(`/marketing/workflow-runs/${id}/cancel`),
+};
+
+// Sales Skills & Workflows
+export const salesSkills = {
+  getSkills: (params?: { category?: string; search?: string; agent_id?: string }) =>
+    api.get<ApiResponse<{ skills: SalesSkill[]; total: number }>>('/sales/skills', { params }),
+  getCategories: () => api.get<ApiResponse<SkillCategory[]>>('/sales/skills/categories'),
+  getSkill: (id: string) => api.get<ApiResponse<SalesSkill>>(`/sales/skills/${id}`),
+  executeSkill: (id: string, context?: any) =>
+    api.post<ApiResponse<{ task_id: string; skill: string; agent_id: string }>>(`/sales/skills/${id}/execute`, { context }),
+  getWorkflows: (params?: { category?: string }) =>
+    api.get<ApiResponse<SalesWorkflow[]>>('/sales/workflows', { params }),
+  getWorkflow: (id: string) => api.get<ApiResponse<SalesWorkflowRunDetail>>(`/sales/workflows/${id}`),
+  startWorkflowRun: (id: string, data?: { context?: any }) =>
+    api.post<ApiResponse<SalesWorkflowRun>>(`/sales/workflows/${id}/run`, data),
+  getWorkflowRuns: (params?: { status?: string }) =>
+    api.get<ApiResponse<SalesWorkflowRun[]>>('/sales/workflow-runs', { params }),
+  getWorkflowRun: (id: string) => api.get<ApiResponse<SalesWorkflowRunDetail>>(`/sales/workflow-runs/${id}`),
+  advanceWorkflowRun: (id: string) =>
+    api.post<ApiResponse<any>>(`/sales/workflow-runs/${id}/advance`),
+  cancelWorkflowRun: (id: string) =>
+    api.post<ApiResponse<SalesWorkflowRun>>(`/sales/workflow-runs/${id}/cancel`),
 };
 
 // Documents (existing)

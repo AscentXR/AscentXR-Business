@@ -13,9 +13,9 @@ function createWrapper(contextValue: any) {
 describe('useAuth', () => {
   it('returns context value when within AuthProvider', () => {
     const mockValue = {
-      user: { username: 'admin', name: 'Admin User', role: 'CEO' as const },
-      token: 'mock-token',
+      user: { uid: 'test-uid', email: 'admin@ascentxr.com', name: 'Admin User', role: 'admin' as const },
       isAuthenticated: true,
+      loading: false,
       login: vi.fn(),
       logout: vi.fn(),
     };
@@ -24,9 +24,8 @@ describe('useAuth', () => {
       wrapper: createWrapper(mockValue),
     });
 
-    expect(result.current.user?.username).toBe('admin');
+    expect(result.current.user?.email).toBe('admin@ascentxr.com');
     expect(result.current.isAuthenticated).toBe(true);
-    expect(result.current.token).toBe('mock-token');
   });
 
   it('throws when used outside AuthProvider', () => {
@@ -39,8 +38,8 @@ describe('useAuth', () => {
     const login = vi.fn();
     const mockValue = {
       user: null,
-      token: null,
       isAuthenticated: false,
+      loading: false,
       login,
       logout: vi.fn(),
     };
@@ -49,16 +48,16 @@ describe('useAuth', () => {
       wrapper: createWrapper(mockValue),
     });
 
-    result.current.login('admin', 'password');
-    expect(login).toHaveBeenCalledWith('admin', 'password');
+    result.current.login('admin@test.com', 'password');
+    expect(login).toHaveBeenCalledWith('admin@test.com', 'password');
   });
 
   it('provides logout function', () => {
     const logout = vi.fn();
     const mockValue = {
-      user: { username: 'admin', name: 'Admin', role: 'CEO' as const },
-      token: 'tok',
+      user: { uid: 'test-uid', email: 'admin@ascentxr.com', name: 'Admin', role: 'admin' as const },
       isAuthenticated: true,
+      loading: false,
       login: vi.fn(),
       logout,
     };
@@ -74,8 +73,8 @@ describe('useAuth', () => {
   it('reflects unauthenticated state', () => {
     const mockValue = {
       user: null,
-      token: null,
       isAuthenticated: false,
+      loading: false,
       login: vi.fn(),
       logout: vi.fn(),
     };
@@ -86,5 +85,21 @@ describe('useAuth', () => {
 
     expect(result.current.isAuthenticated).toBe(false);
     expect(result.current.user).toBeNull();
+  });
+
+  it('exposes loading state', () => {
+    const mockValue = {
+      user: null,
+      isAuthenticated: false,
+      loading: true,
+      login: vi.fn(),
+      logout: vi.fn(),
+    };
+
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: createWrapper(mockValue),
+    });
+
+    expect(result.current.loading).toBe(true);
   });
 });

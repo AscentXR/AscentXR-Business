@@ -17,35 +17,46 @@
     "seed": "psql $DATABASE_URL -f db/seeds/001_sample_data.sql && psql $DATABASE_URL -f db/seeds/002_control_center_seed.sql",
     "hash-password": "node -e \"const bcrypt=require('bcrypt'); bcrypt.hash(process.argv[1], 12).then(h => console.log(h))\" --"
   },
-  "keywords": ["linkedin", "crm", "api", "dashboard", "ascent-xr", "education", "xr", "control-center"],
+  "keywords": [
+    "linkedin",
+    "crm",
+    "api",
+    "dashboard",
+    "ascent-xr",
+    "education",
+    "xr",
+    "control-center"
+  ],
   "author": "Ascent XR",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "axios": "^1.6.5",
-    "multer": "^1.4.5-lts.1",
+    "@anthropic-ai/sdk": "^0.24.0",
     "archiver": "^7.0.1",
+    "axios": "^1.6.5",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "express-session": "^1.17.3",
+    "express-validator": "^7.3.1",
+    "firebase-admin": "^13.6.1",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "node-cron": "^3.0.3",
     "passport": "^0.7.0",
     "passport-linkedin": "^1.0.0",
-    "express-session": "^1.17.3",
-    "helmet": "^7.1.0",
-    "morgan": "^1.10.0",
-    "winston": "^3.11.0",
     "pg": "^8.13.0",
     "redis": "^4.6.12",
-    "bcrypt": "^5.1.1",
-    "jsonwebtoken": "^9.0.2",
-    "express-rate-limit": "^7.1.5",
     "socket.io": "^4.7.4",
-    "@anthropic-ai/sdk": "^0.24.0",
-    "node-cron": "^3.0.3"
+    "winston": "^3.11.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2",
     "jest": "^29.7.0",
-    "supertest": "^6.3.4",
-    "socket.io-client": "^4.7.4"
+    "nodemon": "^3.0.2",
+    "socket.io-client": "^4.7.4",
+    "supertest": "^6.3.4"
   }
 }

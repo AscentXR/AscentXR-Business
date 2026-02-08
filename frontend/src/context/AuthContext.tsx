@@ -1,54 +1,86 @@
 import { createContext, useState, useEffect, ReactNode } from 'react';
-import { auth } from '../api/endpoints';
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut as firebaseSignOut,
+} from 'firebase/auth';
+import { auth as firebaseAuth } from '../config/firebase';
+import { auth as authApi } from '../api/endpoints';
 import type { User } from '../types';
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem('user');
-    return stored ? JSON.parse(stored) : null;
-  });
-  const [token, setToken] = useState<string | null>(() =>
-    localStorage.getItem('token')
-  );
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const isAuthenticated = !!token && !!user;
+  const isAuthenticated = !!user;
 
   useEffect(() => {
-    if (token) {
-      auth.session().catch(() => {
-        logout();
-      });
-    }
+    const unsubscribe = onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          const tokenResult = await firebaseUser.getIdTokenResult();
+          const role = (tokenResult.claims.role as 'admin' | 'viewer') || 'viewer';
+          setUser({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email || '',
+            name: firebaseUser.displayName || firebaseUser.email || '',
+            role,
+          });
+
+          // Sync user to backend database
+          try {
+            await authApi.syncSession();
+          } catch {
+            // Non-critical - backend sync can fail silently
+          }
+        } catch {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  async function login(username: string, password: string) {
-    const response = await auth.login(username, password);
-    const { token: newToken, user: userData } = response.data;
-    localStorage.setItem('token', newToken);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setToken(newToken);
-    setUser(userData);
+  async function login(email: string, password: string) {
+    const credential = await signInWithEmailAndPassword(firebaseAuth, email, password);
+    const tokenResult = await credential.user.getIdTokenResult();
+    const role = (tokenResult.claims.role as 'admin' | 'viewer') || 'viewer';
+    setUser({
+      uid: credential.user.uid,
+      email: credential.user.email || '',
+      name: credential.user.displayName || credential.user.email || '',
+      role,
+    });
+
+    // Sync user to backend
+    try {
+      await authApi.syncSession();
+    } catch {
+      // Non-critical
+    }
   }
 
   function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setToken(null);
+    firebaseSignOut(firebaseAuth);
     setUser(null);
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

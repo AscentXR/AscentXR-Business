@@ -91,8 +91,14 @@ router.post('/zip', async (req, res, next) => {
 router.get('/download/:filename', (req, res, next) => {
   try {
     const { filename } = req.params;
-    const exportDir = process.env.EXPORT_DIR || './exports';
-    const filePath = path.join(exportDir, filename);
+    if (!/^[a-zA-Z0-9._-]+$/.test(filename)) {
+      return res.status(400).json({ success: false, error: 'Invalid filename' });
+    }
+    const exportDir = path.resolve(process.env.EXPORT_DIR || './exports');
+    const filePath = path.resolve(exportDir, filename);
+    if (!filePath.startsWith(exportDir)) {
+      return res.status(400).json({ success: false, error: 'Invalid file path' });
+    }
     
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({
@@ -159,8 +165,14 @@ router.get('/list', (req, res, next) => {
 router.delete('/:filename', (req, res, next) => {
   try {
     const { filename } = req.params;
-    const exportDir = process.env.EXPORT_DIR || './exports';
-    const filePath = path.join(exportDir, filename);
+    if (!/^[a-zA-Z0-9._-]+$/.test(filename)) {
+      return res.status(400).json({ success: false, error: 'Invalid filename' });
+    }
+    const exportDir = path.resolve(process.env.EXPORT_DIR || './exports');
+    const filePath = path.resolve(exportDir, filename);
+    if (!filePath.startsWith(exportDir)) {
+      return res.status(400).json({ success: false, error: 'Invalid file path' });
+    }
     
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({

@@ -5,6 +5,7 @@ import StatusBadge from '../components/shared/StatusBadge';
 import Modal from '../components/shared/Modal';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../context/ToastContext';
+import { adminUsers } from '../api/endpoints';
 
 const TABS = ['General', 'Integrations', 'API Keys', 'Users'];
 
@@ -79,10 +80,93 @@ export default function Settings() {
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [newKeyName, setNewKeyName] = useState('');
 
+  // User management state
+  const [managedUsers, setManagedUsers] = useState<any[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [showCreateUserModal, setShowCreateUserModal] = useState(false);
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserPassword, setNewUserPassword] = useState('');
+  const [newUserRole, setNewUserRole] = useState('viewer');
+
   function handleSaveSettings() {
     const settings = { companyName, timezone, currency, dateFormat, emailNotifications, pushNotifications, weeklyDigest, agentAlerts, darkMode };
     localStorage.setItem('settings', JSON.stringify(settings));
     showToast('Settings saved successfully', 'success');
+  }
+
+  useEffect(() => {
+    if (tab === 'Users' && user?.role === 'admin') {
+      loadUsers();
+    }
+  }, [tab, user?.role]);
+
+  async function loadUsers() {
+    setUsersLoading(true);
+    try {
+      const res = await adminUsers.list();
+      setManagedUsers(res.data.data || []);
+    } catch {
+      showToast('Failed to load users', 'error');
+    } finally {
+      setUsersLoading(false);
+    }
+  }
+
+  async function handleCreateUser() {
+    try {
+      await adminUsers.create({ email: newUserEmail, displayName: newUserName, password: newUserPassword, role: newUserRole });
+      showToast('User created successfully', 'success');
+      setShowCreateUserModal(false);
+      setNewUserEmail('');
+      setNewUserName('');
+      setNewUserPassword('');
+      setNewUserRole('viewer');
+      loadUsers();
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to create user', 'error');
+    }
+  }
+
+  async function handleRoleChange(uid: string, newRole: string) {
+    try {
+      await adminUsers.updateRole(uid, newRole);
+      showToast('Role updated', 'success');
+      loadUsers();
+    } catch {
+      showToast('Failed to update role', 'error');
+    }
+  }
+
+  async function handleDisableUser(uid: string) {
+    try {
+      await adminUsers.disable(uid);
+      showToast('User disabled', 'success');
+      loadUsers();
+    } catch {
+      showToast('Failed to disable user', 'error');
+    }
+  }
+
+  async function handleEnableUser(uid: string) {
+    try {
+      await adminUsers.enable(uid);
+      showToast('User enabled', 'success');
+      loadUsers();
+    } catch {
+      showToast('Failed to enable user', 'error');
+    }
+  }
+
+  async function handleDeleteUser(uid: string) {
+    if (!confirm('Are you sure you want to delete this user?')) return;
+    try {
+      await adminUsers.delete(uid);
+      showToast('User deleted', 'success');
+      loadUsers();
+    } catch {
+      showToast('Failed to delete user', 'error');
+    }
   }
 
   return (
@@ -263,49 +347,82 @@ export default function Settings() {
       {/* Users */}
       {tab === 'Users' && (
         <div className="max-w-3xl space-y-4">
-          <p className="text-sm text-gray-400">Manage user access and permissions.</p>
-          <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl overflow-hidden">
-            <div className="grid grid-cols-12 gap-2 px-4 py-2 border-b border-navy-700 text-xs text-gray-500 font-medium">
-              <div className="col-span-3">Name</div>
-              <div className="col-span-3">Username</div>
-              <div className="col-span-3">Role</div>
-              <div className="col-span-3">Status</div>
+          {user?.role === 'admin' ? (
+            <>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gray-400">Manage user access and permissions.</p>
+                <button onClick={() => setShowCreateUserModal(true)} className="px-4 py-2 bg-[#2563EB] text-white text-sm rounded-lg hover:bg-[#2563EB]/80">+ Create User</button>
+              </div>
+              {usersLoading ? (
+                <div className="flex justify-center py-8">
+                  <svg className="w-6 h-6 animate-spin text-gray-400" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                </div>
+              ) : (
+                <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl overflow-hidden">
+                  <div className="grid grid-cols-12 gap-2 px-4 py-2 border-b border-navy-700 text-xs text-gray-500 font-medium">
+                    <div className="col-span-3">Name</div>
+                    <div className="col-span-3">Email</div>
+                    <div className="col-span-2">Role</div>
+                    <div className="col-span-2">Status</div>
+                    <div className="col-span-2">Actions</div>
+                  </div>
+                  {managedUsers.map((u: any) => (
+                    <div key={u.firebase_uid || u.id} className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-navy-700/50 hover:bg-navy-700/30 transition-colors items-center">
+                      <div className="col-span-3 flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-[#2563EB]/20 flex items-center justify-center">
+                          <span className="text-xs font-bold text-[#2563EB]">
+                            {(u.display_name || u.email || '?').split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
+                          </span>
+                        </div>
+                        <span className="text-sm text-white">{u.display_name || u.email}</span>
+                      </div>
+                      <div className="col-span-3 text-sm text-gray-400 truncate">{u.email}</div>
+                      <div className="col-span-2">
+                        <span className={`text-xs px-2 py-1 rounded-full ${u.role === 'admin' ? 'bg-ascent-blue/20 text-ascent-blue' : 'bg-learning-purple/20 text-learning-purple'}`}>
+                          {u.role === 'admin' ? 'Admin' : 'Viewer'}
+                        </span>
+                      </div>
+                      <div className="col-span-2">
+                        <StatusBadge status={u.is_enabled !== false ? 'active' : 'error'} />
+                      </div>
+                      <div className="col-span-2 flex gap-1">
+                        <button
+                          onClick={() => handleRoleChange(u.firebase_uid, u.role === 'admin' ? 'viewer' : 'admin')}
+                          className="text-xs px-2 py-1 text-gray-400 hover:text-white bg-navy-700 rounded"
+                          title={`Change to ${u.role === 'admin' ? 'viewer' : 'admin'}`}
+                        >
+                          Role
+                        </button>
+                        <button
+                          onClick={() => u.is_enabled !== false ? handleDisableUser(u.firebase_uid) : handleEnableUser(u.firebase_uid)}
+                          className="text-xs px-2 py-1 text-gray-400 hover:text-white bg-navy-700 rounded"
+                        >
+                          {u.is_enabled !== false ? 'Disable' : 'Enable'}
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(u.firebase_uid)}
+                          className="text-xs px-2 py-1 text-red-400 hover:text-red-300 bg-navy-700 rounded"
+                        >
+                          Del
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {managedUsers.length === 0 && (
+                    <div className="px-4 py-6 text-center text-sm text-gray-500">No users found</div>
+                  )}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-8 text-center">
+              <p className="text-gray-400">You don't have permission to manage users.</p>
+              <p className="text-xs text-gray-500 mt-2">Contact an administrator for access.</p>
             </div>
-            {user && (
-              <div className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-navy-700/50 items-center">
-                <div className="col-span-3 flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-[#2563EB]/20 flex items-center justify-center">
-                    <span className="text-xs font-bold text-[#2563EB]">{user.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}</span>
-                  </div>
-                  <span className="text-sm text-white">{user.name}</span>
-                </div>
-                <div className="col-span-3 text-sm text-gray-400">{user.username}</div>
-                <div className="col-span-3">
-                  <span className="text-xs px-2 py-1 rounded-full bg-[#7C3AED]/20 text-[#7C3AED]">{user.role}</span>
-                </div>
-                <div className="col-span-3"><StatusBadge status="active" /></div>
-              </div>
-            )}
-            {/* Additional placeholder users */}
-            {[
-              { name: 'Sarah Chen', username: 'sarah', role: 'CTO', initials: 'SC' },
-              { name: 'Alex Rivera', username: 'alex', role: 'VP Sales', initials: 'AR' },
-            ].map((u) => (
-              <div key={u.username} className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-navy-700/50 items-center">
-                <div className="col-span-3 flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-400">{u.initials}</span>
-                  </div>
-                  <span className="text-sm text-white">{u.name}</span>
-                </div>
-                <div className="col-span-3 text-sm text-gray-400">{u.username}</div>
-                <div className="col-span-3">
-                  <span className="text-xs px-2 py-1 rounded-full bg-navy-700 text-gray-400">{u.role}</span>
-                </div>
-                <div className="col-span-3"><StatusBadge status="active" /></div>
-              </div>
-            ))}
-          </div>
+          )}
         </div>
       )}
 
@@ -322,6 +439,34 @@ export default function Settings() {
           <div className="flex justify-end gap-3 pt-2">
             <button onClick={() => setShowApiKeyModal(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
             <button onClick={() => { setShowApiKeyModal(false); setNewKeyName(''); }} disabled={!newKeyName.trim()} className="px-4 py-2 bg-[#2563EB] text-white text-sm rounded-lg disabled:opacity-50">Generate</button>
+          </div>
+        </div>
+      </Modal>
+      {/* Create User Modal */}
+      <Modal isOpen={showCreateUserModal} onClose={() => setShowCreateUserModal(false)} title="Create User">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Email</label>
+            <input value={newUserEmail} onChange={(e) => setNewUserEmail(e.target.value)} type="email" placeholder="user@example.com" className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#2563EB]" />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Display Name</label>
+            <input value={newUserName} onChange={(e) => setNewUserName(e.target.value)} placeholder="Full Name" className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#2563EB]" />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Temporary Password</label>
+            <input value={newUserPassword} onChange={(e) => setNewUserPassword(e.target.value)} type="password" placeholder="Min 6 characters" className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#2563EB]" />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Role</label>
+            <select value={newUserRole} onChange={(e) => setNewUserRole(e.target.value)} className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#2563EB]">
+              <option value="viewer">Viewer</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div className="flex justify-end gap-3 pt-2">
+            <button onClick={() => setShowCreateUserModal(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+            <button onClick={handleCreateUser} disabled={!newUserEmail.trim() || !newUserPassword.trim() || newUserPassword.length < 6} className="px-4 py-2 bg-[#2563EB] text-white text-sm rounded-lg disabled:opacity-50">Create User</button>
           </div>
         </div>
       </Modal>

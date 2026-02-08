@@ -42,12 +42,12 @@ export default function Header() {
               <span
                 className={clsx(
                   'inline-block text-xs px-2 py-0.5 rounded-full font-medium mt-0.5',
-                  user.role === 'CEO'
+                  user.role === 'admin'
                     ? 'bg-ascent-blue/20 text-ascent-blue'
                     : 'bg-learning-purple/20 text-learning-purple'
                 )}
               >
-                {user.role}
+                {user.role === 'admin' ? 'Admin' : 'Viewer'}
               </span>
             </div>
             <div className="w-8 h-8 rounded-full bg-ascent-blue flex items-center justify-center text-sm font-bold">

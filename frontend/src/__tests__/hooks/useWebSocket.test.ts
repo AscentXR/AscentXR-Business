@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const mockOn = vi.fn();
@@ -16,9 +16,9 @@ vi.mock('socket.io-client', () => ({
 
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: vi.fn().mockReturnValue({
-    token: 'mock-token',
-    user: { username: 'admin', name: 'Admin', role: 'CEO' },
+    user: { uid: 'test-uid', email: 'admin@ascentxr.com', name: 'Admin', role: 'admin' },
     isAuthenticated: true,
+    loading: false,
     login: vi.fn(),
     logout: vi.fn(),
   }),
@@ -39,7 +39,9 @@ describe('useWebSocket', () => {
   it('creates socket connection when token exists', async () => {
     const { io } = await import('socket.io-client');
     renderHook(() => useWebSocket());
-    expect(io).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(io).toHaveBeenCalled();
+    });
   });
 
   it('provides subscribe function', () => {

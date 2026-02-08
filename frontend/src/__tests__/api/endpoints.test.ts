@@ -14,16 +14,47 @@ vi.mock('../../api/client', () => ({
   },
 }));
 
-import { auth, crm, finance, goals } from '../../api/endpoints';
+import { auth, crm, finance, goals, adminUsers } from '../../api/endpoints';
 
 describe('API Endpoints', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('auth.login calls POST /auth/login with credentials', async () => {
-    await auth.login('admin', 'password');
-    expect(mockPost).toHaveBeenCalledWith('/auth/login', { username: 'admin', password: 'password' });
+  it('auth.session calls GET /auth/session', async () => {
+    await auth.session();
+    expect(mockGet).toHaveBeenCalledWith('/auth/session');
+  });
+
+  it('auth.syncSession calls POST /auth/session/sync', async () => {
+    await auth.syncSession();
+    expect(mockPost).toHaveBeenCalledWith('/auth/session/sync');
+  });
+
+  it('auth.logout calls POST /auth/logout', async () => {
+    await auth.logout();
+    expect(mockPost).toHaveBeenCalledWith('/auth/logout');
+  });
+
+  it('adminUsers.list calls GET /admin/users', async () => {
+    await adminUsers.list();
+    expect(mockGet).toHaveBeenCalledWith('/admin/users');
+  });
+
+  it('adminUsers.create calls POST /admin/users', async () => {
+    const data = { email: 'test@test.com', displayName: 'Test', password: 'pass123', role: 'viewer' };
+    await adminUsers.create(data);
+    expect(mockPost).toHaveBeenCalledWith('/admin/users', data);
+  });
+
+  it('adminUsers.updateRole calls PUT /admin/users/:uid', async () => {
+    await adminUsers.updateRole('uid-123', 'admin');
+    expect(mockPut).toHaveBeenCalledWith('/admin/users/uid-123', { role: 'admin' });
+  });
+
+  it('adminUsers.delete calls DELETE /admin/users/:uid', async () => {
+    await adminUsers.delete('uid-123');
+    expect(mockDelete).toHaveBeenCalledWith('/admin/users/uid-123');
   });
 
   it('crm.getContacts calls GET /crm/contacts with params', async () => {

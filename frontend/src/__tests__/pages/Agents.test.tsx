@@ -19,14 +19,12 @@ vi.mock('../../hooks/useApi', () => ({
   useApi: vi.fn().mockImplementation(() => {
     apiCallCount++;
     if (apiCallCount % 2 === 1) {
+      // useApi auto-unwraps objects with array keys, so mock returns Agent[] directly
       return {
-        data: {
-          agents: [
-            { id: 'a1', name: 'SDR Agent', status: 'active', progress: 75, tasks_completed: 15, total_tasks: 20, capabilities: ['outreach'], description: 'Sales development' },
-            { id: 'a2', name: 'Content Agent', status: 'paused', progress: 50, tasks_completed: 5, total_tasks: 10, capabilities: ['writing'], description: 'Content creation' },
-          ],
-          systemMetrics: { totalTasks: 30, completedTasks: 20 },
-        },
+        data: [
+          { id: 'a1', name: 'SDR Agent', status: 'active', progress: 75, tasks_completed: 15, total_tasks: 20, capabilities: ['outreach'], description: 'Sales development' },
+          { id: 'a2', name: 'Content Agent', status: 'paused', progress: 50, tasks_completed: 5, total_tasks: 10, capabilities: ['writing'], description: 'Content creation' },
+        ],
         loading: false, error: null, refetch: vi.fn(),
       };
     }
@@ -49,7 +47,7 @@ vi.mock('../../hooks/useWebSocket', () => ({
 }));
 
 vi.mock('../../hooks/useAuth', () => ({
-  useAuth: vi.fn().mockReturnValue({ user: { username: 'admin', name: 'Admin', role: 'CEO' }, token: 'tok', isAuthenticated: true, login: vi.fn(), logout: vi.fn() }),
+  useAuth: vi.fn().mockReturnValue({ user: { uid: 'test-uid', email: 'admin@ascentxr.com', name: 'Admin', role: 'admin' }, isAuthenticated: true, loading: false, login: vi.fn(), logout: vi.fn() }),
 }));
 
 const mockAgentCtx = {

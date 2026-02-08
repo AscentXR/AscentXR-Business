@@ -6,13 +6,24 @@ jest.mock('../../db/connection', () => ({
   runMigrations: jest.fn().mockResolvedValue()
 }));
 
+// Mock firebase-admin for auth
+const mockVerifyIdToken = jest.fn().mockResolvedValue({
+  uid: 'test-uid',
+  email: 'jim@ascentxr.com',
+  name: 'Jim',
+  role: 'admin'
+});
+jest.mock('firebase-admin', () => ({
+  apps: [],
+  initializeApp: jest.fn().mockReturnValue({}),
+  credential: { applicationDefault: jest.fn(), cert: jest.fn() },
+  auth: jest.fn(() => ({ verifyIdToken: mockVerifyIdToken }))
+}));
+
 const request = require('supertest');
-const jwt = require('jsonwebtoken');
 const app = require('../../server');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-production';
-const token = jwt.sign({ username: 'jim', name: 'Jim', role: 'CEO' }, JWT_SECRET, { expiresIn: '30m' });
-const authHeader = `Bearer ${token}`;
+const authHeader = 'Bearer mock-firebase-token';
 
 describe('Brand API', () => {
   beforeEach(() => { mockQuery.mockReset(); });

@@ -1,5 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+// Mock firebase config module
+vi.mock('../../config/firebase', () => ({
+  auth: {
+    currentUser: {
+      getIdToken: vi.fn().mockResolvedValue('mock-firebase-token'),
+    },
+  },
+}));
+
 describe('API Client', () => {
   beforeEach(() => {
     vi.resetModules();
@@ -25,7 +34,7 @@ describe('API Client', () => {
     );
   });
 
-  it('registers request interceptor for JWT token', async () => {
+  it('registers request interceptor for Firebase token', async () => {
     const requestUse = vi.fn();
     vi.doMock('axios', () => ({
       default: {
@@ -57,31 +66,5 @@ describe('API Client', () => {
 
     await import('../../api/client');
     expect(responseUse).toHaveBeenCalledTimes(1);
-  });
-
-  it('request interceptor attaches token from localStorage', async () => {
-    let interceptorFn: any;
-    vi.doMock('axios', () => ({
-      default: {
-        create: vi.fn().mockReturnValue({
-          interceptors: {
-            request: {
-              use: vi.fn((fn: any) => { interceptorFn = fn; }),
-            },
-            response: { use: vi.fn() },
-          },
-        }),
-      },
-    }));
-
-    const getItemSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('test-token');
-
-    await import('../../api/client');
-
-    const config = { headers: {} as any };
-    const result = interceptorFn(config);
-
-    expect(result.headers.Authorization).toBe('Bearer test-token');
-    getItemSpy.mockRestore();
   });
 });
