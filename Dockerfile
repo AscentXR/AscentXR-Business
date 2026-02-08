@@ -44,12 +44,12 @@ RUN addgroup -g 1001 -S nodejs && \
 # Copy backend from builder
 COPY --from=backend-builder --chown=nodejs:nodejs /app /app
 
-# Copy frontend build to frontend/dist (Express serves this)
-COPY --from=frontend-builder --chown=nodejs:nodejs /frontend/dist /app/../frontend/dist
+# Copy frontend build to where Express expects it: path.join(__dirname, '..', 'frontend', 'dist')
+COPY --from=frontend-builder --chown=nodejs:nodejs /frontend/dist /frontend/dist
 
-# Create required directories
+# Create required directories and ensure ownership
 RUN mkdir -p /app/uploads /app/exports /app/documents && \
-    chown -R nodejs:nodejs /app
+    chown -R nodejs:nodejs /app /frontend
 
 # Switch to non-root user
 USER nodejs
