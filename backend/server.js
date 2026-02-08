@@ -69,7 +69,9 @@ const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || 'http://localhost:51
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (same-origin, curl, server-to-server)
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow explicitly listed origins and the app's own production URL
+    const selfOrigin = process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : null;
+    if (!origin || allowedOrigins.includes(origin) || (selfOrigin && origin === selfOrigin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
