@@ -4,6 +4,11 @@
 # Stage 1: Build frontend
 FROM node:18-alpine AS frontend-builder
 
+# Firebase client config (public values, baked into frontend at build time)
+ARG VITE_FIREBASE_API_KEY
+ARG VITE_FIREBASE_AUTH_DOMAIN
+ARG VITE_FIREBASE_PROJECT_ID
+
 WORKDIR /frontend
 
 # Copy frontend package files
@@ -15,7 +20,10 @@ RUN npm ci
 # Copy frontend source
 COPY frontend/ ./
 
-# Build frontend
+# Build frontend with env vars available to Vite
+ENV VITE_FIREBASE_API_KEY=$VITE_FIREBASE_API_KEY
+ENV VITE_FIREBASE_AUTH_DOMAIN=$VITE_FIREBASE_AUTH_DOMAIN
+ENV VITE_FIREBASE_PROJECT_ID=$VITE_FIREBASE_PROJECT_ID
 RUN npm run build
 
 # Stage 2: Build backend
