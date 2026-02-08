@@ -45,12 +45,15 @@ if (process.env.NODE_ENV === 'production') {
 // Firebase Auth proxy - must be before helmet/body parsing/static files
 // Proxies /__/auth/* to Firebase so OAuth flows are same-origin
 const { createProxyMiddleware } = require('http-proxy-middleware');
-app.use('/__/auth', createProxyMiddleware({
+app.use(createProxyMiddleware({
   target: 'https://ascent-xr-business.firebaseapp.com',
   changeOrigin: true,
   secure: true,
-  onProxyRes(proxyRes) {
-    delete proxyRes.headers['x-frame-options'];
+  pathFilter: '/__/**',
+  on: {
+    proxyRes(proxyRes) {
+      delete proxyRes.headers['x-frame-options'];
+    }
   }
 }));
 
