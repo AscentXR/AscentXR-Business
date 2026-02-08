@@ -23,8 +23,6 @@ export default function Login() {
         return 'Too many failed attempts. Please try again later.';
       case 'auth/invalid-email':
         return 'Please enter a valid email address.';
-      case 'auth/popup-closed-by-user':
-        return 'Sign-in popup was closed. Please try again.';
       case 'auth/account-exists-with-different-credential':
         return 'An account already exists with this email using a different sign-in method.';
       default:
@@ -147,17 +145,9 @@ export default function Login() {
           <button
             type="button"
             disabled={loading}
-            onClick={async () => {
+            onClick={() => {
               setError('');
-              setLoading(true);
-              try {
-                await loginWithGoogle();
-                navigate('/');
-              } catch (err) {
-                setError(getErrorMessage(err));
-              } finally {
-                setLoading(false);
-              }
+              loginWithGoogle();
             }}
             className="w-full py-2.5 bg-navy-700 hover:bg-navy-600 border border-navy-600 rounded-lg text-white font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-3"
           >

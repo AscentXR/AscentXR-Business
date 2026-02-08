@@ -2,7 +2,8 @@ import { createContext, useState, useEffect, ReactNode } from 'react';
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
 } from 'firebase/auth';
@@ -79,21 +80,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function loginWithGoogle() {
     const provider = new GoogleAuthProvider();
-    const credential = await signInWithPopup(firebaseAuth, provider);
-    const tokenResult = await credential.user.getIdTokenResult();
-    const role = (tokenResult.claims.role as 'admin' | 'viewer') || 'viewer';
-    setUser({
-      uid: credential.user.uid,
-      email: credential.user.email || '',
-      name: credential.user.displayName || credential.user.email || '',
-      role,
-    });
-
-    try {
-      await authApi.syncSession();
-    } catch {
-      // Non-critical
-    }
+    await signInWithRedirect(firebaseAuth, provider);
+    // After redirect, onAuthStateChanged handles the rest
   }
 
   function logout() {
