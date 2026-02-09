@@ -151,10 +151,9 @@ export default function Login() {
               setLoading(true);
               try {
                 await loginWithGoogle();
-                navigate('/');
+                // Page will redirect to Google — no navigate needed
               } catch (err) {
                 setError(getErrorMessage(err));
-              } finally {
                 setLoading(false);
               }
             }}
