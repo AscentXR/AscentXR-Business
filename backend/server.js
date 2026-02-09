@@ -19,6 +19,9 @@ const { initCron } = require('./cron');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy for Railway/reverse proxy (required for rate limiting and secure cookies)
+app.set('trust proxy', 1);
+
 // Create HTTP server for WebSocket support
 const server = http.createServer(app);
 
@@ -46,7 +49,7 @@ if (process.env.NODE_ENV === 'production') {
 // Proxies /__/auth/* to Firebase so OAuth flows are same-origin
 const { createProxyMiddleware } = require('http-proxy-middleware');
 app.use(createProxyMiddleware({
-  target: 'https://ascent-xr-business.firebaseapp.com',
+  target: 'https://ascentxr-business.firebaseapp.com',
   changeOrigin: true,
   secure: true,
   pathFilter: '/__/**',
