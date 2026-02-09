@@ -2,6 +2,7 @@ const cron = require('node-cron');
 
 let notificationService = null;
 let taskSchedulerService = null;
+let backupService = null;
 
 function initCron() {
   try {
@@ -15,6 +16,12 @@ function initCron() {
     taskSchedulerService = require('./services/taskSchedulerService');
   } catch (err) {
     console.error('Failed to load task scheduler service for cron:', err.message);
+  }
+
+  try {
+    backupService = require('./services/backupService');
+  } catch (err) {
+    console.error('Failed to load backup service for cron:', err.message);
   }
 
   // Check for alerts every 15 minutes
@@ -108,6 +115,40 @@ function initCron() {
         console.log(`[CRON] Evening summary: ${summary.total} total, ${summary.completed} completed, ${summary.pending_review} pending review`);
       } catch (err) {
         console.error('[CRON] Evening summary failed:', err.message);
+      }
+    });
+  }
+
+  // ============================================================
+  // Backup Jobs
+  // ============================================================
+
+  if (backupService) {
+    // Automated daily backup at 2 AM
+    const backupSchedule = process.env.BACKUP_CRON_SCHEDULE || '0 2 * * *';
+    cron.schedule(backupSchedule, async () => {
+      console.log('[CRON] Running automated daily backup...');
+      try {
+        const result = await backupService.createBackup({
+          label: `Automated daily backup`,
+          createdBy: 'cron',
+          includeFiles: false,
+        });
+        console.log(`[CRON] Daily backup complete: ${result.filename} (${result.manifest.totalRows} rows)`);
+      } catch (err) {
+        console.error('[CRON] Daily backup failed:', err.message);
+      }
+    });
+
+    // Cleanup old backups at 3 AM
+    cron.schedule('0 3 * * *', async () => {
+      console.log('[CRON] Cleaning up old backups...');
+      try {
+        const retentionDays = parseInt(process.env.BACKUP_RETENTION_DAYS, 10) || 7;
+        const result = backupService.cleanupOldBackups(retentionDays);
+        console.log(`[CRON] Backup cleanup: ${result.deleted} deleted, ${result.remaining} remaining`);
+      } catch (err) {
+        console.error('[CRON] Backup cleanup failed:', err.message);
       }
     });
   }

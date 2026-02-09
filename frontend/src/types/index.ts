@@ -837,3 +837,39 @@ export interface Document {
   uploaded_by?: string;
   created_at: string;
 }
+
+// ============================================================
+// Backups
+// ============================================================
+
+export interface BackupInfo {
+  filename: string;
+  size: number;
+  created: string;
+  manifest?: {
+    version: string;
+    timestamp: string;
+    label: string;
+    createdBy: string;
+    tableCount: number;
+    totalRows: number;
+    tableCounts: Record<string, number>;
+    includesFiles: boolean;
+  };
+}
+
+export interface BackupProgress {
+  filename?: string;
+  stage: string;
+  message: string;
+  progress?: number;
+  table?: string;
+  size?: number;
+}
+
+export interface RestoreResult {
+  success: boolean;
+  tablesRestored: number;
+  rowsRestored: number;
+  manifest: BackupInfo['manifest'];
+}

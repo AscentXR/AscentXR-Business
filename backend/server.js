@@ -10,7 +10,7 @@ require('dotenv').config();
 const { authenticateToken, optionalAuth } = require('./middleware/auth');
 const { requireAdmin } = require('./middleware/firebaseAuth');
 const { readOnlyForViewers } = require('./middleware/rbac');
-const { apiLimiter, authLimiter, agentExecutionLimiter, exportLimiter } = require('./middleware/rateLimiter');
+const { apiLimiter, authLimiter, agentExecutionLimiter, exportLimiter, backupLimiter } = require('./middleware/rateLimiter');
 const { auditLog } = require('./middleware/auditLogger');
 const { initWebSocket } = require('./websocket');
 const { initCron } = require('./cron');
@@ -149,6 +149,7 @@ app.use('/api/auth', authLimiter, require('./routes/auth'));
 
 // Admin Routes - require admin role
 app.use('/api/admin/users', authenticateToken, requireAdmin, require('./routes/admin/users'));
+app.use('/api/admin/backup', authenticateToken, requireAdmin, backupLimiter, require('./routes/admin/backup'));
 
 // ============================================================
 // Protected API Routes - require authentication + RBAC

@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PageShell from '../components/layout/PageShell';
 import TabBar from '../components/shared/TabBar';
 import StatusBadge from '../components/shared/StatusBadge';
 import Modal from '../components/shared/Modal';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../context/ToastContext';
-import { adminUsers } from '../api/endpoints';
+import { useWebSocket } from '../hooks/useWebSocket';
+import { adminUsers, adminBackup } from '../api/endpoints';
+import type { BackupInfo, BackupProgress } from '../types';
 
-const TABS = ['General', 'Integrations', 'API Keys', 'Users'];
+const ALL_TABS = ['General', 'Integrations', 'API Keys', 'Users', 'Backups'];
 
 interface Integration {
   id: string;
@@ -89,6 +91,21 @@ export default function Settings() {
   const [newUserPassword, setNewUserPassword] = useState('');
   const [newUserRole, setNewUserRole] = useState('viewer');
 
+  // Backup state
+  const [backups, setBackups] = useState<BackupInfo[]>([]);
+  const [backupsLoading, setBackupsLoading] = useState(false);
+  const [showCreateBackupModal, setShowCreateBackupModal] = useState(false);
+  const [backupLabel, setBackupLabel] = useState('');
+  const [backupIncludeFiles, setBackupIncludeFiles] = useState(false);
+  const [backupCreating, setBackupCreating] = useState(false);
+  const [showRestoreModal, setShowRestoreModal] = useState<string | null>(null);
+  const [restoreConfirmText, setRestoreConfirmText] = useState('');
+  const [restoring, setRestoring] = useState(false);
+  const [backupProgress, setBackupProgress] = useState<BackupProgress | null>(null);
+  const { subscribe } = useWebSocket();
+
+  const TABS = user?.role === 'admin' ? ALL_TABS : ALL_TABS.filter(t => t !== 'Backups');
+
   function handleSaveSettings() {
     const settings = { companyName, timezone, currency, dateFormat, emailNotifications, pushNotifications, weeklyDigest, agentAlerts, darkMode };
     localStorage.setItem('settings', JSON.stringify(settings));
@@ -167,6 +184,106 @@ export default function Settings() {
     } catch {
       showToast('Failed to delete user', 'error');
     }
+  }
+
+  // Backup functions
+  const loadBackups = useCallback(async () => {
+    setBackupsLoading(true);
+    try {
+      const res = await adminBackup.list();
+      setBackups(res.data.data || []);
+    } catch {
+      showToast('Failed to load backups', 'error');
+    } finally {
+      setBackupsLoading(false);
+    }
+  }, [showToast]);
+
+  useEffect(() => {
+    if (tab === 'Backups' && user?.role === 'admin') {
+      loadBackups();
+    }
+  }, [tab, user?.role, loadBackups]);
+
+  useEffect(() => {
+    const unsub1 = subscribe('backup:progress', (data: BackupProgress) => {
+      setBackupProgress(data);
+      if (data.stage === 'complete') {
+        setTimeout(() => setBackupProgress(null), 3000);
+        loadBackups();
+      }
+    });
+    const unsub2 = subscribe('restore:progress', (data: BackupProgress) => {
+      setBackupProgress(data);
+      if (data.stage === 'complete') {
+        setTimeout(() => setBackupProgress(null), 3000);
+      }
+    });
+    return () => { unsub1(); unsub2(); };
+  }, [subscribe, loadBackups]);
+
+  async function handleCreateBackup() {
+    setBackupCreating(true);
+    try {
+      await adminBackup.create({ label: backupLabel || undefined, includeFiles: backupIncludeFiles });
+      showToast('Backup created successfully', 'success');
+      setShowCreateBackupModal(false);
+      setBackupLabel('');
+      setBackupIncludeFiles(false);
+      loadBackups();
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to create backup', 'error');
+    } finally {
+      setBackupCreating(false);
+    }
+  }
+
+  async function handleRestore(filename: string) {
+    setRestoring(true);
+    try {
+      const res = await adminBackup.restore(filename);
+      const data = res.data.data;
+      showToast(`Restored ${data?.tablesRestored} tables (${data?.rowsRestored} rows)`, 'success');
+      setShowRestoreModal(null);
+      setRestoreConfirmText('');
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to restore backup', 'error');
+    } finally {
+      setRestoring(false);
+    }
+  }
+
+  async function handleDeleteBackup(filename: string) {
+    if (!confirm('Are you sure you want to delete this backup?')) return;
+    try {
+      await adminBackup.delete(filename);
+      showToast('Backup deleted', 'success');
+      loadBackups();
+    } catch {
+      showToast('Failed to delete backup', 'error');
+    }
+  }
+
+  async function handleDownloadBackup(filename: string) {
+    try {
+      const res = await adminBackup.download(filename);
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      showToast('Failed to download backup', 'error');
+    }
+  }
+
+  function formatBytes(bytes: number) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   }
 
   return (
@@ -442,6 +559,149 @@ export default function Settings() {
           </div>
         </div>
       </Modal>
+      {/* Backups */}
+      {tab === 'Backups' && user?.role === 'admin' && (
+        <div className="max-w-4xl space-y-4">
+          {/* Progress bar */}
+          {backupProgress && (
+            <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm text-white">{backupProgress.message}</p>
+                {backupProgress.progress != null && (
+                  <span className="text-xs text-gray-400">{backupProgress.progress}%</span>
+                )}
+              </div>
+              {backupProgress.progress != null && (
+                <div className="w-full bg-navy-700 rounded-full h-2">
+                  <div
+                    className="bg-[#2563EB] h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${backupProgress.progress}%` }}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-400">Database backups and restore points.</p>
+            <button
+              onClick={() => setShowCreateBackupModal(true)}
+              disabled={backupCreating}
+              className="px-4 py-2 bg-[#2563EB] text-white text-sm rounded-lg hover:bg-[#2563EB]/80 disabled:opacity-50"
+            >
+              {backupCreating ? 'Creating...' : '+ Create Backup'}
+            </button>
+          </div>
+
+          {backupsLoading ? (
+            <div className="flex justify-center py-8">
+              <svg className="w-6 h-6 animate-spin text-gray-400" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            </div>
+          ) : (
+            <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl overflow-hidden">
+              <div className="grid grid-cols-12 gap-2 px-4 py-2 border-b border-navy-700 text-xs text-gray-500 font-medium">
+                <div className="col-span-4">Filename</div>
+                <div className="col-span-2">Size</div>
+                <div className="col-span-3">Created</div>
+                <div className="col-span-3">Actions</div>
+              </div>
+              {backups.map((backup) => (
+                <div key={backup.filename} className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-navy-700/50 hover:bg-navy-700/30 transition-colors items-center">
+                  <div className="col-span-4 text-sm text-white font-mono truncate" title={backup.filename}>{backup.filename}</div>
+                  <div className="col-span-2 text-sm text-gray-400">{formatBytes(backup.size)}</div>
+                  <div className="col-span-3 text-xs text-gray-400">{new Date(backup.created).toLocaleString()}</div>
+                  <div className="col-span-3 flex gap-1">
+                    <button
+                      onClick={() => handleDownloadBackup(backup.filename)}
+                      className="text-xs px-2 py-1 text-gray-400 hover:text-white bg-navy-700 rounded"
+                    >
+                      Download
+                    </button>
+                    <button
+                      onClick={() => setShowRestoreModal(backup.filename)}
+                      className="text-xs px-2 py-1 text-amber-400 hover:text-amber-300 bg-navy-700 rounded"
+                    >
+                      Restore
+                    </button>
+                    <button
+                      onClick={() => handleDeleteBackup(backup.filename)}
+                      className="text-xs px-2 py-1 text-red-400 hover:text-red-300 bg-navy-700 rounded"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {backups.length === 0 && (
+                <div className="px-4 py-6 text-center text-sm text-gray-500">No backups found. Create one to get started.</div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Create Backup Modal */}
+      <Modal isOpen={showCreateBackupModal} onClose={() => setShowCreateBackupModal(false)} title="Create Backup">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Label (optional)</label>
+            <input value={backupLabel} onChange={(e) => setBackupLabel(e.target.value)} placeholder="e.g., Pre-migration backup" className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#2563EB]" />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-white">Include uploaded files</p>
+              <p className="text-xs text-gray-400">Adds all uploaded files to the backup archive</p>
+            </div>
+            <button
+              onClick={() => setBackupIncludeFiles(!backupIncludeFiles)}
+              className={`relative w-11 h-6 rounded-full transition-colors ${backupIncludeFiles ? 'bg-[#2563EB]' : 'bg-navy-700'}`}
+            >
+              <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${backupIncludeFiles ? 'translate-x-5' : 'translate-x-0'}`} />
+            </button>
+          </div>
+          <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+            <p className="text-xs text-blue-400">This will export all database tables and create a downloadable ZIP archive.</p>
+          </div>
+          <div className="flex justify-end gap-3 pt-2">
+            <button onClick={() => setShowCreateBackupModal(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+            <button onClick={handleCreateBackup} disabled={backupCreating} className="px-4 py-2 bg-[#2563EB] text-white text-sm rounded-lg disabled:opacity-50">
+              {backupCreating ? 'Creating...' : 'Create Backup'}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Restore Confirmation Modal */}
+      <Modal isOpen={!!showRestoreModal} onClose={() => { setShowRestoreModal(null); setRestoreConfirmText(''); }} title="Restore from Backup">
+        <div className="space-y-4">
+          <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+            <p className="text-xs text-red-400 font-medium">WARNING: This will overwrite ALL current database data with the backup contents. This action cannot be undone.</p>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Type RESTORE to confirm</label>
+            <input
+              value={restoreConfirmText}
+              onChange={(e) => setRestoreConfirmText(e.target.value)}
+              placeholder="RESTORE"
+              className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#2563EB]"
+            />
+          </div>
+          <div className="flex justify-end gap-3 pt-2">
+            <button onClick={() => { setShowRestoreModal(null); setRestoreConfirmText(''); }} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+            <button
+              onClick={() => showRestoreModal && handleRestore(showRestoreModal)}
+              disabled={restoreConfirmText !== 'RESTORE' || restoring}
+              className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg disabled:opacity-50 hover:bg-red-500"
+            >
+              {restoring ? 'Restoring...' : 'Restore Backup'}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
       {/* Create User Modal */}
       <Modal isOpen={showCreateUserModal} onClose={() => setShowCreateUserModal(false)} title="Create User">
         <div className="space-y-4">

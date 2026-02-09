@@ -11,6 +11,7 @@ import type {
   WorkflowRun, WorkflowRunDetail,
   SalesSkill, SalesWorkflow, SalesWorkflowRun, SalesWorkflowRunDetail,
   AgentTeam, RecurringSchedule, DailyTaskRun, DailyBriefing,
+  BackupInfo, RestoreResult,
 } from '../types';
 
 // Auth
@@ -307,6 +308,19 @@ export const salesSkills = {
     api.post<ApiResponse<any>>(`/sales/workflow-runs/${id}/advance`),
   cancelWorkflowRun: (id: string) =>
     api.post<ApiResponse<SalesWorkflowRun>>(`/sales/workflow-runs/${id}/cancel`),
+};
+
+// Admin Backup Management
+export const adminBackup = {
+  list: () => api.get<ApiResponse<BackupInfo[]>>('/admin/backup'),
+  create: (data?: { label?: string; includeFiles?: boolean }) =>
+    api.post<ApiResponse<BackupInfo>>('/admin/backup', data),
+  getInfo: (filename: string) => api.get<ApiResponse<BackupInfo>>(`/admin/backup/${filename}`),
+  download: (filename: string) =>
+    api.get(`/admin/backup/${filename}/download`, { responseType: 'blob' }),
+  restore: (filename: string) =>
+    api.post<ApiResponse<RestoreResult>>(`/admin/backup/${filename}/restore`),
+  delete: (filename: string) => api.delete(`/admin/backup/${filename}`),
 };
 
 // Documents (existing)

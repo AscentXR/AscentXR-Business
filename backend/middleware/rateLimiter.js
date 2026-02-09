@@ -38,4 +38,13 @@ const exportLimiter = rateLimit({
   message: { success: false, error: 'Too many export requests, please try again later.' }
 });
 
-module.exports = { apiLimiter, authLimiter, agentExecutionLimiter, exportLimiter };
+const backupLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip,
+  message: { success: false, error: 'Too many backup requests, please try again later.' }
+});
+
+module.exports = { apiLimiter, authLimiter, agentExecutionLimiter, exportLimiter, backupLimiter };

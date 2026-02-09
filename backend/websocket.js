@@ -130,6 +130,20 @@ function emitDailyBriefingReady(data) {
   }
 }
 
+// Emit backup progress to admin users
+function emitBackupProgress(data) {
+  if (io) {
+    io.to('role:admin').emit('backup:progress', data);
+  }
+}
+
+// Emit restore progress to admin users
+function emitRestoreProgress(data) {
+  if (io) {
+    io.to('role:admin').emit('restore:progress', data);
+  }
+}
+
 module.exports = {
   initWebSocket,
   getIO,
@@ -139,4 +153,6 @@ module.exports = {
   emitNotification,
   emitTaskUpdate,
   emitDailyBriefingReady,
+  emitBackupProgress,
+  emitRestoreProgress,
 };
