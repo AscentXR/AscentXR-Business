@@ -2,8 +2,7 @@ import { createContext, useState, useEffect, ReactNode } from 'react';
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
 } from 'firebase/auth';
@@ -29,11 +28,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isAuthenticated = !!user;
 
   useEffect(() => {
-    // Process any pending Google redirect result
-    getRedirectResult(firebaseAuth).catch((error) => {
-      console.error('[Auth] Redirect result error:', error?.code, error?.message);
-    });
-
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
@@ -85,8 +79,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function loginWithGoogle() {
     const provider = new GoogleAuthProvider();
-    await signInWithRedirect(firebaseAuth, provider);
-    // After redirect, onAuthStateChanged will handle the user state
+    const result = await signInWithPopup(firebaseAuth, provider);
+    const tokenResult = await result.user.getIdTokenResult();
+    const role = (tokenResult.claims.role as 'admin' | 'viewer') || 'viewer';
+    setUser({
+      uid: result.user.uid,
+      email: result.user.email || '',
+      name: result.user.displayName || result.user.email || '',
+      role,
+    });
   }
 
   function logout() {
