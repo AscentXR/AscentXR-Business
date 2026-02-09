@@ -36,7 +36,7 @@ const navItems: NavItem[] = [
   { path: '/finance', label: 'Finance', icon: DollarSign },
   { path: '/taxes', label: 'Taxes', icon: Receipt },
   { path: '/brand', label: 'Brand', icon: Palette },
-  { path: '/agents', label: 'Agents', icon: Bot },
+  { path: '/agents', label: 'Agent Teams', icon: Bot },
   { path: '/goals', label: 'Goals', icon: Target },
   { path: '/customer-success', label: 'Customer Success', icon: Heart },
   { path: '/partnerships', label: 'Partnerships', icon: Handshake },

@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import {
   BarChart,
   Bar,
@@ -11,6 +11,11 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import {
+  Megaphone, TrendingUp, Palette, Heart, DollarSign,
+  LayoutDashboard, CheckCircle, Clock, AlertTriangle, Play,
+  ChevronRight, Calendar, Users, RefreshCw,
+} from 'lucide-react';
 import PageShell from '../components/layout/PageShell';
 import DataTable from '../components/shared/DataTable';
 import type { Column } from '../components/shared/DataTable';
@@ -21,13 +26,13 @@ import TabBar from '../components/shared/TabBar';
 import KanbanBoard from '../components/shared/KanbanBoard';
 import type { KanbanColumn, KanbanItem } from '../components/shared/KanbanBoard';
 import ErrorState from '../components/shared/ErrorState';
-import { agents } from '../api/endpoints';
+import { agents, agentTeams } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
 import { AgentContext } from '../context/AgentContext';
 import { useToast } from '../context/ToastContext';
-import type { Agent, AgentTask } from '../types';
+import type { Agent, AgentTask, AgentTeam } from '../types';
 
-const TABS = ['Agents', 'Workflow', 'Analytics'];
+const TABS = ['Teams', 'Agents', 'Daily Tasks', 'Workflow', 'Analytics'];
 
 const KANBAN_COLUMNS: KanbanColumn[] = [
   { id: 'inbox', title: 'INBOX', color: '#6b7280' },
@@ -58,6 +63,16 @@ const COLUMN_TO_STATUS: Record<string, string> = {
 
 const STATUS_COLORS = ['#6b7280', '#3b82f6', '#f59e0b', '#8b5cf6', '#10b981', '#ef4444'];
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const TEAM_ICONS: Record<string, React.ComponentType<any>> = {
+  'megaphone': Megaphone,
+  'trending-up': TrendingUp,
+  'palette': Palette,
+  'heart': Heart,
+  'dollar-sign': DollarSign,
+  'layout-dashboard': LayoutDashboard,
+};
+
 function getActivityLabel(currentTask?: string): string | null {
   if (!currentTask) return null;
   const lower = currentTask.toLowerCase();
@@ -77,7 +92,11 @@ export default function Agents() {
   const [taskTitle, setTaskTitle] = useState('');
   const [taskPrompt, setTaskPrompt] = useState('');
   const [executing, setExecuting] = useState(false);
-  const [tab, setTab] = useState('Agents');
+  const [tab, setTab] = useState('Teams');
+  const [selectedTeam, setSelectedTeam] = useState<AgentTeam | null>(null);
+  const [dailyDate, setDailyDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [dailyStatus, setDailyStatus] = useState('');
+  const [triggering, setTriggering] = useState(false);
   const agentCtx = useContext(AgentContext);
   const { showToast } = useToast();
 
@@ -90,8 +109,35 @@ export default function Agents() {
     refetch: refetchTasks,
   } = useApi<AgentTask[]>(() => agents.getTasks(), []);
 
+  const { data: teamsData, loading: teamsLoading, refetch: refetchTeams } = useApi<AgentTeam[]>(
+    () => agentTeams.list(), []
+  );
+
+  const { data: dailyTasksData, loading: dailyTasksLoading, refetch: refetchDailyTasks } = useApi<{ tasks: AgentTask[]; total: number; date: string }>(
+    () => agentTeams.getDailyTasks({ date: dailyDate, status: dailyStatus || undefined }),
+    [dailyDate, dailyStatus]
+  );
+
+  // Load team detail when a team is selected
+  const [teamDetail, setTeamDetail] = useState<AgentTeam | null>(null);
+  const [teamDetailLoading, setTeamDetailLoading] = useState(false);
+
+  useEffect(() => {
+    if (!selectedTeam) {
+      setTeamDetail(null);
+      return;
+    }
+    setTeamDetailLoading(true);
+    agentTeams.get(selectedTeam.id)
+      .then(r => setTeamDetail(r.data.data || r.data))
+      .catch(() => showToast('Failed to load team details', 'error'))
+      .finally(() => setTeamDetailLoading(false));
+  }, [selectedTeam?.id]);
+
   const safeAgentList = agentList || [];
   const tasks = tasksData || [];
+  const teams = teamsData || [];
+  const dailyTasks = dailyTasksData?.tasks || [];
 
   async function handleExecute() {
     if (!selectedAgent || !taskPrompt) return;
@@ -112,6 +158,32 @@ export default function Agents() {
       showToast('Failed to execute task', 'error');
     } finally {
       setExecuting(false);
+    }
+  }
+
+  async function handleTriggerDaily() {
+    setTriggering(true);
+    try {
+      const resp = await agentTeams.triggerDaily(dailyDate);
+      const data = resp.data.data || resp.data;
+      showToast(`Generated ${data.generated} tasks (${data.skipped} skipped, ${data.errors} errors)`, 'success');
+      refetchDailyTasks();
+      refetchTeams();
+    } catch {
+      showToast('Failed to trigger daily tasks', 'error');
+    } finally {
+      setTriggering(false);
+    }
+  }
+
+  async function handleReviewTask(taskId: string, action: 'approved' | 'rejected') {
+    try {
+      await agents.reviewTask(taskId, action);
+      showToast(`Task ${action}`, 'success');
+      refetchDailyTasks();
+      refetchTeams();
+    } catch {
+      showToast('Failed to review task', 'error');
     }
   }
 
@@ -147,6 +219,58 @@ export default function Agents() {
       label: 'Created',
       sortable: true,
       render: (t) => t.created_at?.slice(0, 16).replace('T', ' '),
+    },
+  ];
+
+  const dailyTaskColumns: Column<AgentTask>[] = [
+    {
+      key: 'title',
+      label: 'Task',
+      render: (t) => <span className="font-medium text-white">{t.title}</span>,
+    },
+    {
+      key: 'team_name',
+      label: 'Team',
+      render: (t) => <span>{t.team_name || '-'}</span>,
+    },
+    {
+      key: 'agent_name',
+      label: 'Agent',
+      render: (t) => <span>{t.agent_name || t.agent_id}</span>,
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (t) => <StatusBadge status={t.status} />,
+    },
+    {
+      key: 'execution_time_ms',
+      label: 'Time',
+      render: (t) =>
+        t.execution_time_ms ? `${(t.execution_time_ms / 1000).toFixed(1)}s` : '-',
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (t) => {
+        if (t.status !== 'review') return <span className="text-gray-500">-</span>;
+        return (
+          <div className="flex gap-2">
+            <button
+              onClick={(e) => { e.stopPropagation(); handleReviewTask(t.id, 'approved'); }}
+              className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded hover:bg-emerald-500/30"
+            >
+              Approve
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); handleReviewTask(t.id, 'rejected'); }}
+              className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded hover:bg-red-500/30"
+            >
+              Reject
+            </button>
+          </div>
+        );
+      },
     },
   ];
 
@@ -203,8 +327,8 @@ export default function Agents() {
 
   return (
     <PageShell
-      title="Agent Coordination"
-      subtitle="Manage AI agents and their tasks"
+      title="Agent Teams"
+      subtitle="Autonomous AI agent teams and daily task management"
       actions={
         <button
           onClick={() => setShowExecModal(true)}
@@ -218,6 +342,162 @@ export default function Agents() {
 
       {agentsError && <ErrorState error={agentsError} onRetry={refetchAgents} />}
       {!agentsError && <>
+
+      {/* Teams Tab */}
+      {tab === 'Teams' && (
+        <>
+          {selectedTeam && teamDetail ? (
+            /* Team Detail Panel */
+            <div>
+              <button
+                onClick={() => setSelectedTeam(null)}
+                className="flex items-center gap-1 text-sm text-gray-400 hover:text-white mb-4"
+              >
+                <ChevronRight size={14} className="rotate-180" /> Back to Teams
+              </button>
+
+              <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-6 mb-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-lg bg-[#7C3AED]/20 flex items-center justify-center">
+                    {(() => {
+                      const IconComp = TEAM_ICONS[teamDetail.icon || ''] || Users;
+                      return <IconComp size={24} className="text-[#7C3AED]" />;
+                    })()}
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">{teamDetail.name}</h2>
+                    <p className="text-sm text-gray-400">{teamDetail.description}</p>
+                  </div>
+                </div>
+
+                {/* Team Members */}
+                <h3 className="text-sm font-medium text-white mb-3">Team Members</h3>
+                {teamDetailLoading ? (
+                  <div className="animate-pulse space-y-2">
+                    {[1, 2, 3].map(i => <div key={i} className="h-12 bg-navy-700 rounded" />)}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {(teamDetail.members || []).map(m => (
+                      <div key={m.id} className="flex items-center justify-between p-3 bg-navy-700/50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${m.agent_status === 'active' ? 'bg-emerald-500/20' : 'bg-navy-600'}`}>
+                            <span className="text-xs font-bold text-gray-300">{m.agent_name?.charAt(0)}</span>
+                          </div>
+                          <div>
+                            <span className="text-sm text-white font-medium">{m.agent_name}</span>
+                            {m.role_in_team === 'lead' && (
+                              <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-[#7C3AED]/20 text-[#7C3AED]">Lead</span>
+                            )}
+                            <p className="text-xs text-gray-400 truncate max-w-md">{m.agent_description}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <StatusBadge status={m.agent_status} />
+                          <span className="text-xs text-gray-500">{m.agent_tasks_completed} tasks</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Team's Today's Tasks */}
+              <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-6">
+                <h3 className="text-sm font-medium text-white mb-3">Today's Tasks</h3>
+                <DataTable
+                  columns={dailyTaskColumns}
+                  data={dailyTasks.filter(t => t.team_id === teamDetail.id)}
+                  loading={dailyTasksLoading}
+                  pagination
+                  pageSize={10}
+                  emptyMessage="No tasks generated for this team today."
+                />
+              </div>
+            </div>
+          ) : (
+            /* Team Grid */
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {teamsLoading
+                ? [1, 2, 3, 4, 5, 6].map((i) => (
+                    <div key={i} className="bg-navy-800/60 border border-navy-700/50 rounded-xl p-5 animate-pulse">
+                      <div className="h-5 bg-navy-700 rounded w-32 mb-3" />
+                      <div className="h-3 bg-navy-700 rounded w-full mb-2" />
+                      <div className="h-2 bg-navy-700 rounded w-3/4" />
+                    </div>
+                  ))
+                : teams.map((team) => {
+                    const IconComp = TEAM_ICONS[team.icon || ''] || Users;
+                    const totalToday = Number(team.tasks_today) || 0;
+                    const completedToday = Number(team.tasks_completed) || 0;
+                    const reviewCount = Number(team.tasks_review) || 0;
+                    const runningCount = Number(team.tasks_running) || 0;
+
+                    return (
+                      <div
+                        key={team.id}
+                        onClick={() => setSelectedTeam(team)}
+                        className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-5 cursor-pointer hover:border-[#7C3AED]/50 transition-colors"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-[#7C3AED]/20 flex items-center justify-center">
+                              <IconComp size={20} className="text-[#7C3AED]" />
+                            </div>
+                            <div>
+                              <h3 className="text-white font-semibold text-sm">{team.name}</h3>
+                              <span className="text-xs text-gray-400">{team.member_count} agents</span>
+                            </div>
+                          </div>
+                          <ChevronRight size={16} className="text-gray-500" />
+                        </div>
+
+                        {team.description && (
+                          <p className="text-xs text-gray-400 mb-3 line-clamp-2">{team.description}</p>
+                        )}
+
+                        {/* Today's progress */}
+                        <div className="mb-3">
+                          <ProgressBar
+                            value={completedToday}
+                            max={totalToday || 1}
+                            label={`${completedToday}/${totalToday} today`}
+                            color="purple"
+                            size="sm"
+                          />
+                        </div>
+
+                        {/* Status indicators */}
+                        <div className="flex items-center gap-3 text-xs">
+                          {reviewCount > 0 && (
+                            <span className="flex items-center gap-1 text-amber-400">
+                              <Clock size={12} /> {reviewCount} review
+                            </span>
+                          )}
+                          {runningCount > 0 && (
+                            <span className="flex items-center gap-1 text-blue-400">
+                              <Play size={12} /> {runningCount} running
+                            </span>
+                          )}
+                          {Number(team.tasks_failed) > 0 && (
+                            <span className="flex items-center gap-1 text-red-400">
+                              <AlertTriangle size={12} /> {team.tasks_failed} failed
+                            </span>
+                          )}
+                          {totalToday > 0 && completedToday === totalToday && (
+                            <span className="flex items-center gap-1 text-emerald-400">
+                              <CheckCircle size={12} /> All done
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+            </div>
+          )}
+        </>
+      )}
+
       {/* Agents Tab */}
       {tab === 'Agents' && (
         <>
@@ -349,6 +629,74 @@ export default function Agents() {
             />
           </div>
         </>
+      )}
+
+      {/* Daily Tasks Tab */}
+      {tab === 'Daily Tasks' && (
+        <div>
+          {/* Controls */}
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center gap-2">
+              <Calendar size={16} className="text-gray-400" />
+              <input
+                type="date"
+                value={dailyDate}
+                onChange={(e) => setDailyDate(e.target.value)}
+                className="px-3 py-1.5 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#7C3AED]"
+              />
+            </div>
+            <select
+              value={dailyStatus}
+              onChange={(e) => setDailyStatus(e.target.value)}
+              className="px-3 py-1.5 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#7C3AED]"
+            >
+              <option value="">All Statuses</option>
+              <option value="review">Pending Review</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+              <option value="running">Running</option>
+              <option value="queued">Queued</option>
+              <option value="failed">Failed</option>
+            </select>
+            <button
+              onClick={handleTriggerDaily}
+              disabled={triggering}
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#7C3AED] text-white text-sm rounded-lg hover:bg-[#7C3AED]/80 disabled:opacity-50"
+            >
+              <RefreshCw size={14} className={triggering ? 'animate-spin' : ''} />
+              {triggering ? 'Generating...' : 'Trigger Daily Run'}
+            </button>
+          </div>
+
+          {/* Summary */}
+          {dailyTasksData && (
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+              {[
+                { label: 'Total', value: dailyTasksData.total, color: 'text-white' },
+                { label: 'Completed', value: dailyTasks.filter(t => ['approved', 'rejected'].includes(t.status)).length, color: 'text-emerald-400' },
+                { label: 'Review', value: dailyTasks.filter(t => t.status === 'review').length, color: 'text-amber-400' },
+                { label: 'Running', value: dailyTasks.filter(t => ['running', 'streaming', 'queued'].includes(t.status)).length, color: 'text-blue-400' },
+                { label: 'Failed', value: dailyTasks.filter(t => t.status === 'failed').length, color: 'text-red-400' },
+              ].map(stat => (
+                <div key={stat.label} className="bg-navy-800/60 border border-navy-700/50 rounded-lg p-3 text-center">
+                  <p className={`text-xl font-bold ${stat.color}`}>{stat.value}</p>
+                  <p className="text-xs text-gray-400">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Tasks Table */}
+          <DataTable
+            columns={dailyTaskColumns}
+            data={dailyTasks}
+            loading={dailyTasksLoading}
+            searchable
+            pagination
+            pageSize={15}
+            emptyMessage={`No tasks found for ${dailyDate}.`}
+          />
+        </div>
       )}
 
       {/* Workflow Tab - Kanban Board */}

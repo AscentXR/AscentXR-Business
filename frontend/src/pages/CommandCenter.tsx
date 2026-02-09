@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { DollarSign, TrendingUp, Briefcase, Cpu } from 'lucide-react';
+import { DollarSign, TrendingUp, Briefcase, Cpu, ClipboardCheck, AlertCircle, PlayCircle, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import PageShell from '../components/layout/PageShell';
@@ -7,10 +7,10 @@ import KPICard from '../components/shared/KPICard';
 import ProgressBar from '../components/shared/ProgressBar';
 import StatusBadge from '../components/shared/StatusBadge';
 import ErrorState from '../components/shared/ErrorState';
-import { metrics, goals, agents, notifications } from '../api/endpoints';
+import { metrics, goals, agents, notifications, agentTeams } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
 import { useWebSocket } from '../hooks/useWebSocket';
-import type { Goal, AgentTask, Notification } from '../types';
+import type { Goal, AgentTask, Notification, DailyBriefing } from '../types';
 
 interface DashboardMetrics {
   revenue: number;
@@ -49,6 +49,11 @@ export default function CommandCenter() {
 
   const { data: alertsData, loading: alertsLoading } = useApi<Notification[]>(
     () => notifications.list({ is_read: false }),
+    []
+  );
+
+  const { data: briefingData, loading: briefingLoading } = useApi<DailyBriefing>(
+    () => agentTeams.getDailyBriefing(),
     []
   );
 
@@ -145,6 +150,106 @@ export default function CommandCenter() {
 
   return (
     <PageShell title="Command Center" subtitle="Mission Control for Ascent XR">
+      {/* My Day Section */}
+      <div className="bg-navy-800/60 backdrop-blur-md border border-[#7C3AED]/30 rounded-xl p-5 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-lg font-bold text-white">
+              Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'}
+            </h2>
+            <p className="text-sm text-gray-400">
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Link
+              to="/agents?tab=Daily+Tasks&status=review"
+              className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/20 text-amber-400 text-sm rounded-lg hover:bg-amber-500/30 transition-colors"
+            >
+              <ClipboardCheck size={14} />
+              Review Pending
+              {briefingData?.stats?.pending_review ? (
+                <span className="px-1.5 py-0.5 bg-amber-500 text-navy-900 text-xs font-bold rounded-full">
+                  {briefingData.stats.pending_review}
+                </span>
+              ) : null}
+            </Link>
+            <Link
+              to="/agents"
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#7C3AED]/20 text-[#7C3AED] text-sm rounded-lg hover:bg-[#7C3AED]/30 transition-colors"
+            >
+              <FileText size={14} />
+              View Briefing
+            </Link>
+          </div>
+        </div>
+
+        {/* Stats Row */}
+        {briefingLoading ? (
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 animate-pulse">
+            {[1, 2, 3, 4, 5].map(i => <div key={i} className="h-16 bg-navy-700 rounded-lg" />)}
+          </div>
+        ) : briefingData ? (
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <div className="bg-navy-700/40 rounded-lg p-3 text-center">
+              <p className="text-xl font-bold text-emerald-400">{briefingData.stats?.completed || 0}</p>
+              <p className="text-xs text-gray-400">Completed</p>
+            </div>
+            <div className="bg-navy-700/40 rounded-lg p-3 text-center">
+              <p className="text-xl font-bold text-blue-400">{briefingData.stats?.running || 0}</p>
+              <p className="text-xs text-gray-400">Running</p>
+            </div>
+            <div className="bg-navy-700/40 rounded-lg p-3 text-center">
+              <p className="text-xl font-bold text-amber-400">{briefingData.stats?.pending_review || 0}</p>
+              <p className="text-xs text-gray-400">Pending Review</p>
+            </div>
+            <div className="bg-navy-700/40 rounded-lg p-3 text-center">
+              <p className="text-xl font-bold text-red-400">{briefingData.stats?.failed || 0}</p>
+              <p className="text-xs text-gray-400">Failed</p>
+            </div>
+            <div className="bg-navy-700/40 rounded-lg p-3 text-center">
+              <p className="text-xl font-bold text-orange-400">{briefingData.alert_count || 0}</p>
+              <p className="text-xs text-gray-400">Active Alerts</p>
+            </div>
+          </div>
+        ) : null}
+
+        {/* Team Progress */}
+        {briefingData?.team_summary && briefingData.team_summary.length > 0 && (
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+            {briefingData.team_summary.map(team => (
+              <div key={team.team_id} className="bg-navy-700/30 rounded-lg p-2">
+                <p className="text-xs text-gray-400 truncate">{team.team_name}</p>
+                <div className="flex items-center gap-1 mt-1">
+                  <div className="flex-1 bg-navy-900 rounded-full h-1.5">
+                    <div
+                      className="bg-[#7C3AED] h-1.5 rounded-full transition-all"
+                      style={{ width: `${team.total_tasks > 0 ? Math.round((team.completed / team.total_tasks) * 100) : 0}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-gray-500">{team.completed}/{team.total_tasks}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Morning Briefing */}
+      {briefingData?.briefing_text && (
+        <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-5 mb-6">
+          <h3 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
+            <PlayCircle size={16} className="text-[#7C3AED]" />
+            Morning Briefing
+          </h3>
+          <div className="bg-navy-900/60 rounded-lg p-4 max-h-64 overflow-y-auto">
+            <pre className="text-sm text-gray-300 whitespace-pre-wrap font-sans leading-relaxed">
+              {briefingData.briefing_text}
+            </pre>
+          </div>
+        </div>
+      )}
+
       {/* KPI Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <KPICard

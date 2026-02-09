@@ -182,6 +182,7 @@ app.use('/api/search', authenticateToken, require('./routes/search'));
 app.use('/api/knowledge-base', authenticateToken, readOnlyForViewers, require('./routes/knowledgeBase'));
 app.use('/api/business-activities', authenticateToken, readOnlyForViewers, require('./routes/businessActivities'));
 app.use('/api/forecasts', authenticateToken, readOnlyForViewers, require('./routes/forecasts'));
+app.use('/api/agent-teams', authenticateToken, readOnlyForViewers, require('./routes/agentTeams'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

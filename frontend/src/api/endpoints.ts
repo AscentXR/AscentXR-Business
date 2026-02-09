@@ -10,6 +10,7 @@ import type {
   MarketingSkill, SkillCategory, MarketingWorkflow, MarketingWorkflowDetail,
   WorkflowRun, WorkflowRunDetail,
   SalesSkill, SalesWorkflow, SalesWorkflowRun, SalesWorkflowRunDetail,
+  AgentTeam, RecurringSchedule, DailyTaskRun, DailyBriefing,
 } from '../types';
 
 // Auth
@@ -158,6 +159,30 @@ export const brand = {
   delete: (id: string) => api.delete(`/brand/${id}`),
   getDashboardMetrics: () => api.get('/brand/dashboard-metrics'),
   getConsistencyScore: () => api.get('/brand/consistency-score'),
+};
+
+// Agent Teams
+export const agentTeams = {
+  list: () => api.get<ApiResponse<AgentTeam[]>>('/agent-teams'),
+  get: (id: string) => api.get<ApiResponse<AgentTeam>>(`/agent-teams/${id}`),
+  getTasks: (id: string, params?: { date?: string; status?: string }) =>
+    api.get<ApiResponse<{ tasks: AgentTask[]; total: number }>>(`/agent-teams/${id}/tasks`, { params }),
+  getSchedules: (id: string) =>
+    api.get<ApiResponse<RecurringSchedule[]>>(`/agent-teams/${id}/schedules`),
+  createSchedule: (teamId: string, data: Partial<RecurringSchedule>) =>
+    api.post<ApiResponse<RecurringSchedule>>(`/agent-teams/${teamId}/schedules`, data),
+  updateSchedule: (id: string, data: Partial<RecurringSchedule>) =>
+    api.put<ApiResponse<RecurringSchedule>>(`/agent-teams/schedules/${id}`, data),
+  getAllSchedules: (params?: { team_id?: string }) =>
+    api.get<ApiResponse<RecurringSchedule[]>>('/agent-teams/schedules', { params }),
+  getDailyBriefing: (date?: string) =>
+    api.get<ApiResponse<DailyBriefing>>('/agent-teams/daily-briefing', { params: { date } }),
+  getDailyRuns: (date?: string) =>
+    api.get<ApiResponse<DailyTaskRun[]>>('/agent-teams/daily-runs', { params: { date } }),
+  getDailyTasks: (params?: { date?: string; status?: string }) =>
+    api.get<ApiResponse<{ tasks: AgentTask[]; total: number; date: string }>>('/agent-teams/daily-tasks', { params }),
+  triggerDaily: (date?: string) =>
+    api.post<ApiResponse<{ generated: number; skipped: number; errors: number }>>('/agent-teams/trigger-daily', { date }),
 };
 
 // Agents

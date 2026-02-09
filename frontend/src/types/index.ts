@@ -385,6 +385,113 @@ export interface AgentTask {
   created_at: string;
   agent_name?: string;
   current_task?: string;
+  schedule_id?: string;
+  team_id?: string;
+  team_name?: string;
+  run_date?: string;
+  requires_review?: boolean;
+}
+
+// ============================================================
+// Agent Teams
+// ============================================================
+
+export interface AgentTeam {
+  id: string;
+  name: string;
+  description?: string;
+  business_area?: string;
+  icon?: string;
+  status: 'active' | 'paused' | 'archived';
+  daily_schedule_time?: string;
+  member_count: number;
+  schedule_count: number;
+  tasks_today: number;
+  tasks_completed: number;
+  tasks_review: number;
+  tasks_running: number;
+  tasks_failed: number;
+  members?: AgentTeamMember[];
+  created_at: string;
+}
+
+export interface AgentTeamMember {
+  id: string;
+  team_id: string;
+  agent_id: string;
+  role_in_team: 'lead' | 'member';
+  join_order: number;
+  agent_name: string;
+  agent_description?: string;
+  agent_status: string;
+  agent_tasks_completed: number;
+  agent_current_task?: string;
+}
+
+export interface RecurringSchedule {
+  id: string;
+  agent_id: string;
+  team_id: string;
+  title: string;
+  description?: string;
+  prompt: string;
+  business_area?: string;
+  priority: number;
+  schedule_type: 'daily' | 'weekdays' | 'weekly' | 'monthly';
+  schedule_days: number[];
+  schedule_time: string;
+  auto_execute: boolean;
+  requires_review: boolean;
+  max_retries: number;
+  is_active: boolean;
+  context_template?: any;
+  last_generated_at?: string;
+  agent_name?: string;
+  team_name?: string;
+  created_at: string;
+}
+
+export interface DailyTaskRun {
+  id: string;
+  run_date: string;
+  schedule_id: string;
+  task_id?: string;
+  agent_id: string;
+  team_id: string;
+  status: 'generated' | 'running' | 'completed' | 'failed' | 'skipped';
+  error?: string;
+  agent_name?: string;
+  team_name?: string;
+  schedule_title?: string;
+  created_at: string;
+}
+
+export interface DailyBriefing {
+  date: string;
+  stats: {
+    total_tasks: number;
+    completed: number;
+    running: number;
+    pending_review: number;
+    failed: number;
+  };
+  pending_reviews: {
+    id: string;
+    title: string;
+    agent_id: string;
+    agent_name: string;
+    team_id: string;
+    team_name: string;
+  }[];
+  alert_count: number;
+  briefing_text: string | null;
+  team_summary: {
+    team_id: string;
+    team_name: string;
+    total_tasks: number;
+    completed: number;
+    pending_review: number;
+  }[];
 }
 
 // ============================================================

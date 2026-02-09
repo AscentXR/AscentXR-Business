@@ -116,6 +116,17 @@ function emitTaskUpdate(task) {
     if (task.id) {
       io.to(`task:${task.id}`).emit('agent:task:stream', task);
     }
+    // Also emit team-scoped update if task has team_id
+    if (task.team_id) {
+      io.emit('team:task:update', task);
+    }
+  }
+}
+
+// Emit daily briefing ready event to admin users
+function emitDailyBriefingReady(data) {
+  if (io) {
+    io.to('role:admin').emit('daily:briefing:ready', data);
   }
 }
 
@@ -127,4 +138,5 @@ module.exports = {
   emitToTask,
   emitNotification,
   emitTaskUpdate,
+  emitDailyBriefingReady,
 };
