@@ -69,9 +69,9 @@ app.use(helmet({
       scriptSrc: ["'self'", "https://apis.google.com", "https://www.gstatic.com"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "ws:", "wss:", "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com", "https://www.googleapis.com"],
+      connectSrc: ["'self'", "ws:", "wss:", "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com", "https://www.googleapis.com", "https://firebase.googleapis.com", "https://firebaseinstallations.googleapis.com"],
       fontSrc: ["'self'"],
-      frameSrc: ["'self'", "https://ascent-xr-business.firebaseapp.com", "https://accounts.google.com"],
+      frameSrc: ["'self'", "https://ascentxr-business.firebaseapp.com", "https://accounts.google.com"],
       frameAncestors: ["'none'"]
     }
   },
