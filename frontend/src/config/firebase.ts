@@ -3,7 +3,9 @@ import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBeLzpNkL5Tc6qsT-KzXkzo11mXzw8ftlI',
-  authDomain: 'ascentxr-business.firebaseapp.com',
+  authDomain: window.location.hostname === 'localhost'
+    ? 'ascentxr-business.firebaseapp.com'
+    : window.location.host,
   projectId: 'ascentxr-business',
 };
 
