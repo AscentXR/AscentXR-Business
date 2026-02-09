@@ -26,7 +26,8 @@ export default function Login() {
       case 'auth/account-exists-with-different-credential':
         return 'An account already exists with this email using a different sign-in method.';
       default:
-        return 'Unable to sign in. Please try again.';
+        console.error('[Auth] Sign-in error:', code, err?.message, err);
+        return `Unable to sign in (${code || 'unknown'}). Please try again.`;
     }
   }
 
