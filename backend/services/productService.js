@@ -5,7 +5,7 @@ class ProductService {
   // PRODUCTS
   // ========================
 
-  async getProducts({ page = 1, limit = 50, search = '', category = '', status = '' } = {}) {
+  async getProducts({ page = 1, limit = 50, search = '', category = '', status = '', brand_entity = '' } = {}) {
     const offset = (page - 1) * limit;
     let sql = `SELECT p.*, (SELECT COUNT(*) FROM product_features pf WHERE pf.product_id = p.id) as feature_count FROM products p`;
     const params = [];
@@ -25,6 +25,11 @@ class ProductService {
     if (status) {
       conditions.push(`p.status = $${paramIndex}`);
       params.push(status);
+      paramIndex++;
+    }
+    if (brand_entity) {
+      conditions.push(`p.brand_entity = $${paramIndex}`);
+      params.push(brand_entity);
       paramIndex++;
     }
 
@@ -56,6 +61,11 @@ class ProductService {
     if (status) {
       countConditions.push(`p.status = $${countIdx}`);
       countParams.push(status);
+      countIdx++;
+    }
+    if (brand_entity) {
+      countConditions.push(`p.brand_entity = $${countIdx}`);
+      countParams.push(brand_entity);
       countIdx++;
     }
     if (countConditions.length > 0) {
@@ -94,7 +104,7 @@ class ProductService {
     const values = [];
     let paramIndex = 1;
 
-    const allowed = ['name', 'description', 'category', 'pricing_model', 'base_price', 'price_max', 'billing_frequency', 'status', 'features', 'target_audience', 'competitive_advantage'];
+    const allowed = ['name', 'description', 'category', 'pricing_model', 'base_price', 'price_max', 'billing_frequency', 'status', 'features', 'target_audience', 'competitive_advantage', 'brand_entity'];
     for (const [key, value] of Object.entries(data)) {
       if (allowed.includes(key)) {
         fields.push(`${key} = $${paramIndex}`);

@@ -67,6 +67,44 @@
 - [ ] Cognitive load optimization
 - [ ] Retention rate improvement studies
 
+### LEARNING TIME VR — SPECIFIC QUALIFYING ACTIVITIES
+
+**WebXR Tablet Adaptation (High Qualification):**
+- [ ] Adapting VR experiences for browser-based (WebXR) delivery on Chromebooks/tablets
+- [ ] Optimizing 3D rendering for low-end Chromebook GPUs
+- [ ] Building progressive loading for bandwidth-constrained school networks
+- [ ] Cross-browser WebXR compatibility (Chrome, Edge, Safari)
+- [ ] Offline caching and service worker development for classroom use
+
+**AI Lesson Generator (High Qualification):**
+- [ ] NLP model development for standards-aligned lesson plan generation
+- [ ] Mapping VR content to state education standards (NGSS, Common Core)
+- [ ] Automated assessment generation from VR experience content
+- [ ] Natural language interface for teachers to customize VR lessons
+
+**ArborXR Integration (Medium Qualification):**
+- [ ] Custom API integration between LTVR platform and ArborXR device management
+- [ ] Remote deployment of VR experiences to Pico 4 fleet
+- [ ] Usage analytics aggregation from ArborXR into LTVR teacher dashboard
+- [ ] Kiosk mode configuration and automated device provisioning
+
+**VictoryXR Content Customization (Medium Qualification):**
+- [ ] Adapting VictoryXR experiences for specific grade levels
+- [ ] Building interactive assessment layers on top of VictoryXR content
+- [ ] Performance optimization of VictoryXR content for Pico 4 hardware
+
+**FERPA-Compliant Analytics (High Qualification):**
+- [ ] Building student data privacy controls meeting FERPA/COPPA requirements
+- [ ] Anonymized learning analytics pipeline
+- [ ] Consent management system for student data collection
+- [ ] Audit logging for data access compliance
+
+**Adaptive Learning Algorithms (High Qualification):**
+- [ ] ML models that adjust VR experience difficulty based on student performance
+- [ ] Learning pathway recommendation engine
+- [ ] Student engagement prediction models
+- [ ] Personalized content sequencing algorithms
+
 ### DOES NOT QUALIFY:
 
 ❌ **Routine Activities:**

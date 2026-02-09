@@ -137,6 +137,65 @@ Federal AGI
 
 ---
 
+## 🎓 LEARNING TIME VR SUBSCRIPTION TAX IMPLICATIONS
+
+### LTVR SaaS Taxability by State
+
+| State | SaaS Taxable | Rate | Nexus Threshold | Status |
+|-------|-------------|------|-----------------|--------|
+| **Indiana** | YES | 7% | $100K / 200 txns | Active — collecting |
+| **Ohio** | YES | 5.75% | $100K / 200 txns | Monitor sales volume |
+| **Illinois** | NO | N/A | N/A | SaaS exempt in IL |
+| **Michigan** | YES | 6% | $100K / 200 txns | Monitor sales volume |
+
+### School District Exemptions (Indiana)
+
+**Form ST-105 (General Sales Tax Exemption Certificate):**
+- Indiana public school districts are generally exempt from sales tax
+- **MUST collect Form ST-105** from each district before applying exemption
+- Valid for 5 years from date of signature
+- Retain copies in `/documents/tax/st105_certificates/`
+- If no ST-105 on file → charge 7% sales tax
+
+**Exempt Organizations:**
+- Public school districts (with ST-105)
+- Charter schools (if 501(c)(3) or government entity)
+- Private schools (only if 501(c)(3), with ST-105)
+
+### Hardware vs SaaS Invoice Separation
+
+**Critical:** Separate Pico 4 hardware from SaaS subscription on all invoices.
+
+| Line Item | Tax Treatment | Rate |
+|-----------|---------------|------|
+| LTVR SaaS Subscription | Taxable (unless ST-105) | 7% IN |
+| Pico 4 Headset Hardware | Taxable tangible property | 7% IN |
+| Teacher Training Services | Non-taxable (standalone service) | 0% |
+| ArborXR Management (SaaS) | Taxable (unless ST-105) | 7% IN |
+
+**Best Practice:** Use separate line items for hardware, software subscription, and services. Never bundle into a single line — this avoids over-taxing non-taxable services.
+
+### Multi-State Nexus Tracker
+
+| State | Economic Nexus | Current LTVR Sales | Nexus Status | Action |
+|-------|---------------|-------------------|--------------|--------|
+| Indiana | $100K / 200 txns | Active | CROSSED | Collecting 7% |
+| Ohio | $100K / 200 txns | Monitoring | BELOW | Register when approaching $80K |
+| Illinois | $100K | Monitoring | BELOW | SaaS exempt — no collection needed |
+| Michigan | $100K / 200 txns | Monitoring | BELOW | Register when approaching $80K |
+
+### LTVR R&D Qualifying Activities
+
+The following Learning Time VR development activities qualify for R&D tax credits:
+- **WebXR tablet platform adaptation** — adapting VR experiences for browser-based delivery
+- **AI Lesson Generator development** — NLP/ML model for automated lesson plan creation
+- **ArborXR integration development** — custom integration for LTVR-specific device management
+- **VictoryXR content customization** — adapting content for specific educational outcomes
+- **FERPA analytics system** — building compliant student data privacy controls
+- **Adaptive learning algorithms** — ML models that adjust content difficulty based on performance
+
+---
+
 ## 💻 INDIANA RESEARCH & DEVELOPMENT (R&D) TAX CREDIT
 
 ### Indiana R&D Credit:

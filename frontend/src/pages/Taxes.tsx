@@ -191,6 +191,88 @@ export default function Taxes() {
         </div>
       </div>
 
+      {/* LTVR Tax Summary Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* SaaS Sales Tax Card */}
+        <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-5">
+          <h3 className="text-sm font-medium text-white mb-4">LTVR SaaS Sales Tax</h3>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-navy-700/50 rounded-lg">
+              <div>
+                <p className="text-sm text-white">Indiana Rate</p>
+                <p className="text-xs text-gray-400">SaaS taxable as pre-written software</p>
+              </div>
+              <span className="text-lg font-bold text-amber-400">7%</span>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-navy-700/50 rounded-lg">
+              <div>
+                <p className="text-sm text-white">School District Exemption</p>
+                <p className="text-xs text-gray-400">Requires Form ST-105 on file</p>
+              </div>
+              <span className="text-sm font-medium text-emerald-400">Available</span>
+            </div>
+            <div className="border-t border-navy-700 pt-3">
+              <h4 className="text-xs text-gray-400 mb-2 uppercase tracking-wider">Multi-State Status</h4>
+              {[
+                { state: 'Indiana', rate: '7%', status: 'Collecting', color: 'text-emerald-400' },
+                { state: 'Ohio', rate: '5.75%', status: 'Monitoring', color: 'text-amber-400' },
+                { state: 'Illinois', rate: 'Exempt', status: 'SaaS exempt', color: 'text-gray-400' },
+                { state: 'Michigan', rate: '6%', status: 'Monitoring', color: 'text-amber-400' },
+              ].map((s) => (
+                <div key={s.state} className="flex justify-between py-1">
+                  <span className="text-sm text-gray-300">{s.state}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-white">{s.rate}</span>
+                    <span className={`text-xs ${s.color}`}>{s.status}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* R&D Credits Card */}
+        <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-5">
+          <h3 className="text-sm font-medium text-white mb-4">R&D Tax Credits (LTVR Development)</h3>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-[#2563EB]/10 border border-[#2563EB]/30 rounded-lg">
+              <div>
+                <p className="text-sm text-[#60a5fa]">Federal R&D Credit</p>
+                <p className="text-xs text-gray-400">Traditional: 20% | ASC: 14%</p>
+              </div>
+              <span className="text-lg font-bold text-[#60a5fa]">20%</span>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-[#7C3AED]/10 border border-[#7C3AED]/30 rounded-lg">
+              <div>
+                <p className="text-sm text-[#a78bfa]">Indiana State R&D Credit</p>
+                <p className="text-xs text-gray-400">15% of federal credit, 10-yr carryforward</p>
+              </div>
+              <span className="text-lg font-bold text-[#a78bfa]">15%</span>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+              <span className="text-sm text-emerald-400">Est. R&D Credit (from deductions)</span>
+              <span className="text-lg font-bold text-emerald-400">${rdCreditEstimate.toLocaleString()}</span>
+            </div>
+            <div className="border-t border-navy-700 pt-3">
+              <h4 className="text-xs text-gray-400 mb-2 uppercase tracking-wider">LTVR Qualifying Activities</h4>
+              {[
+                'WebXR tablet platform adaptation',
+                'AI Lesson Generator (NLP/ML)',
+                'ArborXR integration development',
+                'FERPA-compliant analytics system',
+                'Adaptive learning algorithms',
+                'VictoryXR content customization',
+              ].map((activity) => (
+                <div key={activity} className="flex items-center gap-2 py-0.5">
+                  <span className="text-emerald-400 text-xs">&#10003;</span>
+                  <span className="text-sm text-gray-300">{activity}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Deduction Tracker */}
       <div>
         <h3 className="text-sm font-medium text-white mb-3">Deduction Tracker</h3>

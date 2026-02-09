@@ -1,13 +1,71 @@
 # Ascent XR Brand Style Guide
 
 ## Overview
-Ascent XR is an AI-powered spatial learning platform that transforms education through immersive experiences. Our brand combines the innovation of XR technology with the approachability of modern educational tools.
+Ascent XR is the parent company delivering custom immersive VR/AR experiences for enterprise clients. **Learning Time VR** is our scalable K-12 education product — turnkey VR classroom bundles and tablet/Chromebook WebXR subscriptions for school districts.
+
+---
+
+## Brand Architecture
+
+### Parent / Sub-Brand Hierarchy
+
+| Brand | Role | Tagline |
+|-------|------|---------|
+| **Ascent XR** | Parent company | "Delivering Immersive Experiences" |
+| **Learning Time VR** | K-12 product line | "Learn Beyond Limits" |
+| **Dashboard** | Internal ops tool | (internal use only) |
+
+### Ascent XR (Parent — Enterprise/Custom)
+- **Primary Orange**: `#ff6b00` — Energy, innovation, premium
+- **Deep Navy**: `#132e5e` — Trust, authority, depth
+- **Voice**: Enterprise-premium, confident, innovative. Speaks to CTOs, innovation leads, enterprise buyers.
+- **Use when**: Custom VR/AR project proposals, enterprise client communications, corporate website, investor materials, conference branding.
+
+### Learning Time VR (Product — K-12 Districts)
+- **LTVR Blue**: `#0052cc` — Education, trust, technology
+- **LTVR Red**: `#DC1625` — Energy, engagement, urgency
+- **Tagline**: "Learn Beyond Limits"
+- **Voice**: Education-approachable, outcome-focused, empowering. Speaks to superintendents, tech directors, curriculum coordinators, teachers.
+- **Use when**: School district outreach, LTVR product pages, subscription proposals, demo materials, teacher training docs, LTVR social media.
+
+### Dashboard (Internal)
+- **Ascent Blue**: `#2563EB` — Primary UI color
+- **Learning Purple**: `#7C3AED` — Agent/AI features
+- **Use when**: Internal dashboard UI only, not customer-facing.
+
+### When to Use Which Brand
+
+| Context | Brand | Colors | Voice |
+|---------|-------|--------|-------|
+| Enterprise custom VR project | Ascent XR | Orange + Navy | Premium, innovative |
+| K-12 district sales & marketing | Learning Time VR | Blue + Red | Approachable, outcome-focused |
+| LinkedIn (K-12 content) | Learning Time VR | Blue + Red | Educational, empowering |
+| LinkedIn (company/thought leadership) | Ascent XR | Orange + Navy | Visionary, professional |
+| Internal dashboard | Dashboard | Blue + Purple | Functional, clean |
+| Investor/corporate | Ascent XR | Orange + Navy | Strategic, growth-oriented |
+| Trade shows (ISTE, FETC) | Learning Time VR | Blue + Red | Demo-ready, teacher-friendly |
+
+### Logo Usage Rules
+- Never combine Ascent XR and Learning Time VR logos in the same lockup
+- Use "by Ascent XR" sub-text under Learning Time VR logo when establishing provenance
+- Minimum clear space: equal to "X" height of the respective wordmark
+- LTVR logo may appear alongside VictoryXR and Pico logos in partner materials
+
+---
 
 ## Color Palette
 
-### Primary Colors
+### Dashboard Colors (Internal UI)
 - **Ascent Blue**: `#2563EB` - Trust, intelligence, innovation
 - **Learning Purple**: `#7C3AED` - Creativity, wisdom, imagination
+
+### Ascent XR Brand Colors
+- **AXR Orange**: `#ff6b00` - Innovation, energy, premium
+- **AXR Deep Navy**: `#132e5e` - Authority, trust, depth
+
+### Learning Time VR Brand Colors
+- **LTVR Blue**: `#0052cc` - Education, trust, technology
+- **LTVR Red**: `#DC1625` - Energy, engagement, urgency
 
 ### Secondary Colors
 - **Success Green**: `#10B981` - Growth, achievement, safety
@@ -21,7 +79,9 @@ Ascent XR is an AI-powered spatial learning platform that transforms education t
 - **Mint**: `#34D399` - Freshness, growth
 
 ### Usage Guidelines
-- **Primary**: Blue for primary CTAs, Purple for secondary actions
+- **Dashboard UI**: Blue for primary CTAs, Purple for agent/AI features
+- **Ascent XR materials**: Orange for CTAs, Navy for backgrounds/text
+- **Learning Time VR materials**: Blue for CTAs, Red for emphasis/urgency
 - **Secondary**: Green for success states, Orange for highlights
 - **Accents**: Use sparingly for emphasis and visual interest
 
@@ -138,7 +198,20 @@ Based on 8px grid:
 - Alt text for all images
 
 ### Voice & Tone
-- Professional yet approachable
+
+**Ascent XR (Enterprise):**
+- Professional and premium
+- Innovative and visionary
+- Confident, strategic
+- Speaks to decision-makers and enterprise buyers
+
+**Learning Time VR (K-12):**
+- Approachable and empowering
+- Outcome-focused (student engagement, teacher time savings, district ROI)
+- Practical, solution-oriented
+- Speaks to educators, superintendents, and tech directors
+
+**Dashboard (Internal):**
 - Clear and concise
-- Educational but not academic
-- Innovative but not confusing
+- Functional, data-driven
+- Professional but informal

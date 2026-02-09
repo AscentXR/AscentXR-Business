@@ -85,6 +85,7 @@ export interface Product {
   status: 'active' | 'draft' | 'discontinued';
   features: any[];
   target_audience?: string;
+  brand_entity?: 'ascent_xr' | 'learning_time_vr';
 }
 
 export interface ProductFeature {

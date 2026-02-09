@@ -220,9 +220,9 @@ export default function Sales() {
       subtitle="CRM & Pipeline Management"
       actions={
         <div className="flex gap-2 flex-wrap">
-          <AgentTriggerButton agentId="research" label="Research District" prompt="Research top school districts in our pipeline" businessArea="sales" />
-          <AgentTriggerButton agentId="proposal" label="Draft Proposal" prompt="Draft a proposal for the highest-value deal in pipeline" businessArea="sales" />
-          <AgentTriggerButton agentId="qualify" label="Qualify Lead" prompt="Score and qualify the latest leads" businessArea="sales" />
+          <AgentTriggerButton agentId="research" label="Research District" prompt="Research target school districts and assess fit for Learning Time VR products. For each district determine: best LTVR tier (VR Classroom Pack $5K-$15K/yr vs Tablet Subscription $1.5K-$5K/yr), funding sources (ESSER, Title IV-A), decision makers, infrastructure readiness, and budget cycle timeline." businessArea="sales" />
+          <AgentTriggerButton agentId="proposal" label="Draft LTVR Proposal" prompt="Draft a Learning Time VR proposal for the highest-value deal in our pipeline. Reference the specific LTVR tier (Classroom Pack, Tablet Subscription, District Enterprise, or Pilot), include tier-specific pricing and ROI projections, funding guidance (ESSER/Title IV-A), implementation timeline, and teacher training details. Use LTVR brand voice — approachable, outcome-focused." businessArea="sales" />
+          <AgentTriggerButton agentId="qualify" label="Qualify Lead (BANT)" prompt="Score and qualify the latest leads using LTVR-specific BANT: Budget ($1.5K-$50K, ESSER/Title IV-A availability), Authority (superintendent/tech director/curriculum coordinator), Need (VR headset vs tablet infrastructure), Timeline (budget cycle, ESSER deadlines). Recommend the best LTVR tier for each lead." businessArea="sales" />
         </div>
       }
     >
@@ -231,7 +231,37 @@ export default function Sales() {
       {primaryError && <ErrorState error={primaryError} onRetry={contactsError ? refetchContacts : refetchDeals} />}
       {!primaryError && <>
       {/* Pipeline Tab */}
-      {tab === 'Pipeline' && (
+      {tab === 'Pipeline' && (<>
+        {/* LTVR Pipeline Summary */}
+        <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-5 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-white">Learning Time VR Pipeline</h3>
+            <span className="text-xs text-gray-400">Target: $300K by June 2026</span>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="p-3 bg-navy-700/50 rounded-lg">
+              <p className="text-xs text-gray-400">Total Pipeline</p>
+              <p className="text-lg font-bold text-white">${deals.reduce((s, d) => s + (d.opportunity_value || 0), 0).toLocaleString()}</p>
+            </div>
+            <div className="p-3 bg-navy-700/50 rounded-lg">
+              <p className="text-xs text-gray-400">Weighted Pipeline</p>
+              <p className="text-lg font-bold text-[#2563EB]">${deals.reduce((s, d) => s + ((d.opportunity_value || 0) * (d.probability || 0) / 100), 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+            </div>
+            <div className="p-3 bg-navy-700/50 rounded-lg">
+              <p className="text-xs text-gray-400">Active Deals</p>
+              <p className="text-lg font-bold text-white">{deals.length}</p>
+            </div>
+            <div className="p-3 bg-navy-700/50 rounded-lg">
+              <p className="text-xs text-gray-400">Avg Deal Size</p>
+              <p className="text-lg font-bold text-white">${deals.length ? Math.round(deals.reduce((s, d) => s + (d.opportunity_value || 0), 0) / deals.length).toLocaleString() : '0'}</p>
+            </div>
+            <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+              <p className="text-xs text-emerald-400">Progress to $300K</p>
+              <p className="text-lg font-bold text-emerald-400">{Math.round(deals.reduce((s, d) => s + ((d.opportunity_value || 0) * (d.probability || 0) / 100), 0) / 3000)}%</p>
+            </div>
+          </div>
+        </div>
+
         <div className="flex gap-4 overflow-x-auto pb-4">
           {PIPELINE_STAGES.map((stage) => (
             <div key={stage} className={`flex-shrink-0 w-72 bg-navy-800/60 backdrop-blur-md rounded-xl border-t-2 ${STAGE_COLORS[stage]} border border-navy-700/50`}>
@@ -271,7 +301,7 @@ export default function Sales() {
             </div>
           ))}
         </div>
-      )}
+      </>)}
 
       {/* Contacts Tab */}
       {tab === 'Contacts' && (
@@ -328,7 +358,7 @@ export default function Sales() {
           </svg>
           <h3 className="text-lg text-white font-medium mb-2">Proposals</h3>
           <p className="text-gray-400 text-sm mb-4">Generate proposals using AI agents for deals in your pipeline.</p>
-          <AgentTriggerButton agentId="proposal" label="Draft Proposal" prompt="Draft a proposal for our top pipeline deal" businessArea="sales" />
+          <AgentTriggerButton agentId="proposal" label="Draft LTVR Proposal" prompt="Draft a Learning Time VR proposal for our top pipeline deal. Reference the specific LTVR tier, include tier-specific pricing and ROI projections, funding guidance (ESSER/Title IV-A), implementation timeline, and teacher training details. Use LTVR brand voice." businessArea="sales" />
         </div>
       )}
 
@@ -597,9 +627,22 @@ export default function Sales() {
               <input type="date" value={editingDeal.next_action_date?.slice(0, 10) || ''} onChange={(e) => setEditingDeal({ ...editingDeal, next_action_date: e.target.value })} className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#2563EB]" />
             </div>
           </div>
-          <div>
-            <label className="block text-sm text-gray-400 mb-1">Next Action</label>
-            <input value={editingDeal.next_action || ''} onChange={(e) => setEditingDeal({ ...editingDeal, next_action: e.target.value })} className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#2563EB]" />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Next Action</label>
+              <input value={editingDeal.next_action || ''} onChange={(e) => setEditingDeal({ ...editingDeal, next_action: e.target.value })} className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#2563EB]" />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">LTVR Product Tier</label>
+              <select value={(editingDeal as any).product_tier || ''} onChange={(e) => setEditingDeal({ ...editingDeal, product_tier: e.target.value } as any)} className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#2563EB]">
+                <option value="">Select tier...</option>
+                <option value="vr_classroom_pack">VR Classroom Pack ($5K-$15K/yr)</option>
+                <option value="tablet_subscription">Tablet Subscription ($1.5K-$5K/yr)</option>
+                <option value="district_enterprise">District Enterprise ($10K-$50K/yr)</option>
+                <option value="pilot_program">Pilot Program ($1.5K-$2.5K)</option>
+                <option value="custom_experience">Custom Experience (Ascent XR)</option>
+              </select>
+            </div>
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <button onClick={() => setShowDealModal(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors">Close</button>

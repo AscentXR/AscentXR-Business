@@ -10,8 +10,18 @@ import { brand, knowledgeBase, businessActivities, forecasts, goals } from '../a
 import { useApi } from '../hooks/useApi';
 import type { BrandAsset, KnowledgeBaseArticle, BusinessActivity, Forecast, Goal } from '../types';
 
-const BRAND_COLORS = [
-  { name: 'Ascent Blue', hex: '#2563EB', usage: 'Primary brand color, CTAs, links' },
+const AXR_COLORS = [
+  { name: 'AXR Orange', hex: '#ff6b00', usage: 'Primary CTAs, headers, emphasis' },
+  { name: 'AXR Deep Navy', hex: '#132e5e', usage: 'Backgrounds, body text, dark elements' },
+];
+
+const LTVR_COLORS = [
+  { name: 'LTVR Blue', hex: '#0052cc', usage: 'Primary CTAs, headers, emphasis' },
+  { name: 'LTVR Red', hex: '#DC1625', usage: 'Energy, engagement, urgency accents' },
+];
+
+const DASHBOARD_COLORS = [
+  { name: 'Ascent Blue', hex: '#2563EB', usage: 'Primary UI color, CTAs, links' },
   { name: 'Learning Purple', hex: '#7C3AED', usage: 'AI/agent features, accents' },
   { name: 'Navy', hex: '#0a1d45', usage: 'Backgrounds, dark UI elements' },
   { name: 'Navy 800', hex: '#1a2744', usage: 'Card backgrounds' },
@@ -75,7 +85,7 @@ export default function Brand() {
       title="Brand & Style Guide"
       subtitle="Colors, fonts, logos, and brand assets"
       actions={
-        <AgentTriggerButton agentId="brand" label="Audit Brand Consistency" prompt="Audit our brand assets and marketing materials for consistency with brand guidelines" businessArea="marketing" />
+        <AgentTriggerButton agentId="brand" label="Audit Brand Consistency" prompt="Audit all marketing materials for correct brand usage: K-12 district materials must use Learning Time VR (blue #0052cc, 'Learn Beyond Limits'), enterprise materials must use Ascent XR (orange #ff6b00, 'Delivering Immersive Experiences'). Check LinkedIn posts, proposals, emails, and website for brand consistency." businessArea="marketing" />
       }
     >
       {error && <ErrorState error={error} onRetry={refetch} />}
@@ -83,13 +93,93 @@ export default function Brand() {
       <TabBar tabs={['Brand Assets', 'Knowledge Base', 'Goals', 'Forecasts', 'Activities']} active={tab} onChange={setTab} />
 
       {tab === 'Brand Assets' && (<>
-      {/* Color Palette */}
+      {/* Brand Architecture Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {/* Ascent XR Card */}
+        <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-5" style={{ borderTopColor: '#ff6b00', borderTopWidth: 3 }}>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-lg font-bold" style={{ color: '#ff6b00' }}>Ascent XR</span>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400">Parent Company</span>
+          </div>
+          <p className="text-xs text-gray-400 italic mb-3">"Delivering Immersive Experiences"</p>
+          <p className="text-sm text-gray-300 mb-3">Enterprise/custom VR &amp; AR experiences. For enterprise clients, investors, corporate communications.</p>
+          <div className="flex gap-2">
+            <div className="w-8 h-8 rounded" style={{ backgroundColor: '#ff6b00' }} title="#ff6b00" />
+            <div className="w-8 h-8 rounded" style={{ backgroundColor: '#132e5e' }} title="#132e5e" />
+          </div>
+        </div>
+        {/* Learning Time VR Card */}
+        <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-5" style={{ borderTopColor: '#0052cc', borderTopWidth: 3 }}>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-lg font-bold" style={{ color: '#0052cc' }}>Learning Time VR</span>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">K-12 Product</span>
+          </div>
+          <p className="text-xs text-gray-400 italic mb-3">"Learn Beyond Limits"</p>
+          <p className="text-sm text-gray-300 mb-3">K-12 VR headset bundles &amp; tablet WebXR subscriptions for school districts. Revenue target: $300K by June 2026.</p>
+          <div className="flex gap-2">
+            <div className="w-8 h-8 rounded" style={{ backgroundColor: '#0052cc' }} title="#0052cc" />
+            <div className="w-8 h-8 rounded" style={{ backgroundColor: '#DC1625' }} title="#DC1625" />
+          </div>
+        </div>
+      </div>
+
+      {/* When to Use Which Brand */}
       <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-5 mb-6">
-        <h3 className="text-sm font-medium text-white mb-4">Color Palette</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {BRAND_COLORS.map((color) => (
+        <h3 className="text-sm font-medium text-white mb-4">When to Use Which Brand</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {[
+            { context: 'K-12 district sales & outreach', brand: 'Learning Time VR', color: '#0052cc' },
+            { context: 'LinkedIn posts (K-12 content)', brand: 'Learning Time VR', color: '#0052cc' },
+            { context: 'Trade shows (ISTE, FETC)', brand: 'Learning Time VR', color: '#0052cc' },
+            { context: 'Enterprise custom VR projects', brand: 'Ascent XR', color: '#ff6b00' },
+            { context: 'Investor & corporate materials', brand: 'Ascent XR', color: '#ff6b00' },
+            { context: 'LinkedIn (thought leadership)', brand: 'Ascent XR', color: '#ff6b00' },
+          ].map((item) => (
+            <div key={item.context} className="flex items-center gap-2 p-2 bg-navy-700/50 rounded-lg">
+              <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
+              <div>
+                <p className="text-xs text-white">{item.context}</p>
+                <p className="text-xs font-medium" style={{ color: item.color }}>{item.brand}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Color Palettes — Ascent XR + Learning Time VR + Dashboard */}
+      <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-5 mb-6">
+        <h3 className="text-sm font-medium text-white mb-4">Color Palettes</h3>
+        <h4 className="text-xs uppercase tracking-wider text-orange-400 mb-2">Ascent XR</h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          {AXR_COLORS.map((color) => (
             <div key={color.hex} className="space-y-2">
-              <div className="h-20 rounded-lg border border-navy-700" style={{ backgroundColor: color.hex }} />
+              <div className="h-16 rounded-lg border border-navy-700" style={{ backgroundColor: color.hex }} />
+              <div>
+                <p className="text-sm font-medium text-white">{color.name}</p>
+                <p className="text-xs text-gray-400 font-mono">{color.hex}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{color.usage}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <h4 className="text-xs uppercase tracking-wider text-blue-400 mb-2">Learning Time VR</h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          {LTVR_COLORS.map((color) => (
+            <div key={color.hex} className="space-y-2">
+              <div className="h-16 rounded-lg border border-navy-700" style={{ backgroundColor: color.hex }} />
+              <div>
+                <p className="text-sm font-medium text-white">{color.name}</p>
+                <p className="text-xs text-gray-400 font-mono">{color.hex}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{color.usage}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <h4 className="text-xs uppercase tracking-wider text-gray-400 mb-2">Dashboard (Internal)</h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {DASHBOARD_COLORS.map((color) => (
+            <div key={color.hex} className="space-y-2">
+              <div className="h-16 rounded-lg border border-navy-700" style={{ backgroundColor: color.hex }} />
               <div>
                 <p className="text-sm font-medium text-white">{color.name}</p>
                 <p className="text-xs text-gray-400 font-mono">{color.hex}</p>

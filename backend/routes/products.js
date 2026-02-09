@@ -5,8 +5,8 @@ const productService = require('../services/productService');
 // GET /api/products - List products
 router.get('/', async (req, res, next) => {
   try {
-    const { category } = req.query;
-    const data = await productService.getProducts({ category });
+    const { category, brand_entity } = req.query;
+    const data = await productService.getProducts({ category, brand_entity });
     res.json({ success: true, data });
   } catch (error) {
     next(error);

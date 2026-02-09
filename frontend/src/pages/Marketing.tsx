@@ -209,9 +209,9 @@ export default function Marketing() {
       subtitle="LinkedIn, Campaigns & Content"
       actions={
         <div className="flex gap-2 flex-wrap">
-          <AgentTriggerButton agentId="content" label="Draft LinkedIn Post" prompt="Draft a LinkedIn post about Ascent XR for K-12 education" businessArea="marketing" />
-          <AgentTriggerButton agentId="content" label="Plan Next Week" prompt="Plan next week's content calendar with daily posts" businessArea="marketing" />
-          <AgentTriggerButton agentId="analytics" label="Analyze Campaign" prompt="Analyze our active marketing campaigns and suggest optimizations" businessArea="marketing" />
+          <AgentTriggerButton agentId="content" label="Draft LTVR LinkedIn Post" prompt="Draft a LinkedIn post promoting Learning Time VR for K-12 education. Reference specific products: VR Classroom Pack (Pico 4 headsets + VictoryXR, $5K-$15K/yr) or Tablet Subscription (WebXR on Chromebooks, $1.5K-$5K/yr). Use 'Learn Beyond Limits' tagline. Target superintendents and tech directors. Use LTVR brand voice — approachable, outcome-focused." businessArea="marketing" />
+          <AgentTriggerButton agentId="content" label="Plan LTVR Content Week" prompt="Plan next week's Learning Time VR content calendar. Cover 5 pillars: (1) LTVR product benefits, (2) Student outcome case studies, (3) District ROI, (4) Teacher success stories, (5) EdTech innovation. Target mix: 3 LinkedIn posts, 1 blog/case study, 1 email outreach. Use LTVR brand voice and reference specific products." businessArea="marketing" />
+          <AgentTriggerButton agentId="analytics" label="Analyze Campaign" prompt="Analyze our active Learning Time VR marketing campaigns and suggest optimizations. Compare VR Headset Pack messaging vs Tablet Subscription messaging performance. Review LinkedIn engagement, email open rates, and lead conversion. Recommend A/B tests." businessArea="marketing" />
         </div>
       }
     >

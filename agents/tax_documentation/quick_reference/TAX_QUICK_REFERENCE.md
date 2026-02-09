@@ -104,18 +104,34 @@ Projected Annual Net Income: $100,000
 ## 🔬 R&D TAX CREDIT (EDTECH)
 
 ### What Qualifies:
-✅ Developing VR/AR learning experiences  
-✅ Building AI content generation systems  
-✅ Creating spatial learning algorithms  
-✅ Testing educational efficacy  
-✅ Proprietary WebXR platform development  
-✅ 3D modeling and interaction design  
+✅ Developing VR/AR learning experiences
+✅ Building AI content generation systems
+✅ Creating spatial learning algorithms
+✅ Testing educational efficacy
+✅ Proprietary WebXR platform development
+✅ 3D modeling and interaction design
+
+### Learning Time VR — Specific R&D Activities:
+✅ WebXR tablet adaptation (Chromebook optimization)
+✅ AI Lesson Generator (NLP/ML for lesson plan creation)
+✅ ArborXR integration (custom device management API)
+✅ VictoryXR content customization (grade-level adaptation)
+✅ FERPA-compliant analytics system (privacy controls)
+✅ Adaptive learning algorithms (difficulty adjustment ML)
+
+### R&D Credit Breakdown:
+| Credit | Rate | Base |
+|--------|------|------|
+| **Federal** (Traditional) | 20% | Excess over base amount |
+| **Federal** (ASC) | 14% | Excess over 50% of 3-yr avg |
+| **Indiana State** | 15% | Of federal credit amount |
+| **Combined max** | ~35% | Federal 20% + Indiana 15% |
 
 ### What Doesn't Qualify:
-❌ Routine maintenance  
-❌ Marketing website development  
-❌ Sales tool development  
-❌ Research after commercial production  
+❌ Routine maintenance
+❌ Marketing website development
+❌ Sales tool development
+❌ Research after commercial production
 ❌ Adaptation of existing products  
 
 ### Credit Calculation Options:
@@ -197,6 +213,30 @@ Total R&D Hours: 22 hrs
 - **Filing:** Monthly (due 20th) or quarterly
 - **Registration:** INTIME.in.gov
 - **SaaS Status:** Taxable as pre-written software
+
+### Learning Time VR Sales Tax Summary
+
+| Item | IN (7%) | OH (5.75%) | IL | MI (6%) |
+|------|---------|-----------|-----|---------|
+| LTVR SaaS Subscription | Taxable | Taxable | Exempt | Taxable |
+| Pico 4 Hardware | Taxable | Taxable | Taxable (6.25%) | Taxable |
+| Training Services | Exempt | Exempt | Exempt | Exempt |
+| School District (with ST-105) | Exempt | Check exemption | Exempt | Check exemption |
+
+**Action Items:**
+- Collect Form ST-105 from every Indiana school district customer
+- Separate hardware, SaaS, and services on all invoices
+- Monitor OH/MI sales for nexus threshold ($100K)
+- IL: SaaS exempt — no collection needed (hardware still taxable)
+
+### Multi-State Nexus Status Tracker
+
+| State | Threshold | Current Sales | Status | Next Action |
+|-------|-----------|---------------|--------|-------------|
+| Indiana | $100K / 200 txns | Active | REGISTERED | Collecting |
+| Ohio | $100K / 200 txns | Monitoring | Below | Register at $80K |
+| Illinois | $100K | Monitoring | Below | SaaS exempt anyway |
+| Michigan | $100K / 200 txns | Monitoring | Below | Register at $80K |
 
 ---
 
