@@ -3,6 +3,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
 } from 'firebase/auth';
@@ -28,6 +29,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isAuthenticated = !!user;
 
   useEffect(() => {
+    // Process any pending Google redirect result
+    getRedirectResult(firebaseAuth).catch((error) => {
+      console.error('[Auth] Redirect result error:', error?.code, error?.message);
+    });
+
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
