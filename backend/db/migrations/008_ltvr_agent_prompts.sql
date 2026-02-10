@@ -10,97 +10,97 @@
 -- ---- MARKETING TEAM ----
 
 -- Draft LinkedIn Post
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Draft a LinkedIn post promoting Learning Time VR for K-12 education. Reference specific product tiers: VR Classroom Pack (Pico 4 headsets + VictoryXR content, $5K-$15K/yr) or Tablet Subscription (WebXR on existing Chromebooks, $1.5K-$5K/yr). Use the "Learn Beyond Limits" tagline. Target audience: superintendents, tech directors, and curriculum coordinators. Include a clear call-to-action for scheduling a demo. Use the Learning Time VR brand voice — approachable, outcome-focused, empowering. Do NOT reference "Ascent XR" in K-12 posts.'
 WHERE title ILIKE '%linkedin post%' AND title ILIKE '%draft%';
 
 -- Content Calendar Review
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Review and plan the Learning Time VR content calendar for the upcoming week. Ensure content covers these 5 pillars: (1) LTVR product benefits — VR headset packs and tablet subscriptions, (2) Student outcome case studies — engagement, retention, test scores, (3) District ROI — cost per student, teacher time savings, funding sources, (4) Teacher success stories — classroom implementation wins, (5) EdTech innovation — VictoryXR content updates, AI lesson generator roadmap. Each piece should use Learning Time VR brand voice and reference specific products. Target mix: 3 LinkedIn posts, 1 blog/case study, 1 email outreach.'
 WHERE title ILIKE '%content calendar%' AND title ILIKE '%review%';
 
 -- Case Study Outline
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Create a case study outline for a Learning Time VR customer. Specify which LTVR product tier the customer uses (VR Classroom Pack, Tablet Subscription, or District Enterprise License). Include: district name and demographics, challenge/problem before LTVR, solution deployed (specific tier and configuration), results (student engagement metrics, teacher feedback, usage data from ArborXR), ROI analysis, and a compelling quote. Use Learning Time VR brand voice.'
 WHERE title ILIKE '%case study%' AND title ILIKE '%outline%';
 
 -- Email Campaign Analysis
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Analyze the performance of our Learning Time VR subscription outreach email campaigns. Review open rates, click-through rates, and reply rates for campaigns targeting school district superintendents and tech directors. Compare performance of VR Headset Pack messaging vs. Tablet Subscription messaging. Identify top-performing subject lines and calls-to-action. Recommend A/B tests for the next campaign cycle. Reference LTVR pricing tiers and "Learn Beyond Limits" positioning.'
 WHERE title ILIKE '%email%' AND title ILIKE '%campaign%' AND title ILIKE '%analy%';
 
 -- ---- SALES TEAM ----
 
 -- Research Districts
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Research the top target school districts in our pipeline and assess their fit for Learning Time VR products. For each district determine: (1) Best-fit LTVR tier — VR Headset Classroom Pack ($5K-$15K/yr) if they have tech infrastructure and dedicated STEM budget, or Tablet Subscription ($1.5K-$5K/yr) if budget-conscious or Title I. (2) Funding sources — check for active ESSER funds, Title IV-A Part A allocations, state technology grants. (3) Decision makers — identify superintendent, technology director, and curriculum coordinator. (4) Infrastructure — existing 1:1 device programs, WiFi readiness, IT support capacity. (5) Timeline — budget cycle dates, board meeting schedule, ESSER spending deadlines.'
 WHERE title ILIKE '%research%' AND title ILIKE '%district%';
 
 -- Pipeline Follow-up
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Review all deals in the pipeline and draft follow-up actions. For each deal, reference the specific Learning Time VR product tier being proposed (Classroom Pack, Tablet Subscription, District Enterprise, or Pilot Program) and the associated pricing ($1.5K-$50K range). Include next steps specific to the deal stage: Discovery (schedule needs assessment), Needs Assessment (propose specific LTVR tier), Proposal (send tier-specific pricing), Negotiation (address objections with ROI data), Contract Review (prepare implementation timeline). Track progress toward $300K revenue target.'
 WHERE title ILIKE '%pipeline%' AND title ILIKE '%follow%';
 
 -- Lead Scoring (BANT)
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Score and qualify the latest leads using LTVR-specific BANT criteria. Budget: Does the district have $1,500-$50,000 available? Check ESSER funding status, Title IV-A allocations, technology line items in published budgets. Authority: Is our contact a superintendent, assistant superintendent, technology director, or curriculum coordinator? Need: Does the district need VR headset infrastructure (Classroom Pack) or can they use existing tablets (Tablet Subscription)? Are they replacing an existing solution or new to immersive learning? Timeline: What is their budget cycle? When is the next board meeting? Are there ESSER spending deadlines approaching? Score each lead 1-10 on each dimension.'
 WHERE title ILIKE '%lead%' AND title ILIKE '%scor%';
 
 -- Pipeline Status
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Generate a pipeline status report for Learning Time VR deals. Break down by product tier: VR Classroom Pack, Tablet Subscription, District Enterprise, and Pilot Program. For each tier show: number of active deals, total weighted pipeline value, deals expected to close this month, and top 3 deals by value. Calculate progress toward the $300K revenue target. Highlight any deals that have been stalled for 2+ weeks and recommend re-engagement actions. Include MRR and ARR projections based on current pipeline.'
 WHERE title ILIKE '%pipeline%' AND title ILIKE '%status%';
 
 -- Proposal Review
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Review the latest proposals in our pipeline for accuracy and persuasiveness. Each proposal should reference the specific Learning Time VR tier being offered, include tier-specific pricing and ROI projections, address the district''s specific needs identified during needs assessment, and include relevant case studies. Verify: correct LTVR product name and pricing, accurate feature list for the tier, competitive positioning vs ClassVR/Nearpod, funding guidance (ESSER, Title IV-A), clear implementation timeline, and teacher training details.'
 WHERE title ILIKE '%proposal%' AND title ILIKE '%review%';
 
 -- ---- BRAND TEAM ----
 
 -- Compliance Review
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Audit all recent marketing materials and communications for correct brand usage. Key rules: (1) K-12 district-facing materials MUST use "Learning Time VR" brand (blue #0052cc + red #DC1625), tagline "Learn Beyond Limits", approachable/educational voice. (2) Enterprise/custom project materials MUST use "Ascent XR" brand (orange #ff6b00 + navy #132e5e), tagline "Delivering Immersive Experiences", premium/innovative voice. (3) Never combine both brands in the same lockup. (4) Internal dashboard uses Ascent Blue #2563EB + Learning Purple #7C3AED. Flag any instances of wrong brand usage.'
 WHERE title ILIKE '%compliance%' AND title ILIKE '%review%' AND (title ILIKE '%brand%' OR business_area = 'brand');
 
 -- Consistency Audit
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Perform a brand consistency audit across all Learning Time VR and Ascent XR channels. Check: (1) LinkedIn — are K-12 posts using LTVR branding and voice? (2) Email outreach — are district emails using "Learn Beyond Limits" tagline? (3) Website — is product page using LTVR colors and messaging? (4) Proposals — do they reference correct LTVR tier names and pricing? (5) Social media — is there any Ascent XR/LTVR brand confusion? Report inconsistencies with specific corrections needed.'
 WHERE title ILIKE '%consistency%' AND title ILIKE '%audit%';
 
 -- ---- CUSTOMER SUCCESS ----
 
 -- Health Monitor
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Monitor Learning Time VR customer health metrics. For VR Classroom Pack customers: check ArborXR headset utilization rates, content engagement (which VictoryXR experiences are used most), teacher dashboard login frequency, and device health/battery status. For Tablet Subscription customers: check WebXR session frequency, content engagement, teacher login rates, and student participation rates. Flag any customers with: <50% headset utilization, no teacher logins in 7+ days, declining engagement trend, or upcoming renewal within 60 days. Include recommended interventions for at-risk accounts.'
 WHERE title ILIKE '%health%' AND title ILIKE '%monitor%';
 
 -- Onboarding Review
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Review Learning Time VR customer onboarding progress. Track milestones by product tier. VR Classroom Pack milestones: (1) Hardware delivery confirmed, (2) ArborXR device enrollment complete, (3) Teacher training session conducted, (4) First VR classroom session completed, (5) 30-day usage check-in done. Tablet Subscription milestones: (1) WebXR access provisioned, (2) Teacher accounts created, (3) Teacher training session conducted, (4) First WebXR session completed, (5) 30-day usage check-in done. Flag any customers behind schedule and recommend acceleration actions.'
 WHERE title ILIKE '%onboarding%' AND title ILIKE '%review%';
 
 -- Renewal Pipeline
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Review the Learning Time VR renewal pipeline. For each customer approaching renewal (within 90 days): (1) Current product tier and annual value, (2) Usage health score (from health monitor), (3) Upsell opportunity — can Tablet Subscription customers upgrade to VR Classroom Pack? Can single-classroom customers expand to district Enterprise License? (4) Risk factors — low usage, teacher turnover, budget changes, (5) Recommended renewal strategy — standard renewal, upsell proposal, or save campaign. Calculate total renewal value at risk and total upsell opportunity.'
 WHERE title ILIKE '%renewal%' AND title ILIKE '%pipeline%';
 
 -- ---- FINANCE / TAX ----
 
 -- Tax Compliance
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Review tax compliance status with focus on Learning Time VR subscription revenue. Check: (1) Indiana SaaS sales tax — LTVR subscriptions taxable at 7%, verify collection on all Indiana sales, confirm ST-105 exemption certificates collected from school districts claiming tax exemption. (2) Multi-state nexus — monitor Ohio (5.75% SaaS tax), Illinois (SaaS exempt), Michigan (6% SaaS tax) sales volumes against nexus thresholds ($100K). (3) Invoice compliance — ensure VR hardware is separated from SaaS subscription on invoices for proper tax treatment. (4) R&D credits — flag LTVR development expenses (WebXR platform, AI lesson generator, ArborXR integration) for R&D credit qualification.'
 WHERE title ILIKE '%tax%' AND title ILIKE '%compliance%';
 
 -- ---- OPERATIONS ----
 
 -- Morning Briefing
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Generate the daily morning briefing. Include: (1) Learning Time VR Pipeline: total weighted pipeline value, deals progressing today, deals at risk, progress toward $300K revenue target. (2) LTVR Subscription Metrics: current MRR, ARR, new subscriptions this month, renewals due this month, churn alerts. (3) Agent Task Summary: tasks completed overnight, tasks pending review, any failures requiring attention. (4) Key Deadlines: upcoming sales deadlines, ESSER funding deadlines, proposal due dates. (5) Top Priority: the single most important action for today to advance toward revenue target.'
 WHERE title ILIKE '%morning%' AND title ILIKE '%briefing%';
 
 -- Weekly Review
-UPDATE recurring_schedules
+UPDATE recurring_task_schedules
 SET prompt = 'Generate the weekly review report. Include: (1) Learning Time VR Subscription Metrics: weekly MRR/ARR change, new subscriptions closed, active pilots, conversion rate (pilot to full subscription). (2) Pipeline Activity: deals moved between stages, total pipeline value change, new leads added, deals won/lost. (3) Marketing Performance: LinkedIn post engagement, email campaign results, content published. (4) Customer Success: customer health scores, onboarding progress, renewal status. (5) Financial: revenue vs $300K target, burn rate, notable expenses. (6) Next Week Priorities: top 5 actions to focus on.'
 WHERE title ILIKE '%weekly%' AND title ILIKE '%review%';
 
@@ -110,7 +110,7 @@ WHERE title ILIKE '%weekly%' AND title ILIKE '%review%';
 -- ============================================================
 
 -- LTVR Revenue Tracker (daily, assigned to financial-controller agent)
-INSERT INTO recurring_schedules (agent_id, team_id, title, description, prompt, business_area, priority, schedule_type, schedule_days, schedule_time, auto_execute, requires_review, max_retries, is_active)
+INSERT INTO recurring_task_schedules (agent_id, team_id, title, description, prompt, business_area, priority, schedule_type, schedule_days, schedule_time, auto_execute, requires_review, max_retries, is_active)
 SELECT a.id, t.id,
   'LTVR Revenue Tracker',
   'Daily tracking of Learning Time VR subscription revenue metrics',
@@ -121,7 +121,7 @@ WHERE a.name ILIKE '%financial%' OR a.name ILIKE '%finance%controller%'
 LIMIT 1;
 
 -- LTVR Competitive Intelligence (weekly, assigned to SDR agent)
-INSERT INTO recurring_schedules (agent_id, team_id, title, description, prompt, business_area, priority, schedule_type, schedule_days, schedule_time, auto_execute, requires_review, max_retries, is_active)
+INSERT INTO recurring_task_schedules (agent_id, team_id, title, description, prompt, business_area, priority, schedule_type, schedule_days, schedule_time, auto_execute, requires_review, max_retries, is_active)
 SELECT a.id, t.id,
   'LTVR Competitive Intelligence',
   'Weekly monitoring of competitors in the K-12 VR/immersive learning space',
@@ -132,7 +132,7 @@ WHERE a.name ILIKE '%sdr%' OR a.name ILIKE '%research%'
 LIMIT 1;
 
 -- LTVR Tablet Demo Audit (weekly, assigned to content creator)
-INSERT INTO recurring_schedules (agent_id, team_id, title, description, prompt, business_area, priority, schedule_type, schedule_days, schedule_time, auto_execute, requires_review, max_retries, is_active)
+INSERT INTO recurring_task_schedules (agent_id, team_id, title, description, prompt, business_area, priority, schedule_type, schedule_days, schedule_time, auto_execute, requires_review, max_retries, is_active)
 SELECT a.id, t.id,
   'LTVR Tablet Demo Audit',
   'Weekly audit of which VictoryXR experiences are optimized for tablet/WebXR access',
@@ -143,7 +143,7 @@ WHERE a.name ILIKE '%content%'
 LIMIT 1;
 
 -- LTVR Funding Alert (weekly, assigned to SDR agent)
-INSERT INTO recurring_schedules (agent_id, team_id, title, description, prompt, business_area, priority, schedule_type, schedule_days, schedule_time, auto_execute, requires_review, max_retries, is_active)
+INSERT INTO recurring_task_schedules (agent_id, team_id, title, description, prompt, business_area, priority, schedule_type, schedule_days, schedule_time, auto_execute, requires_review, max_retries, is_active)
 SELECT a.id, t.id,
   'LTVR Funding Alert',
   'Weekly monitoring of education funding opportunities for LTVR sales',
