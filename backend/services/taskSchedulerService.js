@@ -225,7 +225,7 @@ async function resolveContextToken(token, schedule) {
     case 'pipeline_summary': {
       const r = await query(`
         SELECT stage, COUNT(*) as count, SUM(opportunity_value) as total_value
-        FROM deals WHERE stage NOT IN ('closed_lost')
+        FROM pipeline WHERE stage NOT IN ('closed_lost')
         GROUP BY stage ORDER BY count DESC
       `);
       return r.rows;
@@ -234,7 +234,7 @@ async function resolveContextToken(token, schedule) {
     case 'pipeline_deals': {
       const r = await query(`
         SELECT d.*, sd.name as district_name
-        FROM deals d
+        FROM pipeline d
         LEFT JOIN school_districts sd ON d.school_district_id = sd.id
         WHERE d.stage NOT IN ('closed_lost')
         ORDER BY d.opportunity_value DESC LIMIT 20
@@ -519,6 +519,66 @@ async function resolveContextToken(token, schedule) {
         ORDER BY pd.created_at DESC LIMIT 20
       `);
       return r.rows;
+    }
+
+    case 'esser_districts': {
+      // Districts with known ESSER III allocations — prioritized for urgency outreach
+      const r = await query(`
+        SELECT sd.name, sd.state, sd.city, sd.student_count,
+               d.stage, d.opportunity_value, d.expected_close_date
+        FROM school_districts sd
+        LEFT JOIN pipeline d ON d.school_district_id = sd.id AND d.stage NOT IN ('closed_lost')
+        WHERE sd.state IN ('IN', 'OH', 'IL', 'MI')
+        ORDER BY sd.student_count DESC NULLS LAST
+        LIMIT 50
+      `);
+      return r.rows;
+    }
+
+    case 'budget_deadlines': {
+      // Upcoming budget decision dates and board vote schedules
+      const r = await query(`
+        SELECT d.*, sd.name as district_name, sd.state
+        FROM pipeline d
+        LEFT JOIN school_districts sd ON d.school_district_id = sd.id
+        WHERE d.next_action_date IS NOT NULL
+        AND d.next_action_date >= CURRENT_DATE
+        AND d.next_action_date <= CURRENT_DATE + INTERVAL '90 days'
+        AND d.stage NOT IN ('closed_won', 'closed_lost')
+        ORDER BY d.next_action_date ASC
+      `);
+      return r.rows;
+    }
+
+    case 'pilot_conversions': {
+      // Deals in pilot stage approaching conversion
+      const r = await query(`
+        SELECT d.*, sd.name as district_name, sd.state,
+               ch.overall_score as health_score, ch.engagement_score
+        FROM pipeline d
+        LEFT JOIN school_districts sd ON d.school_district_id = sd.id
+        LEFT JOIN customer_health ch ON ch.school_district_id = d.school_district_id
+        WHERE d.stage IN ('pilot', 'evaluation', 'trial')
+        ORDER BY d.next_action_date ASC NULLS LAST
+      `);
+      return r.rows;
+    }
+
+    case 'revenue_gap': {
+      // Dynamic revenue gap calculation toward $300K target
+      const r = await query(`
+        SELECT
+          300000 as target,
+          COALESCE(SUM(CASE WHEN status = 'paid' THEN paid_amount ELSE 0 END), 0) as current_revenue,
+          300000 - COALESCE(SUM(CASE WHEN status = 'paid' THEN paid_amount ELSE 0 END), 0) as remaining,
+          ROUND(COALESCE(SUM(CASE WHEN status = 'paid' THEN paid_amount ELSE 0 END), 0) * 100.0 / 300000, 1) as percentage,
+          ('2026-06-30'::date - CURRENT_DATE) as days_remaining,
+          CASE WHEN ('2026-06-30'::date - CURRENT_DATE) > 0
+            THEN ROUND((300000 - COALESCE(SUM(CASE WHEN status = 'paid' THEN paid_amount ELSE 0 END), 0)) / (('2026-06-30'::date - CURRENT_DATE) / 30.0), 0)
+            ELSE 0 END as required_monthly_rate
+        FROM invoices
+      `);
+      return r.rows[0] || { target: 300000, current_revenue: 0, remaining: 300000, percentage: 0, days_remaining: 140, required_monthly_rate: 50500 };
     }
 
     case 'recent_content_performance':

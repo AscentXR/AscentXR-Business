@@ -216,10 +216,13 @@ class AgentExecutionService {
           [taskId]
         );
 
+        // Use higher token limit for proposal-agent (needs longer output for proposals/RFPs)
+        const maxTokens = task.agent_id === 'proposal-agent' ? 8192 : 4096;
+
         // Call Anthropic API
         const response = await this.client.messages.create({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 4096,
+          max_tokens: maxTokens,
           system: systemPrompt,
           messages: [
             { role: 'user', content: userMessage }
@@ -336,9 +339,12 @@ class AgentExecutionService {
         return;
       }
 
+      // Use higher token limit for proposal-agent (needs longer output for proposals/RFPs)
+      const maxTokens = task.agent_id === 'proposal-agent' ? 8192 : 4096;
+
       const stream = await this.client.messages.stream({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 4096,
+        max_tokens: maxTokens,
         system: systemPrompt,
         messages: [
           { role: 'user', content: userMessage }
