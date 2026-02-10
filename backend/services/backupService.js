@@ -10,6 +10,34 @@ const BATCH_SIZE = 5000;
 
 let operationInProgress = false;
 
+/**
+ * Build a set of JSONB column names for a table (from live database).
+ * Used during restore to know which values need JSON.stringify.
+ */
+async function getJsonbColumns(tableName) {
+  const res = await query(`
+    SELECT column_name
+    FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = $1
+      AND (data_type = 'json' OR data_type = 'jsonb')
+  `, [tableName]);
+  return new Set(res.rows.map(r => r.column_name));
+}
+
+/**
+ * Serialize a value for pg parameterized INSERT.
+ * - JSONB columns: JSON.stringify objects AND arrays (JSONB can store arrays)
+ * - ARRAY columns (text[], int[]): pass JS arrays as-is, pg handles them
+ * - Everything else: pass through (pg handles strings, numbers, booleans, null, Date)
+ */
+function serializeValue(val, isJsonbCol) {
+  if (val === null || val === undefined) return null;
+  if (isJsonbCol && typeof val === 'object' && !(val instanceof Date)) {
+    return JSON.stringify(val);
+  }
+  return val;
+}
+
 function getWebSocket() {
   try {
     return require('../websocket');
@@ -368,18 +396,12 @@ async function restoreFromBackup(filename, { createdBy } = {}) {
         }
       }
 
-      // INSERT in dependency order
-      for (const table of depOrder) {
-        if (!tableData[table] || tableData[table].length === 0) continue;
-        currentStep++;
-        const pct = Math.round((currentStep / totalSteps) * 100);
-        emitProgress({ stage: 'inserting', message: `Restoring ${table}...`, progress: Math.min(pct, 95), table });
-
-        const rows = tableData[table];
+      // Helper: insert rows for a table with proper JSONB serialization
+      async function insertTableRows(table, rows) {
         const columns = Object.keys(rows[0]);
+        const jsonbCols = await getJsonbColumns(table);
         const quotedCols = columns.map(c => `"${c}"`).join(', ');
 
-        // Insert in batches
         for (let i = 0; i < rows.length; i += BATCH_SIZE) {
           const batch = rows.slice(i, i + BATCH_SIZE);
           const values = [];
@@ -387,7 +409,7 @@ async function restoreFromBackup(filename, { createdBy } = {}) {
 
           batch.forEach((row, batchIdx) => {
             const rowPlaceholders = columns.map((col, colIdx) => {
-              values.push(row[col]);
+              values.push(serializeValue(row[col], jsonbCols.has(col)));
               return `$${batchIdx * columns.length + colIdx + 1}`;
             });
             placeholders.push(`(${rowPlaceholders.join(', ')})`);
@@ -400,33 +422,20 @@ async function restoreFromBackup(filename, { createdBy } = {}) {
         }
       }
 
+      // INSERT in dependency order
+      for (const table of depOrder) {
+        if (!tableData[table] || tableData[table].length === 0) continue;
+        currentStep++;
+        const pct = Math.round((currentStep / totalSteps) * 100);
+        emitProgress({ stage: 'inserting', message: `Restoring ${table}...`, progress: Math.min(pct, 95), table });
+        await insertTableRows(table, tableData[table]);
+      }
+
       // Also insert tables not in the dependency graph
       for (const table of tablesToRestore) {
         if (depOrder.includes(table)) continue;
         if (!tableData[table] || tableData[table].length === 0) continue;
-
-        const rows = tableData[table];
-        const columns = Object.keys(rows[0]);
-        const quotedCols = columns.map(c => `"${c}"`).join(', ');
-
-        for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-          const batch = rows.slice(i, i + BATCH_SIZE);
-          const values = [];
-          const placeholders = [];
-
-          batch.forEach((row, batchIdx) => {
-            const rowPlaceholders = columns.map((col, colIdx) => {
-              values.push(row[col]);
-              return `$${batchIdx * columns.length + colIdx + 1}`;
-            });
-            placeholders.push(`(${rowPlaceholders.join(', ')})`);
-          });
-
-          await client.query(
-            `INSERT INTO "${table}" (${quotedCols}) VALUES ${placeholders.join(', ')}`,
-            values
-          );
-        }
+        await insertTableRows(table, tableData[table]);
       }
 
       await client.query('COMMIT');
