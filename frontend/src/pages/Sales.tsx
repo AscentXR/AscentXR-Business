@@ -18,7 +18,7 @@ const TABS = ['Pipeline', 'Contacts', 'Deals', 'Proposals', 'Skills & Workflows'
 const SALES_SKILL_CATEGORY_COLORS: Record<string, string> = {
   'Prospecting & Outreach': 'bg-blue-500/20 text-blue-400',
   'Discovery & Qualification': 'bg-cyan-500/20 text-cyan-400',
-  'Presentation & Demo': 'bg-purple-500/20 text-purple-400',
+  'Presentation & Demo': 'bg-teal-500/20 text-teal-400',
   'Proposal & Closing': 'bg-emerald-500/20 text-emerald-400',
   'Account Management': 'bg-amber-500/20 text-amber-400',
   'Sales Operations': 'bg-orange-500/20 text-orange-400',
@@ -29,7 +29,7 @@ const PIPELINE_STAGES = ['Discovery', 'Needs Assessment', 'Proposal', 'Negotiati
 const STAGE_COLORS: Record<string, string> = {
   Discovery: 'border-blue-400',
   'Needs Assessment': 'border-cyan-400',
-  Proposal: 'border-[#7C3AED]',
+  Proposal: 'border-[#0D9488]',
   Negotiation: 'border-amber-400',
   'Contract Review': 'border-emerald-400',
 };

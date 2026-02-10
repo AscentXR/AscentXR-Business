@@ -80,7 +80,7 @@ export default function Taxes() {
     { key: 'description', label: 'Description', render: (d) => <span className="font-medium text-white">{d.description}</span> },
     { key: 'category', label: 'Category', render: (d) => <span className="capitalize">{d.category}</span> },
     { key: 'amount', label: 'Amount', sortable: true, render: (d) => <span>${d.amount?.toLocaleString()}</span> },
-    { key: 'is_r_and_d', label: 'R&D', render: (d) => d.is_r_and_d ? <span className="text-[#7C3AED] text-xs font-medium">R&D</span> : <span className="text-gray-600">-</span> },
+    { key: 'is_r_and_d', label: 'R&D', render: (d) => d.is_r_and_d ? <span className="text-[#0D9488] text-xs font-medium">R&D</span> : <span className="text-gray-600">-</span> },
     { key: 'status', label: 'Status', render: (d) => <StatusBadge status={d.status} /> },
   ];
 
@@ -170,9 +170,9 @@ export default function Taxes() {
               <span className="text-sm text-gray-300">Total Deductions</span>
               <span className="text-lg font-bold text-white">${totalDeductions.toLocaleString()}</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-[#7C3AED]/10 border border-[#7C3AED]/30 rounded-lg">
-              <span className="text-sm text-[#7C3AED]">R&D Deductions</span>
-              <span className="text-lg font-bold text-[#7C3AED]">${rdDeductions.toLocaleString()}</span>
+            <div className="flex items-center justify-between p-3 bg-[#0D9488]/10 border border-[#0D9488]/30 rounded-lg">
+              <span className="text-sm text-[#0D9488]">R&D Deductions</span>
+              <span className="text-lg font-bold text-[#0D9488]">${rdDeductions.toLocaleString()}</span>
             </div>
             <div className="flex items-center justify-between p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
               <span className="text-sm text-emerald-400">Estimated R&D Credit (20%)</span>
@@ -242,12 +242,12 @@ export default function Taxes() {
               </div>
               <span className="text-lg font-bold text-[#60a5fa]">20%</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-[#7C3AED]/10 border border-[#7C3AED]/30 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-[#0D9488]/10 border border-[#0D9488]/30 rounded-lg">
               <div>
-                <p className="text-sm text-[#a78bfa]">Indiana State R&D Credit</p>
+                <p className="text-sm text-[#5eead4]">Indiana State R&D Credit</p>
                 <p className="text-xs text-gray-400">15% of federal credit, 10-yr carryforward</p>
               </div>
-              <span className="text-lg font-bold text-[#a78bfa]">15%</span>
+              <span className="text-lg font-bold text-[#5eead4]">15%</span>
             </div>
             <div className="flex items-center justify-between p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
               <span className="text-sm text-emerald-400">Est. R&D Credit (from deductions)</span>

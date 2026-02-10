@@ -18,9 +18,9 @@ import {
 
 const BRAND_COLORS = [
   '#2563EB', // Ascent Blue
-  '#7C3AED', // Learning Purple
+  '#0D9488', // Teal
   '#3B82F6', // Blue Light
-  '#8B5CF6', // Purple Light
+  '#14B8A6', // Teal Light
   '#10B981', // Emerald
   '#F59E0B', // Amber
   '#EF4444', // Red

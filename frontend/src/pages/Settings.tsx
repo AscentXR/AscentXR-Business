@@ -498,7 +498,7 @@ export default function Settings() {
                       </div>
                       <div className="col-span-3 text-sm text-gray-400 truncate">{u.email}</div>
                       <div className="col-span-2">
-                        <span className={`text-xs px-2 py-1 rounded-full ${u.role === 'admin' ? 'bg-ascent-blue/20 text-ascent-blue' : 'bg-learning-purple/20 text-learning-purple'}`}>
+                        <span className={`text-xs px-2 py-1 rounded-full ${u.role === 'admin' ? 'bg-ascent-blue/20 text-ascent-blue' : 'bg-learning-teal/20 text-learning-teal'}`}>
                           {u.role === 'admin' ? 'Admin' : 'Viewer'}
                         </span>
                       </div>

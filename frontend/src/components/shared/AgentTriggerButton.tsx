@@ -44,7 +44,7 @@ export default function AgentTriggerButton({
     <button
       onClick={handleClick}
       disabled={loading}
-      className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg bg-[#7C3AED]/20 text-[#7C3AED] border border-[#7C3AED]/30 hover:bg-[#7C3AED]/30 transition-colors disabled:opacity-50"
+      className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg bg-[#0D9488]/20 text-[#0D9488] border border-[#0D9488]/30 hover:bg-[#0D9488]/30 transition-colors disabled:opacity-50"
     >
       <svg className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
         {loading ? (

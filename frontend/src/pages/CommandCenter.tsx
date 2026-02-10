@@ -151,7 +151,7 @@ export default function CommandCenter() {
   return (
     <PageShell title="Command Center" subtitle="Mission Control for Ascent XR">
       {/* My Day Section */}
-      <div className="bg-navy-800/60 backdrop-blur-md border border-[#7C3AED]/30 rounded-xl p-5 mb-6">
+      <div className="bg-navy-800/60 backdrop-blur-md border border-[#0D9488]/30 rounded-xl p-5 mb-6">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-lg font-bold text-white">
@@ -176,7 +176,7 @@ export default function CommandCenter() {
             </Link>
             <Link
               to="/agents"
-              className="flex items-center gap-2 px-3 py-1.5 bg-[#7C3AED]/20 text-[#7C3AED] text-sm rounded-lg hover:bg-[#7C3AED]/30 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#0D9488]/20 text-[#0D9488] text-sm rounded-lg hover:bg-[#0D9488]/30 transition-colors"
             >
               <FileText size={14} />
               View Briefing
@@ -223,7 +223,7 @@ export default function CommandCenter() {
                 <div className="flex items-center gap-1 mt-1">
                   <div className="flex-1 bg-navy-900 rounded-full h-1.5">
                     <div
-                      className="bg-[#7C3AED] h-1.5 rounded-full transition-all"
+                      className="bg-[#0D9488] h-1.5 rounded-full transition-all"
                       style={{ width: `${team.total_tasks > 0 ? Math.round((team.completed / team.total_tasks) * 100) : 0}%` }}
                     />
                   </div>
@@ -239,7 +239,7 @@ export default function CommandCenter() {
       {briefingData?.briefing_text && (
         <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-5 mb-6">
           <h3 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
-            <PlayCircle size={16} className="text-[#7C3AED]" />
+            <PlayCircle size={16} className="text-[#0D9488]" />
             Morning Briefing
           </h3>
           <div className="bg-navy-900/60 rounded-lg p-4 max-h-64 overflow-y-auto">

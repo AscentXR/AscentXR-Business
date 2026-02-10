@@ -19,7 +19,7 @@ const SKILL_CATEGORY_COLORS: Record<string, string> = {
   'Conversion Optimization': 'bg-orange-500/20 text-orange-400',
   'Content & Copy': 'bg-blue-500/20 text-blue-400',
   'SEO & Discovery': 'bg-green-500/20 text-green-400',
-  'Paid & Distribution': 'bg-purple-500/20 text-purple-400',
+  'Paid & Distribution': 'bg-teal-500/20 text-teal-400',
   'Measurement & Testing': 'bg-cyan-500/20 text-cyan-400',
   'Growth Engineering': 'bg-pink-500/20 text-pink-400',
   'Strategy & Monetization': 'bg-amber-500/20 text-amber-400',

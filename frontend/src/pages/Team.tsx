@@ -38,11 +38,11 @@ export default function Team() {
         onClick={() => { setEditing(member); setShowModal(true); }}
       >
         <div className="flex items-start gap-4">
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${member.type === 'ai_agent' ? 'bg-[#7C3AED]/20' : 'bg-[#2563EB]/20'}`}>
+          <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${member.type === 'ai_agent' ? 'bg-[#0D9488]/20' : 'bg-[#2563EB]/20'}`}>
             {member.avatar_url ? (
               <img src={member.avatar_url} alt={member.name} className="w-12 h-12 rounded-full object-cover" />
             ) : (
-              <span className={`text-lg font-bold ${member.type === 'ai_agent' ? 'text-[#7C3AED]' : 'text-[#2563EB]'}`}>
+              <span className={`text-lg font-bold ${member.type === 'ai_agent' ? 'text-[#0D9488]' : 'text-[#2563EB]'}`}>
                 {member.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
               </span>
             )}

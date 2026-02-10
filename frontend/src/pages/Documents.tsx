@@ -18,8 +18,8 @@ const FILE_ICONS: Record<string, { icon: string; color: string }> = {
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': { icon: 'DOC', color: 'text-blue-400 bg-blue-500/20' },
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': { icon: 'XLS', color: 'text-emerald-400 bg-emerald-500/20' },
   'application/vnd.openxmlformats-officedocument.presentationml.presentation': { icon: 'PPT', color: 'text-orange-400 bg-orange-500/20' },
-  'image/png': { icon: 'PNG', color: 'text-purple-400 bg-purple-500/20' },
-  'image/jpeg': { icon: 'JPG', color: 'text-purple-400 bg-purple-500/20' },
+  'image/png': { icon: 'PNG', color: 'text-teal-400 bg-teal-500/20' },
+  'image/jpeg': { icon: 'JPG', color: 'text-teal-400 bg-teal-500/20' },
   'text/plain': { icon: 'TXT', color: 'text-gray-400 bg-gray-500/20' },
 };
 

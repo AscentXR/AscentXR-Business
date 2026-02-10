@@ -38,7 +38,7 @@ const KANBAN_COLUMNS: KanbanColumn[] = [
   { id: 'inbox', title: 'INBOX', color: '#6b7280' },
   { id: 'assigned', title: 'ASSIGNED', color: '#3b82f6' },
   { id: 'in_progress', title: 'IN PROGRESS', color: '#f59e0b' },
-  { id: 'review', title: 'REVIEW', color: '#8b5cf6' },
+  { id: 'review', title: 'REVIEW', color: '#14b8a6' },
   { id: 'done', title: 'DONE', color: '#10b981' },
 ];
 
@@ -61,7 +61,7 @@ const COLUMN_TO_STATUS: Record<string, string> = {
   done: 'approved',
 };
 
-const STATUS_COLORS = ['#6b7280', '#3b82f6', '#f59e0b', '#8b5cf6', '#10b981', '#ef4444'];
+const STATUS_COLORS = ['#6b7280', '#3b82f6', '#f59e0b', '#14b8a6', '#10b981', '#ef4444'];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const TEAM_ICONS: Record<string, React.ComponentType<any>> = {
@@ -332,7 +332,7 @@ export default function Agents() {
       actions={
         <button
           onClick={() => setShowExecModal(true)}
-          className="px-4 py-2 bg-[#7C3AED] text-white text-sm rounded-lg hover:bg-[#7C3AED]/80"
+          className="px-4 py-2 bg-[#0D9488] text-white text-sm rounded-lg hover:bg-[#0D9488]/80"
         >
           + Execute Task
         </button>
@@ -358,10 +358,10 @@ export default function Agents() {
 
               <div className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-6 mb-6">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-lg bg-[#7C3AED]/20 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-[#0D9488]/20 flex items-center justify-center">
                     {(() => {
                       const IconComp = TEAM_ICONS[teamDetail.icon || ''] || Users;
-                      return <IconComp size={24} className="text-[#7C3AED]" />;
+                      return <IconComp size={24} className="text-[#0D9488]" />;
                     })()}
                   </div>
                   <div>
@@ -387,7 +387,7 @@ export default function Agents() {
                           <div>
                             <span className="text-sm text-white font-medium">{m.agent_name}</span>
                             {m.role_in_team === 'lead' && (
-                              <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-[#7C3AED]/20 text-[#7C3AED]">Lead</span>
+                              <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-[#0D9488]/20 text-[#0D9488]">Lead</span>
                             )}
                             <p className="text-xs text-gray-400 truncate max-w-md">{m.agent_description}</p>
                           </div>
@@ -437,12 +437,12 @@ export default function Agents() {
                       <div
                         key={team.id}
                         onClick={() => setSelectedTeam(team)}
-                        className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-5 cursor-pointer hover:border-[#7C3AED]/50 transition-colors"
+                        className="bg-navy-800/60 backdrop-blur-md border border-navy-700/50 rounded-xl p-5 cursor-pointer hover:border-[#0D9488]/50 transition-colors"
                       >
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-[#7C3AED]/20 flex items-center justify-center">
-                              <IconComp size={20} className="text-[#7C3AED]" />
+                            <div className="w-10 h-10 rounded-lg bg-[#0D9488]/20 flex items-center justify-center">
+                              <IconComp size={20} className="text-[#0D9488]" />
                             </div>
                             <div>
                               <h3 className="text-white font-semibold text-sm">{team.name}</h3>
@@ -462,7 +462,7 @@ export default function Agents() {
                             value={completedToday}
                             max={totalToday || 1}
                             label={`${completedToday}/${totalToday} today`}
-                            color="purple"
+                            color="teal"
                             size="sm"
                           />
                         </div>
@@ -523,12 +523,12 @@ export default function Agents() {
                       <div className="flex items-center gap-3">
                         <div
                           className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                            agent.status === 'active' ? 'bg-[#7C3AED]/20' : 'bg-navy-700'
+                            agent.status === 'active' ? 'bg-[#0D9488]/20' : 'bg-navy-700'
                           }`}
                         >
                           <svg
                             className={`w-5 h-5 ${
-                              agent.status === 'active' ? 'text-[#7C3AED]' : 'text-gray-500'
+                              agent.status === 'active' ? 'text-[#0D9488]' : 'text-gray-500'
                             }`}
                             fill="none"
                             viewBox="0 0 24 24"
@@ -564,13 +564,13 @@ export default function Agents() {
                         value={agent.tasks_completed}
                         max={agent.total_tasks || 1}
                         label={`${agent.tasks_completed}/${agent.total_tasks} tasks`}
-                        color="purple"
+                        color="teal"
                         size="sm"
                       />
                     </div>
                     {agent.current_task && (
                       <div className="flex items-center gap-1.5 mt-2">
-                        <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-[#7C3AED]/20 text-[#7C3AED]">
+                        <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-[#0D9488]/20 text-[#0D9488]">
                           [{getActivityLabel(agent.current_task)}]
                         </span>
                         <span className="text-xs text-gray-400 truncate">
@@ -596,8 +596,8 @@ export default function Agents() {
 
           {/* Active Task Streaming */}
           {activeTasks.length > 0 && (
-            <div className="bg-navy-800/60 backdrop-blur-md border border-[#7C3AED]/30 rounded-xl p-5 mb-6">
-              <h3 className="text-sm font-medium text-[#7C3AED] mb-3">Active Tasks</h3>
+            <div className="bg-navy-800/60 backdrop-blur-md border border-[#0D9488]/30 rounded-xl p-5 mb-6">
+              <h3 className="text-sm font-medium text-[#0D9488] mb-3">Active Tasks</h3>
               <div className="space-y-3">
                 {activeTasks.map((task) => (
                   <div key={task.id} className="p-3 bg-navy-700/50 rounded-lg">
@@ -642,13 +642,13 @@ export default function Agents() {
                 type="date"
                 value={dailyDate}
                 onChange={(e) => setDailyDate(e.target.value)}
-                className="px-3 py-1.5 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#7C3AED]"
+                className="px-3 py-1.5 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#0D9488]"
               />
             </div>
             <select
               value={dailyStatus}
               onChange={(e) => setDailyStatus(e.target.value)}
-              className="px-3 py-1.5 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#7C3AED]"
+              className="px-3 py-1.5 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#0D9488]"
             >
               <option value="">All Statuses</option>
               <option value="review">Pending Review</option>
@@ -661,7 +661,7 @@ export default function Agents() {
             <button
               onClick={handleTriggerDaily}
               disabled={triggering}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[#7C3AED] text-white text-sm rounded-lg hover:bg-[#7C3AED]/80 disabled:opacity-50"
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#0D9488] text-white text-sm rounded-lg hover:bg-[#0D9488]/80 disabled:opacity-50"
             >
               <RefreshCw size={14} className={triggering ? 'animate-spin' : ''} />
               {triggering ? 'Generating...' : 'Trigger Daily Run'}
@@ -756,7 +756,7 @@ export default function Agents() {
                   />
                   <Bar
                     dataKey="completed"
-                    fill="#7C3AED"
+                    fill="#0D9488"
                     name="Completed"
                     radius={[4, 4, 0, 0]}
                   />
@@ -813,7 +813,7 @@ export default function Agents() {
                 <p className="text-xs text-gray-400 mt-1">Approved</p>
               </div>
               <div className="text-center p-4 bg-navy-700/30 rounded-lg">
-                <p className="text-2xl font-bold text-[#7C3AED]">
+                <p className="text-2xl font-bold text-[#0D9488]">
                   {tasks.length > 0
                     ? `${Math.round(
                         tasks
@@ -847,7 +847,7 @@ export default function Agents() {
             <select
               value={selectedAgent}
               onChange={(e) => setSelectedAgent(e.target.value)}
-              className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#7C3AED]"
+              className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#0D9488]"
             >
               <option value="">Select an agent...</option>
               {safeAgentList.map((a) => (
@@ -863,7 +863,7 @@ export default function Agents() {
               value={taskTitle}
               onChange={(e) => setTaskTitle(e.target.value)}
               placeholder="Brief description"
-              className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#7C3AED]"
+              className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#0D9488]"
             />
           </div>
           <div>
@@ -873,7 +873,7 @@ export default function Agents() {
               onChange={(e) => setTaskPrompt(e.target.value)}
               rows={4}
               placeholder="What should the agent do?"
-              className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#7C3AED]"
+              className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#0D9488]"
             />
           </div>
           <div className="flex justify-end gap-3 pt-2">
@@ -886,7 +886,7 @@ export default function Agents() {
             <button
               onClick={handleExecute}
               disabled={executing || !selectedAgent || !taskPrompt}
-              className="px-4 py-2 bg-[#7C3AED] text-white text-sm rounded-lg disabled:opacity-50"
+              className="px-4 py-2 bg-[#0D9488] text-white text-sm rounded-lg disabled:opacity-50"
             >
               {executing ? 'Executing...' : 'Execute'}
             </button>

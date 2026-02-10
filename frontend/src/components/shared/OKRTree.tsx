@@ -71,13 +71,13 @@ function GoalNode({
         <div
           className={clsx(
             'flex-shrink-0 w-7 h-7 rounded flex items-center justify-center mt-0.5',
-            isObjective ? 'bg-ascent-blue/15' : 'bg-learning-purple/15'
+            isObjective ? 'bg-ascent-blue/15' : 'bg-learning-teal/15'
           )}
         >
           {isObjective ? (
             <Target size={14} className="text-ascent-blue" />
           ) : (
-            <KeyRound size={14} className="text-learning-purple" />
+            <KeyRound size={14} className="text-learning-teal" />
           )}
         </div>
 

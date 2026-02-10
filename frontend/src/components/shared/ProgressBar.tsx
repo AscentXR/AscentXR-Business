@@ -3,7 +3,7 @@ interface ProgressBarProps {
   max?: number;
   label?: string;
   showPercentage?: boolean;
-  color?: 'blue' | 'purple' | 'green' | 'red' | 'yellow';
+  color?: 'blue' | 'teal' | 'green' | 'red' | 'yellow';
   size?: 'sm' | 'md' | 'lg';
   warning?: boolean;
 }
@@ -21,7 +21,7 @@ export default function ProgressBar({
 
   const colorMap: Record<string, string> = {
     blue: 'bg-[#2563EB]',
-    purple: 'bg-[#7C3AED]',
+    teal: 'bg-[#0D9488]',
     green: 'bg-emerald-500',
     red: 'bg-red-500',
     yellow: 'bg-amber-500',

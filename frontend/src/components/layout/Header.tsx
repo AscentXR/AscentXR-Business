@@ -44,7 +44,7 @@ export default function Header() {
                   'inline-block text-xs px-2 py-0.5 rounded-full font-medium mt-0.5',
                   user.role === 'admin'
                     ? 'bg-ascent-blue/20 text-ascent-blue'
-                    : 'bg-learning-purple/20 text-learning-purple'
+                    : 'bg-learning-teal/20 text-learning-teal'
                 )}
               >
                 {user.role === 'admin' ? 'Admin' : 'Viewer'}

@@ -10,9 +10,9 @@ export default {
           'blue-light': '#3B82F6',
         },
         learning: {
-          purple: '#7C3AED',
-          'purple-dark': '#6D28D9',
-          'purple-light': '#8B5CF6',
+          teal: '#0D9488',
+          'teal-dark': '#0F766E',
+          'teal-light': '#14B8A6',
         },
         navy: {
           900: '#0a1d45',

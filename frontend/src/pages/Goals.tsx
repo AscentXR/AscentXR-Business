@@ -59,7 +59,7 @@ export default function Goals() {
         >
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
-              <span className={`text-xs px-2 py-0.5 rounded ${goal.goal_type === 'objective' ? 'bg-[#2563EB]/20 text-[#2563EB]' : 'bg-[#7C3AED]/20 text-[#7C3AED]'}`}>
+              <span className={`text-xs px-2 py-0.5 rounded ${goal.goal_type === 'objective' ? 'bg-[#2563EB]/20 text-[#2563EB]' : 'bg-[#0D9488]/20 text-[#0D9488]'}`}>
                 {goal.goal_type === 'objective' ? 'O' : 'KR'}
               </span>
               <span className="text-sm text-white">{goal.title}</span>
@@ -96,7 +96,7 @@ export default function Goals() {
         </div>
         <div className="flex gap-2">
           {BUSINESS_AREAS.map((area) => (
-            <button key={area} onClick={() => setAreaFilter(area)} className={`px-3 py-1.5 text-xs rounded-full transition-colors ${areaFilter === area ? 'bg-[#7C3AED] text-white' : 'bg-navy-700 text-gray-400 hover:text-white'}`}>{area}</button>
+            <button key={area} onClick={() => setAreaFilter(area)} className={`px-3 py-1.5 text-xs rounded-full transition-colors ${areaFilter === area ? 'bg-[#0D9488] text-white' : 'bg-navy-700 text-gray-400 hover:text-white'}`}>{area}</button>
           ))}
         </div>
       </div>

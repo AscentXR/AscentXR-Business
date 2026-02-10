@@ -22,7 +22,7 @@ const LTVR_COLORS = [
 
 const DASHBOARD_COLORS = [
   { name: 'Ascent Blue', hex: '#2563EB', usage: 'Primary UI color, CTAs, links' },
-  { name: 'Learning Purple', hex: '#7C3AED', usage: 'AI/agent features, accents' },
+  { name: 'Learning Teal', hex: '#0D9488', usage: 'AI/agent features, accents' },
   { name: 'Navy', hex: '#0a1d45', usage: 'Backgrounds, dark UI elements' },
   { name: 'Navy 800', hex: '#1a2744', usage: 'Card backgrounds' },
   { name: 'Navy 700', hex: '#2a3754', usage: 'Borders, dividers' },

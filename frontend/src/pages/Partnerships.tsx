@@ -80,7 +80,7 @@ export default function Partnerships() {
         <div className="flex gap-2">
           <AgentTriggerButton agentId="partnerships" label="Analyze Partner Performance" prompt="Analyze partner performance metrics and identify top-performing and underperforming partnerships" businessArea="partnerships" />
           <button onClick={() => { setEditingPartner({}); setShowPartnerModal(true); }} className="px-4 py-2 bg-[#2563EB] text-white text-sm rounded-lg hover:bg-[#2563EB]/80">+ New Partner</button>
-          <button onClick={() => { setEditingDeal({}); setShowDealModal(true); }} className="px-4 py-2 bg-[#7C3AED] text-white text-sm rounded-lg hover:bg-[#7C3AED]/80">+ New Deal</button>
+          <button onClick={() => { setEditingDeal({}); setShowDealModal(true); }} className="px-4 py-2 bg-[#0D9488] text-white text-sm rounded-lg hover:bg-[#0D9488]/80">+ New Deal</button>
         </div>
       }
     >
@@ -257,7 +257,7 @@ export default function Partnerships() {
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <button onClick={() => setShowDealModal(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
-            <button onClick={handleSaveDeal} disabled={saving} className="px-4 py-2 bg-[#7C3AED] text-white text-sm rounded-lg disabled:opacity-50">{saving ? 'Saving...' : 'Save'}</button>
+            <button onClick={handleSaveDeal} disabled={saving} className="px-4 py-2 bg-[#0D9488] text-white text-sm rounded-lg disabled:opacity-50">{saving ? 'Saving...' : 'Save'}</button>
           </div>
         </div>
       </Modal>
