@@ -62,7 +62,7 @@ describe('GlobalSearch', () => {
 
     server.use(
       http.get('/api/search', () => {
-        return HttpResponse.json({ success: true, data: [] });
+        return HttpResponse.json({ success: true, data: { results: [], grouped: {}, total: 0, query: 'zzzznonexistent' } });
       })
     );
 

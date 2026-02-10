@@ -189,9 +189,14 @@ export const handlers = [
     const q = url.searchParams.get('q') || '';
     return HttpResponse.json({
       success: true,
-      data: [
-        { section: 'Sales', type: 'contact', id: 'c1', title: `Result for ${q}`, subtitle: 'Contact', url: '/sales' },
-      ],
+      data: {
+        results: [
+          { section: 'Sales', type: 'contact', id: 'c1', title: `Result for ${q}`, subtitle: 'Contact', url: '/sales' },
+        ],
+        grouped: { Sales: [{ section: 'Sales', type: 'contact', id: 'c1', title: `Result for ${q}`, subtitle: 'Contact', url: '/sales' }] },
+        total: 1,
+        query: q,
+      },
     });
   }),
 ];
