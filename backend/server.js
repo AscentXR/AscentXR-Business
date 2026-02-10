@@ -116,7 +116,18 @@ app.use(auditLog);
 // Serve React frontend build if it exists, otherwise fall back to legacy dashboard
 const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
 if (fs.existsSync(frontendDist)) {
-  app.use(express.static(frontendDist));
+  // Hashed assets (JS/CSS) get long cache; index.html must never be cached
+  app.use('/assets', express.static(path.join(frontendDist, 'assets'), {
+    maxAge: '1y',
+    immutable: true
+  }));
+  app.use(express.static(frontendDist, {
+    setHeaders(res, filePath) {
+      if (filePath.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      }
+    }
+  }));
 } else {
   app.use(express.static(path.join(__dirname, '..'), {
     extensions: ['html'],
@@ -223,6 +234,7 @@ app.use('/api/*', (req, res) => {
 // SPA fallback - serve React index.html or legacy dashboard (no arbitrary file serving)
 app.get('*', (req, res) => {
   const reactIndex = path.join(frontendDist, 'index.html');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   if (fs.existsSync(reactIndex)) {
     res.sendFile(reactIndex);
   } else {
