@@ -39,6 +39,7 @@ async function authenticateToken(req, res, next) {
         error: 'Account has been disabled'
       });
     }
+    console.error('[Auth] Token verification failed:', err.code, err.message);
     return res.status(403).json({
       success: false,
       error: 'Invalid token'

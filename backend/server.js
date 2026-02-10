@@ -14,6 +14,7 @@ const { apiLimiter, authLimiter, agentExecutionLimiter, exportLimiter, backupLim
 const { auditLog } = require('./middleware/auditLogger');
 const { initWebSocket } = require('./websocket');
 const { initCron } = require('./cron');
+const { initFirebase, validateFirebaseCredentials } = require('./config/firebase');
 
 // Initialize Express app
 const app = express();
@@ -259,6 +260,10 @@ if (require.main === module) {
   runMigrations()
     .then(() => console.log('Migrations complete'))
     .catch(err => console.error('Migration error:', err.message));
+
+  // Initialize Firebase and validate credentials before starting server
+  initFirebase();
+  validateFirebaseCredentials();
 
   server.listen(PORT, () => {
     console.log(`Ascent XR Control Center running on port ${PORT}`);
