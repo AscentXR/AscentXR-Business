@@ -141,7 +141,7 @@ app.get('/health', (req, res) => {
     status: 'ok',
     timestamp: new Date().toISOString(),
     service: 'Ascent XR Control Center',
-    version: '20.0'
+    version: '20.1'
   });
 });
 
@@ -150,9 +150,20 @@ app.get('/api/health', (req, res) => {
     status: 'ok',
     timestamp: new Date().toISOString(),
     service: 'Ascent XR Backend API',
-    version: '3.0.0',
+    version: '3.1.0',
     uptime: process.uptime()
   });
+});
+
+// Temporary migration endpoint - run migrations on demand
+app.post('/api/run-migrations', async (req, res) => {
+  try {
+    const { runMigrations } = require('./db/connection');
+    await runMigrations();
+    res.json({ success: true, message: 'Migrations complete' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 // Auth Routes (rate-limited, no token required - these handle login/session)

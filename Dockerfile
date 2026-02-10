@@ -29,7 +29,7 @@ COPY backend/package*.json ./
 # Install production dependencies only
 RUN npm ci --only=production
 
-# Copy backend source
+# Bust Docker cache for backend source (updated: 2026-02-10T14:00)
 COPY backend/ ./
 
 # Stage 3: Production
