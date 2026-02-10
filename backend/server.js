@@ -244,6 +244,11 @@ app.get('*', (req, res) => {
 
 // Start server
 if (require.main === module) {
+  const { runMigrations } = require('./db/connection');
+  runMigrations()
+    .then(() => console.log('Migrations complete'))
+    .catch(err => console.error('Migration error:', err.message));
+
   server.listen(PORT, () => {
     console.log(`Ascent XR Control Center running on port ${PORT}`);
     console.log(`Dashboard: http://localhost:${PORT}/`);
