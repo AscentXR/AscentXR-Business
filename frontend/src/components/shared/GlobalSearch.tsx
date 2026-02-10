@@ -25,7 +25,8 @@ export default function GlobalSearch() {
     setLoading(true);
     try {
       const response = await searchApi.query(q);
-      setResults(response.data.data?.results || []);
+      const raw = response.data.data;
+      setResults(Array.isArray(raw) ? raw : Array.isArray(raw?.results) ? raw.results : []);
     } catch {
       setResults([]);
     } finally {
@@ -97,7 +98,8 @@ export default function GlobalSearch() {
   }
 
   // Group results by section
-  const groupedResults = results.reduce<Record<string, SearchResult[]>>((groups, result) => {
+  const safeResults = Array.isArray(results) ? results : [];
+  const groupedResults = safeResults.reduce<Record<string, SearchResult[]>>((groups, result) => {
     const section = result.section;
     if (!groups[section]) groups[section] = [];
     groups[section].push(result);
