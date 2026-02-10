@@ -1,7 +1,7 @@
 # TAX QUICK REFERENCE GUIDE
 **For: Financial Agent (CPA)**  
-**Last Updated:** February 3, 2026  
-**Tax Year:** 2026
+**Last Updated:** February 10, 2026
+**Tax Year:** 2025 & 2026
 
 ---
 
@@ -13,6 +13,42 @@
 - [ ] **Sales Tax:** Register in states approaching nexus
 - [ ] **Retirement Account:** Open Solo 401(k) before year-end
 - [ ] **Q1 Estimate:** Calculate and pay by April 15, 2026
+
+---
+
+## 🆕 OBBBA KEY CHANGES (One Big Beautiful Bill Act — Signed July 4, 2025)
+
+> **Major 2025 legislation affecting Ascent XR (C-Corp filer):**
+
+| Change | Old | New (OBBBA) | Effective |
+|--------|-----|-------------|-----------|
+| **Bonus Depreciation** | 60% (2024) → 40% (2025) | **100%** restored | Property acquired after Jan 19, 2025 |
+| **Section 179 Limit** | $1,250,000 | **$2,500,000** | Property acquired after Jan 19, 2025 |
+| **R&D Expensing (Sec 174)** | 5-year amortization | **Immediate deduction** restored | Amounts paid after Jan 19, 2025 |
+| **Section 199A (QBI)** | 20% deduction, expiring 2025 | **23% permanent** (pass-throughs only) | 2025 forward |
+| **QSBS (Sec 1202)** | 100% exclusion | **Confirmed & strengthened** | Ongoing |
+
+> ⚠️ **C-Corp Impact:** Bonus depreciation and Section 179 are huge wins. Section 199A does NOT apply to C-corps (pass-through only) — but its increase to 23% permanent makes entity comparison more nuanced.
+
+---
+
+## 🏢 C-CORP QUICK REFERENCE (Ascent XR Files as C-Corp)
+
+| Item | Amount/Detail |
+|------|---------------|
+| **Federal Corporate Tax Rate** | 21% flat |
+| **Form** | 1120 (due April 15, 2026; extension Oct 15, 2026) |
+| **Indiana Corporate Tax** | 4.9% (IT-20) |
+| **Federal Estimated Tax Threshold** | $500+ expected liability |
+| **Federal Estimated Dates** | April 15, June 16, Sept 15, Dec 15 |
+| **Indiana Estimated Tax Threshold** | $2,500+ expected liability |
+| **Indiana Estimated Dates** | April 20, June 20, Sept 20, Dec 20 |
+| **Section 179 (OBBBA)** | $2,500,000 |
+| **Bonus Depreciation (OBBBA)** | 100% |
+| **Accumulated Earnings Credit** | $250,000 before penalty tax (20%) |
+| **QSBS Exclusion** | 100% of gain (up to $10M or 10× basis, 5-year hold) |
+
+> 📄 **Full C-Corp Guide:** See [CCORP_FILING_GUIDE_2025.md](../entity_comparisons/CCORP_FILING_GUIDE_2025.md)
 
 ---
 
@@ -37,7 +73,7 @@
 ### State Income Tax (Key States)
 | State | Rate | Type |
 |-------|------|------|
-| Indiana | 3.23% | Flat |
+| Indiana | 3.00% | Flat (reduced from 3.05% in 2024) |
 | Ohio | 0-3.99% | Progressive |
 | Illinois | 4.95% | Flat |
 | Michigan | 4.25% | Flat |
@@ -187,8 +223,8 @@ Total R&D Hours: 22 hrs
 
 | State | Taxable | Rate | Nexus Threshold |
 |-------|---------|------|-----------------|
-| **Indiana** | YES | 7% | $100K sales OR 200 transactions |
-| **Ohio** | YES | 5.75% | $100K OR 200 transactions |
+| **Indiana** | YES | 7% | $100K sales only (200-txn threshold removed Jan 1, 2024) |
+| **Ohio** | YES | 5.75% | $100K OR 200 transactions (check current) |
 | **Illinois** | YES | 6.25% + local | $100K |
 | **Michigan** | YES | 6% | $100K |
 | **California** | NO | N/A | N/A |
@@ -233,10 +269,10 @@ Total R&D Hours: 22 hrs
 
 | State | Threshold | Current Sales | Status | Next Action |
 |-------|-----------|---------------|--------|-------------|
-| Indiana | $100K / 200 txns | Active | REGISTERED | Collecting |
+| Indiana | $100K sales | Active | REGISTERED | Collecting |
 | Ohio | $100K / 200 txns | Monitoring | Below | Register at $80K |
 | Illinois | $100K | Monitoring | Below | SaaS exempt anyway |
-| Michigan | $100K / 200 txns | Monitoring | Below | Register at $80K |
+| Michigan | $100K | Monitoring | Below | Register at $80K |
 
 ---
 
@@ -249,7 +285,7 @@ Total R&D Hours: 22 hrs
 
 ### 2. Technology & Software
 - **100% deductible:** Development tools, AWS, GitHub
-- **Section 179:** Computers, VR equipment (up to $1.25M)
+- **Section 179:** Computers, VR equipment (up to $2.5M under OBBBA)
 - **Subscriptions:** Annual SaaS tools
 
 ### 3. Professional Development
@@ -396,6 +432,6 @@ Total R&D Hours: 22 hrs
 
 ---
 
-**Last Updated:** February 3, 2026  
-**Next Review:** March 3, 2026  
+**Last Updated:** February 10, 2026
+**Next Review:** March 10, 2026
 **Document Owner:** Financial Agent (CPA)

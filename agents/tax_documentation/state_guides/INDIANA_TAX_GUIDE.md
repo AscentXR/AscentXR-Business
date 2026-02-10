@@ -6,14 +6,15 @@
 
 ## 🏛️ INDIANA TAX OVERVIEW
 
-### Corporate/ Business Taxes:
+### Corporate / Business Taxes:
 | Tax Type | Rate | Notes |
 |----------|------|-------|
-| **Corporate Income Tax** | 4.9% (2026) | Decreasing to 3.0% by 2029 |
-| **Individual Income Tax** | 3.23% | Flat rate (decreasing to 3.0% by 2029) |
+| **Corporate Income Tax** | 4.9% | Stable rate — no further scheduled reductions |
+| **Individual Income Tax** | 3.00% (2025) | Flat rate (decreasing — was 3.05% in 2024) |
 | **Sales Tax** | 7% | State only, no local add-on |
-| **Personal Property Tax** | Varies | On business equipment |
-| **Unemployment Tax** | 0.5-7.4% | New employer: 2.5% |
+| **Personal Property Tax** | Varies | $80K exempt (2025); $2M exempt (2026+) per SB 1 |
+| **County Income Tax** | 0.5%–3.0% | Varies by county; applies to owner W-2 salary |
+| **Unemployment Tax** | 0.5–7.4% | New employer: 2.5% |
 
 ### Filing Requirements:
 - **Resident:** File if income >$1,000
@@ -32,7 +33,7 @@ Federal AGI
 + Additions (state-specific)
 - Deductions (state-specific)
 = Indiana AGI
-× 3.23% (flat rate)
+× 3.00% (2025 flat rate)
 = Indiana Tax Liability
 ```
 
@@ -51,7 +52,7 @@ Federal AGI
 
 **Sole Proprietorship/LLC:**
 - Report on Schedule IT-40 (individual return)
-- Pass-through income taxed at 3.23%
+- Pass-through income taxed at 3.00% (2025)
 - File by April 15
 
 **S-Corporation:**
@@ -62,9 +63,11 @@ Federal AGI
 
 **C-Corporation:**
 - File Form IT-20 (corporate return)
-- Tax rate: 4.9% (2026)
-- Decreasing 0.5% per year until 3.0% in 2029
-- Due date: 15th day of 4th month after year-end
+- Tax rate: **4.9%** (stable — no further scheduled reductions)
+- Due date: 15th day of 4th month after year-end (April 15)
+- Estimated payments due on the **20th** (April 20, June 20, Sept 20, Dec 20)
+- Estimated payment threshold: **$2,500** or more expected liability
+- See [CCORP_FILING_GUIDE_2025.md](../entity_comparisons/CCORP_FILING_GUIDE_2025.md) for full C-corp guide
 
 **Partnership:**
 - File Form IT-65 (partnership return)
@@ -82,8 +85,8 @@ Federal AGI
 **7%** - State rate only (no local Indiana sales taxes)
 
 ### Nexus Threshold:
-- **$100,000** in annual Indiana sales, OR
-- **200** separate transactions in Indiana
+- **$100,000** in annual Indiana sales
+- ~~200 separate transactions~~ — **Removed** effective January 1, 2024
 
 ### Registration:
 - **Online:** INTIME.in.gov
@@ -143,10 +146,10 @@ Federal AGI
 
 | State | SaaS Taxable | Rate | Nexus Threshold | Status |
 |-------|-------------|------|-----------------|--------|
-| **Indiana** | YES | 7% | $100K / 200 txns | Active — collecting |
+| **Indiana** | YES | 7% | $100K sales only | Active — collecting |
 | **Ohio** | YES | 5.75% | $100K / 200 txns | Monitor sales volume |
 | **Illinois** | NO | N/A | N/A | SaaS exempt in IL |
-| **Michigan** | YES | 6% | $100K / 200 txns | Monitor sales volume |
+| **Michigan** | YES | 6% | $100K | Monitor sales volume |
 
 ### School District Exemptions (Indiana)
 
@@ -179,10 +182,10 @@ Federal AGI
 
 | State | Economic Nexus | Current LTVR Sales | Nexus Status | Action |
 |-------|---------------|-------------------|--------------|--------|
-| Indiana | $100K / 200 txns | Active | CROSSED | Collecting 7% |
+| Indiana | $100K sales | Active | CROSSED | Collecting 7% |
 | Ohio | $100K / 200 txns | Monitoring | BELOW | Register when approaching $80K |
 | Illinois | $100K | Monitoring | BELOW | SaaS exempt — no collection needed |
-| Michigan | $100K / 200 txns | Monitoring | BELOW | Register when approaching $80K |
+| Michigan | $100K | Monitoring | BELOW | Register when approaching $80K |
 
 ### LTVR R&D Qualifying Activities
 
@@ -199,19 +202,24 @@ The following Learning Time VR development activities qualify for R&D tax credit
 ## 💻 INDIANA RESEARCH & DEVELOPMENT (R&D) TAX CREDIT
 
 ### Indiana R&D Credit:
-- **Rate:** 15% of qualified research expenses (QREs)
-- **Refundable:** No (carry forward 10 years)
-- **Transferable:** No
-- **Forms:** Schedule IT-20RDC (attach to IT-20 or IT-20S)
+| Item | Detail |
+|------|--------|
+| **Rate (first $1M QREs)** | 15% of qualified research expenses |
+| **Rate (above $1M QREs)** | 10% of qualified research expenses |
+| **Carryforward** | 10 years |
+| **Refundable** | No |
+| **Transferable** | No |
+| **Forms** | Schedule IT-20RDC (attach to IT-20 or IT-20S) |
 
 ### Eligibility:
 Must claim federal R&D credit (Form 6765) to claim Indiana credit
 
 ### Calculation:
 ```
-Federal R&D Credit:            $10,000
-× 15%
-= Indiana R&D Credit:          $1,500
+Example: $1,200,000 in QREs
+First $1,000,000 × 15% = $150,000
+Remaining $200,000 × 10% = $20,000
+Total Indiana R&D Credit: $170,000
 
 Can offset Indiana income tax
 Unused credits carry forward 10 years
@@ -223,6 +231,11 @@ Same as federal R&D requirements:
 - Project descriptions
 - Technical uncertainty
 - Process of experimentation
+
+### Manufacturing & R&D Equipment Sales Tax Exemption
+- Equipment **directly used** in manufacturing or R&D is **exempt** from Indiana sales tax
+- Includes computers, servers, lab equipment used predominantly (>50%) for qualifying R&D
+- Claim exemption using Form ST-105 with appropriate exemption reason code
 
 ---
 
@@ -302,10 +315,11 @@ Must meet ALL three to be contractor. Otherwise = employee.
 - **Account:** Withholding Tax Account
 
 ### Rates:
-- **State:** 3.23% (flat rate)
-- **Counties:** Some counties have additional withholding
-  - Marion County: 1.62% additional
-  - Most others: 0% additional
+- **State:** 3.00% (2025 flat rate)
+- **Counties:** Most counties impose additional withholding (0.5%–3.0%)
+  - Hamilton County (Fishers): Check current rate on INTIME
+  - Marion County: ~2.02% (county + special)
+  - Rate varies by county of residence
 
 ### Filing:
 - **Form:** WH-1 (Withholding Tax Return)
@@ -425,6 +439,93 @@ Must meet ALL three to be contractor. Otherwise = employee.
 
 ---
 
+## 🏛️ SB 1 / HEA 1427 PROPERTY TAX REFORMS (2025–2026)
+
+Indiana Senate Bill 1 (enrolled as HEA 1427) enacted significant business personal property tax reforms:
+
+### Personal Property Exemption Increases
+| Assessment Year | Exemption Amount | Notes |
+|----------------|-----------------|-------|
+| **2025** | First **$80,000** exempt | Current year |
+| **2026 and after** | First **$2,000,000** exempt | Dramatic increase |
+
+### 30% Depreciation Floor Removed
+- Previously, business personal property could not be depreciated below 30% of original cost for tax purposes
+- **For new property acquired after January 1, 2025:** the 30% floor is removed
+- Property can now depreciate to actual fair market value
+- Existing property (acquired before Jan 1, 2025) still subject to the old 30% floor
+
+### County Revenue Offset
+- Counties can impose an additional **0.3% local income tax surcharge** through 2027
+- This offsets lost property tax revenue from higher exemptions
+- Check with Hamilton County for any adopted surcharge
+
+### Impact on Ascent XR
+- Most business personal property (computers, VR equipment, furniture) will likely fall under the exemption threshold
+- **2025:** Equipment under $80K assessed value — no personal property tax
+- **2026+:** Equipment under $2M assessed value — no personal property tax
+- Still required to file Form 103 if total acquisition cost exceeds threshold
+
+---
+
+## 🏘️ COUNTY INCOME TAX
+
+### Overview
+Indiana counties impose a local income tax (county option income tax) on residents and workers:
+
+| Item | Detail |
+|------|--------|
+| **Rate Range** | 0.5% to 3.0% (varies by county) |
+| **Applies To** | W-2 wages, self-employment income of residents |
+| **C-Corp Impact** | Applies to owner's **W-2 salary** from the corporation (not corporate income) |
+| **Collection** | Withheld from payroll alongside state withholding |
+
+### Key County Rates (verify current rates on DOR website)
+| County | Approximate Rate |
+|--------|-----------------|
+| Hamilton (Fishers) | ~1.0%–1.5% |
+| Marion (Indianapolis) | ~2.02% |
+| Allen (Fort Wayne) | ~1.5% |
+| Lake (NW Indiana) | ~1.0%–1.5% |
+
+### SB 1 Additional Authority
+- Counties can impose an additional **0.3% surcharge** through 2027
+- Intended to offset lost property tax revenue from SB 1 exemption increases
+- Check INTIME or DOR website for current Hamilton County rate
+
+---
+
+## 📝 BUSINESS ENTITY REPORT
+
+### Biennial Filing Requirement
+| Item | Detail |
+|------|--------|
+| **Who Must File** | All LLCs, corporations, LPs, and LLPs registered in Indiana |
+| **Frequency** | Every 2 years (biennial) |
+| **Fee** | $32 (online) / $50 (paper) |
+| **Due Date** | End of the anniversary month of entity formation |
+| **File At** | INBiz.in.gov |
+| **Penalty** | Failure to file within **120 days** of due date → administrative dissolution risk |
+
+### Best Practices
+- Set calendar reminder 30 days before due date
+- File online for lowest fee ($32)
+- Verify registered agent and principal office address are current
+- Keep confirmation receipt for records
+
+---
+
+## 🕊️ INDIANA TAX AMNESTY PROGRAM
+
+### Voluntary Disclosure / Amnesty
+- Indiana periodically offers tax amnesty programs for **pre-2023 tax liabilities**
+- Allows taxpayers to come into compliance with **reduced or waived penalties**
+- Contact Indiana DOR Voluntary Disclosure Program: 317-232-2240
+- Applies to: income tax, sales tax, withholding tax, and other state-administered taxes
+- **Does not** waive underlying tax or interest — only penalties
+
+---
+
 ## ⚠️ COMMON INDIANA TAX MISTAKES
 
 1. **Not registering for sales tax** until after nexus threshold crossed
@@ -498,5 +599,5 @@ Must meet ALL three to be contractor. Otherwise = employee.
 - Federal Tax Quick Reference
 - Entity Comparison Matrix
 
-**Last Updated:** February 3, 2026  
+**Last Updated:** February 10, 2026
 **Next Review:** Quarterly (April, July, October, January)

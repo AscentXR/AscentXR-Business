@@ -15,7 +15,7 @@
 | **Payroll Required** | No | Yes | Yes |
 | **Ownership Flexibility** | High | Limited (100 shareholders, US citizens) | Unlimited |
 | **Investor Friendly** | Moderate | Low | High |
-| **Exit Tax Benefits** | Standard capital gains | Standard capital gains | QSBS exclusion (up to $10M) |
+| **Exit Tax Benefits** | Standard capital gains | Standard capital gains | QSBS exclusion (up to $10M, enhanced under OBBBA) |
 | **R&D Credit Application** | Personal return | Personal return | Corporate return |
 | **Complexity** | Low | Medium | High |
 
@@ -108,7 +108,7 @@ PLUS: Double taxation on dividends
 - Liability protection
 - Pass-through taxation (no double tax)
 - Credibility with customers/partners
-- QBI deduction eligible (20%)
+- QBI deduction eligible (23% permanent under OBBBA — up from 20%)
 - Can deduct health insurance
 
 **CONS:**
@@ -135,9 +135,9 @@ PLUS: Double taxation on dividends
 - Any type of shareholder (individuals, entities, foreign)
 - Multiple classes of stock
 - Easier to raise capital
-- **QSBS exclusion** (100% tax-free on first $10M gain)
+- **QSBS exclusion** (100% tax-free on first $10M gain, enhanced under OBBBA)
 - R&D credit directly offsets corporate tax
-- Better fringe benefits
+- **Superior fringe benefits** (health insurance, group life up to $50K, dependent care $5K, education assistance $5,250, HRAs — all tax-free to owner-employee; S-corp >2% shareholders lose most of these)
 
 **CONS:**
 - Double taxation (corp + personal)
@@ -145,7 +145,7 @@ PLUS: Double taxation on dividends
 - Higher compliance costs
 - Requires formal board meetings
 - Unfavorable for losses (trapped at corp level)
-- Not eligible for QBI deduction
+- Not eligible for QBI deduction (Section 199A now permanent at 23% for pass-throughs under OBBBA — lost by C-corp election)
 
 **BEST FOR:**
 - Raising venture capital
@@ -328,14 +328,16 @@ Generally: C-Corp only if raising outside capital
 2. **Time distributions:** Year-end for cash flow
 3. **Health insurance:** Deductible above-the-line
 4. **Retirement:** Solo 401(k) contributions reduce W-2 income
-5. **QBI deduction:** 20% of qualified business income
+5. **QBI deduction:** 23% of qualified business income (permanent under OBBBA)
 
 ### For C-Corp Owners:
-1. **QSBS planning:** Hold stock 5+ years for $10M exclusion
+1. **QSBS planning:** Hold stock 5+ years for $10M exclusion (enhanced under OBBBA)
 2. **Salary vs dividend:** Balance payroll tax vs double tax
-3. **Fringe benefits:** Medical, life insurance tax-free to employee
+3. **Fringe benefits:** Health insurance, group life ($50K), dependent care ($5K), education assistance ($5,250), HRAs — all tax-free to owner
 4. **R&D credits:** Directly offset 21% corporate tax
-5. **Accumulated earnings:** Plan distributions or justification
+5. **Accumulated earnings:** Plan distributions or document business purpose (>$250K threshold)
+6. **Section 179 (OBBBA):** Deduct up to $2.5M in equipment/software purchases
+7. **Bonus depreciation (OBBBA):** 100% first-year deduction on qualifying property
 
 ---
 
@@ -355,7 +357,9 @@ Generally: C-Corp only if raising outside capital
 
 ## 📚 RELATED DOCUMENTS
 
+- **C-Corp Filing Guide (2025):** `/agents/tax_documentation/entity_comparisons/CCORP_FILING_GUIDE_2025.md`
 - Tax Quick Reference: `/agents/tax_documentation/quick_reference/TAX_QUICK_REFERENCE.md`
+- Indiana Tax Guide: `/agents/tax_documentation/state_guides/INDIANA_TAX_GUIDE.md`
 - S-Corp Election Form 2553: `/agents/tax_documentation/forms_checklists/`
 - Payroll Setup Guide: `/agents/tax_documentation/forms_checklists/`
 - R&D Credit Analysis: `/agents/tax_documentation/rd_credit_docs/`
@@ -363,5 +367,5 @@ Generally: C-Corp only if raising outside capital
 ---
 
 **Document Owner:** Financial Agent (CPA)
-**Last Updated:** February 3, 2026
-**Next Review:** March 3, 2026
+**Last Updated:** February 10, 2026
+**Next Review:** March 10, 2026
