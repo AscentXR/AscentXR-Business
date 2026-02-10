@@ -25,7 +25,7 @@ export default function GlobalSearch() {
     setLoading(true);
     try {
       const response = await searchApi.query(q);
-      setResults(response.data.data || []);
+      setResults(response.data.data?.results || []);
     } catch {
       setResults([]);
     } finally {
