@@ -948,3 +948,89 @@ export interface RestoreResult {
   rowsRestored: number;
   manifest: BackupInfo['manifest'];
 }
+
+// ============================================================
+// Sales Dashboard
+// ============================================================
+
+export interface SalesDashboardOverview {
+  totalPipeline: number;
+  weightedPipeline: number;
+  totalDeals: number;
+  avgDealSize: number;
+  winRate: number;
+  activeDistricts: number;
+  avgAdoption: number;
+  communicationsLast30: number;
+  communicationsTrend: number;
+  completedSkills: number;
+  totalSkills: number;
+}
+
+export interface PipelineStageData {
+  stage: string;
+  deal_count: number;
+  total_value: number;
+  avg_value: number;
+  avg_probability: number;
+  weighted_value: number;
+}
+
+export interface DistrictPerformanceRow {
+  name: string;
+  state: string;
+  total_students: number;
+  budget_range: string;
+  tech_readiness_score: number;
+  opportunity_value: number;
+  probability: number;
+  stage: string;
+  relationship_status: string;
+  teacher_adoption_rate: number;
+}
+
+// ============================================================
+// Marketing Dashboard
+// ============================================================
+
+export interface MarketingDashboardOverview {
+  totalCampaigns: number;
+  activeCampaigns: number;
+  totalBudget: number;
+  totalSpent: number;
+  totalLeads: number;
+  totalConversions: number;
+  ctr: number;
+  costPerLead: number;
+  linkedinImpressions: number;
+  linkedinEngagementRate: number;
+  publishedPosts: number;
+  contentPipeline: Record<string, number>;
+  completedSkills: number;
+  totalSkills: number;
+}
+
+export interface CampaignAnalyticsRow {
+  id: string;
+  name: string;
+  channel: string;
+  status: string;
+  budget: number;
+  spent: number;
+  leads_generated: number;
+  conversions: number;
+  impressions: number;
+  clicks: number;
+  ctr: number;
+  cost_per_lead: number;
+  roas: number;
+}
+
+export interface LinkedInTrendPoint {
+  week: string;
+  impressions: number;
+  engagements: number;
+  clicks: number;
+  shares: number;
+  engagement_rate: number;
+}

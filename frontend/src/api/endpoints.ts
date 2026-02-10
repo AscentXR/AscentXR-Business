@@ -349,6 +349,30 @@ export const adminBackup = {
   delete: (filename: string) => api.delete(`/admin/backup/${filename}`),
 };
 
+// Sales Dashboard
+interface DateRangeParams { start_date?: string; end_date?: string; }
+
+export const salesDashboard = {
+  getOverview: (params?: DateRangeParams) => api.get('/sales-dashboard/overview', { params }),
+  getPipeline: (params?: DateRangeParams) => api.get('/sales-dashboard/pipeline', { params }),
+  getDistricts: () => api.get('/sales-dashboard/districts'),
+  getActivity: (params?: DateRangeParams) => api.get('/sales-dashboard/activity', { params }),
+  getForecast: () => api.get('/sales-dashboard/forecast'),
+  exportCSV: (section: string, params?: DateRangeParams) =>
+    api.get(`/sales-dashboard/export/${section}`, { params, responseType: 'blob' }),
+};
+
+// Marketing Dashboard
+export const marketingDashboard = {
+  getOverview: (params?: DateRangeParams) => api.get('/marketing-dashboard/overview', { params }),
+  getCampaigns: (params?: DateRangeParams) => api.get('/marketing-dashboard/campaigns', { params }),
+  getContent: (params?: DateRangeParams) => api.get('/marketing-dashboard/content', { params }),
+  getLinkedIn: (params?: DateRangeParams) => api.get('/marketing-dashboard/linkedin', { params }),
+  getForecast: () => api.get('/marketing-dashboard/forecast'),
+  exportCSV: (section: string, params?: DateRangeParams) =>
+    api.get(`/marketing-dashboard/export/${section}`, { params, responseType: 'blob' }),
+};
+
 // Documents (existing)
 export const documents = {
   list: (params?: { category?: string; search?: string }) => api.get<ApiResponse<Document[]>>('/documents', { params }),

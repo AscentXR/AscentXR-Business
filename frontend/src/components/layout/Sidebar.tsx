@@ -18,6 +18,8 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  BarChart3,
+  PieChart,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { metrics } from '../../api/endpoints';
@@ -31,7 +33,9 @@ interface NavItem {
 const navItems: NavItem[] = [
   { path: '/', label: 'Command Center', icon: LayoutDashboard },
   { path: '/sales', label: 'Sales & CRM', icon: TrendingUp },
+  { path: '/sales-dashboard', label: 'Sales Dashboard', icon: BarChart3 },
   { path: '/marketing', label: 'Marketing', icon: Megaphone },
+  { path: '/marketing-dashboard', label: 'Mktg Dashboard', icon: PieChart },
   { path: '/products', label: 'Products', icon: Package },
   { path: '/finance', label: 'Finance', icon: DollarSign },
   { path: '/taxes', label: 'Taxes', icon: Receipt },
@@ -119,7 +123,7 @@ export default function Sidebar() {
           const isActive =
             item.path === '/'
               ? location.pathname === '/'
-              : location.pathname.startsWith(item.path);
+              : location.pathname === item.path || location.pathname.startsWith(item.path + '/');
 
           return (
             <NavLink

@@ -185,6 +185,8 @@ app.use('/api/business-activities', authenticateToken, readOnlyForViewers, requi
 app.use('/api/forecasts', authenticateToken, readOnlyForViewers, require('./routes/forecasts'));
 app.use('/api/agent-teams', authenticateToken, readOnlyForViewers, require('./routes/agentTeams'));
 app.use('/api/skill-calendar', authenticateToken, readOnlyForViewers, require('./routes/skillCalendar'));
+app.use('/api/sales-dashboard', authenticateToken, require('./routes/salesDashboard'));
+app.use('/api/marketing-dashboard', authenticateToken, require('./routes/marketingDashboard'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

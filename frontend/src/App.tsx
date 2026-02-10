@@ -17,6 +17,8 @@ import Legal from './pages/Legal';
 import Documents from './pages/Documents';
 import CustomerSuccess from './pages/CustomerSuccess';
 import Partnerships from './pages/Partnerships';
+import SalesDashboard from './pages/SalesDashboard';
+import MarketingDashboard from './pages/MarketingDashboard';
 import Settings from './pages/Settings';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -51,6 +53,8 @@ export default function App() {
                 <Route path="/" element={<ErrorBoundary><CommandCenter /></ErrorBoundary>} />
                 <Route path="/sales" element={<ErrorBoundary><Sales /></ErrorBoundary>} />
                 <Route path="/marketing" element={<ErrorBoundary><Marketing /></ErrorBoundary>} />
+                <Route path="/sales-dashboard" element={<ErrorBoundary><SalesDashboard /></ErrorBoundary>} />
+                <Route path="/marketing-dashboard" element={<ErrorBoundary><MarketingDashboard /></ErrorBoundary>} />
                 <Route path="/products" element={<ErrorBoundary><Products /></ErrorBoundary>} />
                 <Route path="/finance" element={<ErrorBoundary><Finance /></ErrorBoundary>} />
                 <Route path="/taxes" element={<ErrorBoundary><Taxes /></ErrorBoundary>} />
