@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { agents as agentApi } from '../api/endpoints';
 import { useWebSocket } from '../hooks/useWebSocket';
 import type { AgentTask } from '../types';
@@ -21,18 +21,21 @@ export function AgentProvider({ children }: { children: ReactNode }) {
   const [activeTasks, setActiveTasks] = useState<AgentTask[]>([]);
   const { subscribe } = useWebSocket();
 
-  // Listen for task updates
-  subscribe('agent:task:update', (task: AgentTask) => {
-    setActiveTasks((prev) => {
-      const idx = prev.findIndex((t) => t.id === task.id);
-      if (idx >= 0) {
-        const next = [...prev];
-        next[idx] = task;
-        return next;
-      }
-      return [...prev, task];
+  // Listen for task updates (with proper cleanup)
+  useEffect(() => {
+    const unsub = subscribe('agent:task:update', (task: AgentTask) => {
+      setActiveTasks((prev) => {
+        const idx = prev.findIndex((t) => t.id === task.id);
+        if (idx >= 0) {
+          const next = [...prev];
+          next[idx] = task;
+          return next;
+        }
+        return [...prev, task];
+      });
     });
-  });
+    return unsub;
+  }, [subscribe]);
 
   const executeTask = useCallback(async (data: {
     agent_id: string;

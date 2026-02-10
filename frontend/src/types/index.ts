@@ -821,6 +821,81 @@ export interface SalesWorkflowRunStep {
 }
 
 // ============================================================
+// Skill Execution Calendar
+// ============================================================
+
+export interface ExecutionPlan {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  business_area: 'marketing' | 'sales';
+  team_id?: string;
+  status: 'draft' | 'active' | 'paused' | 'completed' | 'archived';
+  start_date?: string;
+  end_date?: string;
+  revenue_target?: number;
+  context?: any;
+  created_by?: string;
+  total_entries: number;
+  completed_entries: number;
+  running_entries: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SkillCalendarEntry {
+  id: string;
+  plan_id: string;
+  marketing_skill_id?: string;
+  sales_skill_id?: string;
+  scheduled_date: string;
+  scheduled_time?: string;
+  priority: number;
+  day_order: number;
+  assigned_agent_id?: string;
+  assigned_team_id?: string;
+  status: 'pending' | 'scheduled' | 'running' | 'completed' | 'failed' | 'skipped';
+  task_id?: string;
+  result_summary?: string;
+  title_override?: string;
+  notes?: string;
+  week_label?: string;
+  phase?: string;
+  started_at?: string;
+  completed_at?: string;
+  created_at: string;
+  updated_at: string;
+  // Joined fields
+  skill_name?: string;
+  skill_slug?: string;
+  skill_category?: string;
+  skill_duration_minutes?: number;
+  skill_description?: string;
+  assigned_agent_name?: string;
+}
+
+export interface PlanStats {
+  total: number;
+  pending: number;
+  scheduled: number;
+  running: number;
+  completed: number;
+  failed: number;
+  skipped: number;
+  total_phases: number;
+  earliest_date?: string;
+  latest_date?: string;
+  progress: number;
+  phases: {
+    phase: string;
+    total: number;
+    completed: number;
+    running: number;
+  }[];
+}
+
+// ============================================================
 // Documents (existing)
 // ============================================================
 

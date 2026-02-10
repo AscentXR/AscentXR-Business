@@ -12,6 +12,7 @@ import type {
   SalesSkill, SalesWorkflow, SalesWorkflowRun, SalesWorkflowRunDetail,
   AgentTeam, RecurringSchedule, DailyTaskRun, DailyBriefing,
   BackupInfo, RestoreResult,
+  ExecutionPlan, SkillCalendarEntry, PlanStats,
 } from '../types';
 
 // Auth
@@ -308,6 +309,31 @@ export const salesSkills = {
     api.post<ApiResponse<any>>(`/sales/workflow-runs/${id}/advance`),
   cancelWorkflowRun: (id: string) =>
     api.post<ApiResponse<SalesWorkflowRun>>(`/sales/workflow-runs/${id}/cancel`),
+};
+
+// Skill Execution Calendar
+export const skillCalendar = {
+  getPlans: (params?: { business_area?: string; status?: string }) =>
+    api.get<ApiResponse<ExecutionPlan[]>>('/skill-calendar/plans', { params }),
+  getPlan: (id: string) => api.get<ApiResponse<ExecutionPlan>>(`/skill-calendar/plans/${id}`),
+  createPlan: (data: Partial<ExecutionPlan>) => api.post<ApiResponse<ExecutionPlan>>('/skill-calendar/plans', data),
+  updatePlan: (id: string, data: Partial<ExecutionPlan>) => api.put<ApiResponse<ExecutionPlan>>(`/skill-calendar/plans/${id}`, data),
+  deletePlan: (id: string) => api.delete(`/skill-calendar/plans/${id}`),
+  generatePlan: (data: any) => api.post<ApiResponse<ExecutionPlan>>('/skill-calendar/plans/generate', data),
+  getPlanStats: (id: string) => api.get<ApiResponse<PlanStats>>(`/skill-calendar/plans/${id}/stats`),
+  getEntries: (params?: { plan_id?: string; status?: string; start_date?: string; end_date?: string }) =>
+    api.get<ApiResponse<SkillCalendarEntry[]>>('/skill-calendar/entries', { params }),
+  getUpcomingEntries: (days?: number) =>
+    api.get<ApiResponse<SkillCalendarEntry[]>>('/skill-calendar/entries/upcoming', { params: { days } }),
+  createEntry: (data: Partial<SkillCalendarEntry>) => api.post<ApiResponse<SkillCalendarEntry>>('/skill-calendar/entries', data),
+  updateEntry: (id: string, data: Partial<SkillCalendarEntry>) => api.put<ApiResponse<SkillCalendarEntry>>(`/skill-calendar/entries/${id}`, data),
+  deleteEntry: (id: string) => api.delete(`/skill-calendar/entries/${id}`),
+  executeEntry: (id: string) =>
+    api.post<ApiResponse<{ entry_id: string; task_id: string; skill: string; agent_id: string }>>(`/skill-calendar/entries/${id}/execute`),
+  completeEntry: (id: string, data?: { resultSummary?: string }) =>
+    api.post<ApiResponse<SkillCalendarEntry>>(`/skill-calendar/entries/${id}/complete`, data),
+  skipEntry: (id: string) =>
+    api.post<ApiResponse<SkillCalendarEntry>>(`/skill-calendar/entries/${id}/skip`),
 };
 
 // Admin Backup Management

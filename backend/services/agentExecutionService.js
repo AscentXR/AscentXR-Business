@@ -473,6 +473,19 @@ class AgentExecutionService {
     try {
       const { emitTaskUpdate } = require('../websocket');
       emitTaskUpdate(data);
+
+      // Auto-update calendar entries when linked tasks complete/fail
+      if (data.status === 'review' || data.status === 'failed') {
+        const ctx = typeof data.context === 'string' ? JSON.parse(data.context) : (data.context || {});
+        if (ctx.calendar_entry_id) {
+          const calSvc = require('./skillCalendarService');
+          if (data.status === 'review') {
+            calSvc.completeCalendarEntry(ctx.calendar_entry_id, { resultSummary: data.result, taskId: data.id }).catch(() => {});
+          } else {
+            calSvc.failCalendarEntry(ctx.calendar_entry_id, data.error).catch(() => {});
+          }
+        }
+      }
     } catch (e) {
       // websocket module not initialized - skip silently
     }

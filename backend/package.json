@@ -14,7 +14,7 @@
     "test:db": "jest tests/db/ --runInBand",
     "test:ci": "jest --ci --coverage --forceExit",
     "migrate": "node -e \"require('./db/connection').runMigrations().then(() => process.exit(0))\"",
-    "seed": "psql $DATABASE_URL -f db/seeds/001_sample_data.sql && psql $DATABASE_URL -f db/seeds/002_control_center_seed.sql",
+    "seed": "psql $DATABASE_URL -f db/seeds/001_sample_data.sql && psql $DATABASE_URL -f db/seeds/002_control_center_seed.sql && psql $DATABASE_URL -f db/seeds/003_agent_knowledge_seed.sql && psql $DATABASE_URL -f db/seeds/004_marketing_skills_seed.sql && psql $DATABASE_URL -f db/seeds/005_sales_skills_seed.sql && psql $DATABASE_URL -f db/seeds/006_revenue_sprint_seed.sql && psql $DATABASE_URL -f db/seeds/007_skill_calendar_seed.sql",
     "hash-password": "node -e \"const bcrypt=require('bcrypt'); bcrypt.hash(process.argv[1], 12).then(h => console.log(h))\" --"
   },
   "keywords": [
