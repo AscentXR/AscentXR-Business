@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import PageShell from '../components/layout/PageShell';
 import TabBar from '../components/shared/TabBar';
 import DataTable from '../components/shared/DataTable';
@@ -8,14 +8,16 @@ import ProgressBar from '../components/shared/ProgressBar';
 import Modal from '../components/shared/Modal';
 import AgentTriggerButton from '../components/shared/AgentTriggerButton';
 import ErrorState from '../components/shared/ErrorState';
-import { marketing, linkedin, knowledgeBase, businessActivities, forecasts, goals, marketingSkills, skillCalendar } from '../api/endpoints';
+import { Link } from 'react-router-dom';
+import MarketingStrategyTab from './MarketingStrategyTab';
+import { marketing, linkedin, knowledgeBase, businessActivities, forecasts, goals, marketingSkills, skillCalendar, agents as agentsApi, mediaQueue } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { useSkillTaskTracker } from '../hooks/useSkillTaskTracker';
 import { useToast } from '../context/ToastContext';
 import type { Campaign, ContentCalendarItem, LinkedInPost, KnowledgeBaseArticle, BusinessActivity, Forecast, Goal, MarketingSkill, MarketingWorkflow, WorkflowRun, ExecutionPlan, SkillCalendarEntry, PlanStats } from '../types';
 
-const TABS = ['Plan Calendar', 'Content Calendar', 'Campaigns', 'LinkedIn Posts', 'Skills & Workflows', 'Knowledge Base', 'Goals', 'Forecasts', 'Activities'];
+const TABS = ['Strategy', 'Plan Calendar', 'Content Calendar', 'Campaigns', 'LinkedIn Posts', 'Media Queue', 'Skills & Workflows', 'Knowledge Base', 'Goals', 'Forecasts', 'Activities'];
 
 const SKILL_CATEGORY_COLORS: Record<string, string> = {
   'Conversion Optimization': 'bg-orange-500/20 text-orange-400',
@@ -38,21 +40,155 @@ const ENTRY_STATUS_COLORS: Record<string, string> = {
   skipped: 'bg-gray-500/10 text-gray-500 border-gray-700/30 line-through',
 };
 
+const MEDIA_STATUS_COLORS: Record<string, string> = {
+  done: 'bg-emerald-500/20 text-emerald-400 border-emerald-600/30',
+  running: 'bg-amber-500/20 text-amber-400 border-amber-600/30 animate-pulse',
+  pending: 'bg-gray-500/20 text-gray-400 border-gray-600/30',
+  queued: 'bg-blue-500/20 text-blue-400 border-blue-600/30',
+  error: 'bg-red-500/20 text-red-400 border-red-600/30',
+};
+
+function MediaQueueTab() {
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<'all' | 'image' | 'video'>('all');
+
+  const fetchQueue = () => {
+    setLoading(true);
+    mediaQueue.getQueue()
+      .then((resp: any) => {
+        const data = resp.data?.data || resp.data || [];
+        const arr = Array.isArray(data) ? data : data.items || data.queue || [];
+        setItems(arr.sort((a: any, b: any) => {
+          const order: Record<string, number> = { running: 0, pending: 1, queued: 2, done: 3, error: 4 };
+          return (order[a.status] ?? 5) - (order[b.status] ?? 5);
+        }));
+      })
+      .catch(() => setItems([]))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { fetchQueue(); const iv = setInterval(fetchQueue, 15000); return () => clearInterval(iv); }, []);
+
+  const filtered = filter === 'all' ? items : items.filter((i: any) => i.type === filter);
+  const counts = {
+    total: items.length,
+    done: items.filter((i: any) => i.status === 'done').length,
+    running: items.filter((i: any) => i.status === 'running').length,
+    pending: items.filter((i: any) => ['pending', 'queued'].includes(i.status)).length,
+    error: items.filter((i: any) => i.status === 'error').length,
+    images: items.filter((i: any) => i.type === 'image').length,
+    videos: items.filter((i: any) => i.type === 'video').length,
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { label: 'Total Jobs', value: counts.total, color: 'text-white' },
+          { label: 'Completed', value: counts.done, color: 'text-emerald-400' },
+          { label: 'Running', value: counts.running, color: 'text-amber-400' },
+          { label: 'Pending', value: counts.pending, color: 'text-gray-400' },
+        ].map(s => (
+          <div key={s.label} className="bg-navy-800/60 border border-navy-700/50 rounded-xl p-4">
+            <p className="text-xs text-gray-500 mb-1">{s.label}</p>
+            <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Filter + Refresh */}
+      <div className="flex items-center justify-between">
+        <div className="flex gap-2">
+          {(['all', 'image', 'video'] as const).map(f => (
+            <button key={f} onClick={() => setFilter(f)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${filter === f ? 'bg-[#2563EB] border-[#2563EB] text-white' : 'bg-navy-800 border-navy-700 text-gray-400 hover:text-white'}`}>
+              {f === 'all' ? `All (${counts.total})` : f === 'image' ? `Images (${counts.images})` : `Videos (${counts.videos})`}
+            </button>
+          ))}
+        </div>
+        <button onClick={fetchQueue} className="px-3 py-1.5 text-xs bg-navy-700 text-gray-300 rounded-lg hover:bg-navy-600">
+          Refresh
+        </button>
+      </div>
+
+      {/* Queue Items */}
+      {loading ? (
+        <div className="space-y-3 animate-pulse">{[1,2,3].map(i => <div key={i} className="h-24 bg-navy-800 rounded-xl" />)}</div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-12 text-gray-500">No media jobs in queue</div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map((item: any, idx: number) => (
+            <div key={item.queue_id || idx} className="bg-navy-800/60 border border-navy-700/50 rounded-xl p-4 hover:border-navy-600/50 transition-colors">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded border ${MEDIA_STATUS_COLORS[item.status] || MEDIA_STATUS_COLORS.pending}`}>
+                      {item.status}
+                    </span>
+                    <span className={`inline-block px-2 py-0.5 text-xs rounded ${item.type === 'video' ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                      {item.type === 'video' ? 'Video (LTX)' : 'Image (Flux)'}
+                    </span>
+                  </div>
+                  <p className="text-sm font-medium text-white truncate">{item.label || 'Untitled'}</p>
+                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">{item.params?.prompt?.slice(0, 150) || '—'}</p>
+                  {item.params && (
+                    <p className="text-xs text-gray-600 mt-1">
+                      {item.params.width}x{item.params.height} &middot; {item.params.model || 'dev'}
+                      {item.params.steps ? ` \u00b7 ${item.params.steps} steps` : ''}
+                    </p>
+                  )}
+                </div>
+                {item.status === 'done' && item.output_file && (
+                  <div className="flex-shrink-0">
+                    {item.type === 'image' ? (
+                      <img
+                        src={`/api/media/output/${item.output_file}`}
+                        alt={item.label}
+                        className="w-32 h-20 object-cover rounded-lg border border-navy-600"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    ) : (
+                      <video
+                        src={`/api/media/output/${item.output_file}`}
+                        className="w-32 h-20 object-cover rounded-lg border border-navy-600"
+                        muted autoPlay loop playsInline
+                        onError={(e) => { (e.target as HTMLVideoElement).style.display = 'none'; }}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Marketing() {
-  const [tab, setTab] = useState('Plan Calendar');
+  const [tab, setTab] = useState('Strategy');
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState<'content' | 'campaign'>('content');
+  const [modalType, setModalType] = useState<'content' | 'campaign' | 'linkedin'>('content');
   const [editingContent, setEditingContent] = useState<Partial<ContentCalendarItem>>({});
   const [editingCampaign, setEditingCampaign] = useState<Partial<Campaign>>({});
+  const [editingPost, setEditingPost] = useState<{ text: string; scheduledTime: string }>({ text: '', scheduledTime: '' });
   const [saving, setSaving] = useState(false);
   const [kbSearch, setKbSearch] = useState('');
   const [activityFilter, setActivityFilter] = useState('');
   const [scenarioFilter, setScenarioFilter] = useState('baseline');
   const [selectedArticle, setSelectedArticle] = useState<KnowledgeBaseArticle | null>(null);
+  const [readyToPosts, setReadyToPosts] = useState<any[]>([]);
+  const [readyToPostsLoading, setReadyToPostsLoading] = useState(true);
   const [skillCategoryFilter, setSkillCategoryFilter] = useState('');
   const [executingSkill, setExecutingSkill] = useState<string | null>(null);
   const [startingWorkflow, setStartingWorkflow] = useState<string | null>(null);
   const [selectedEntry, setSelectedEntry] = useState<SkillCalendarEntry | null>(null);
+  const [selectedPost, setSelectedPost] = useState<LinkedInPost | null>(null);
+  const [postActionLoading, setPostActionLoading] = useState<Record<string, 'approving' | 'publishing' | null>>({});
   const { showToast } = useToast();
   const { subscribe } = useWebSocket();
   const { skillTasks, trackSkill, clearSkill } = useSkillTaskTracker(subscribe);
@@ -69,7 +205,7 @@ export default function Marketing() {
   // Content Calendar data
   const { data: calendarData, loading: calendarLoading, error: calendarError, refetch: refetchCalendar } = useApi<ContentCalendarItem[]>(() => marketing.getCalendar(), []);
   const { data: campaignsData, loading: campaignsLoading, error: campaignsError, refetch: refetchCampaigns } = useApi<Campaign[]>(() => marketing.getCampaigns(), []);
-  const { data: postsData, loading: postsLoading } = useApi<LinkedInPost[]>(() => linkedin.getPosts(), []);
+  const { data: postsData, loading: postsLoading, refetch: refetchPosts } = useApi<LinkedInPost[]>(() => linkedin.getPosts(), []);
 
   const { data: kbData } = useApi<any>(() => knowledgeBase.getArticles({ business_area: 'marketing' }), []);
   const { data: activitiesData } = useApi<any>(() => businessActivities.getActivities({ business_area: 'marketing' }), []);
@@ -81,6 +217,21 @@ export default function Marketing() {
   const { data: categoriesData } = useApi<any>(() => marketingSkills.getCategories(), []);
   const { data: workflowsData } = useApi<MarketingWorkflow[]>(() => marketingSkills.getWorkflows(), []);
   const { data: activeRunsData, refetch: refetchRuns } = useApi<WorkflowRun[]>(() => marketingSkills.getWorkflowRuns(), []);
+
+  // Load agent-drafted content pending review (Ready to Post)
+  useEffect(() => {
+    setReadyToPostsLoading(true);
+    agentsApi.getTasks({ status: 'review' })
+      .then((resp: any) => {
+        const tasks = resp.data?.data || resp.data || [];
+        const contentTasks = (Array.isArray(tasks) ? tasks : []).filter(
+          (t: any) => t.business_area === 'marketing' || t.agent_id === 'content-creator'
+        ).slice(0, 5);
+        setReadyToPosts(contentTasks);
+      })
+      .catch(() => {})
+      .finally(() => setReadyToPostsLoading(false));
+  }, []);
 
   // Plan Calendar data
   const { data: plansData } = useApi<ExecutionPlan[]>(() => skillCalendar.getPlans({ business_area: 'marketing' }), []);
@@ -103,7 +254,8 @@ export default function Marketing() {
   );
 
   const planEntries: SkillCalendarEntry[] = entriesData || [];
-  const planStats: PlanStats | null = planStatsData || null;
+  // useApi auto-unwraps objects with array keys — guard against mangled PlanStats
+  const planStats: PlanStats | null = (planStatsData && typeof planStatsData === 'object' && 'progress' in planStatsData) ? planStatsData : null;
 
   const skillItems: MarketingSkill[] = skillsData?.skills || skillsData || [];
   const categoryItems = categoriesData || [];
@@ -204,6 +356,16 @@ export default function Marketing() {
       showToast('Campaign saved successfully', 'success');
       setShowModal(false); setEditingCampaign({}); refetchCampaigns();
     } catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); } finally { setSaving(false); }
+  }
+
+  async function handleSaveLinkedInPost() {
+    setSaving(true);
+    try {
+      await linkedin.schedulePost({ text: editingPost.text, scheduledTime: editingPost.scheduledTime });
+      showToast('LinkedIn post scheduled', 'success');
+      setShowModal(false); setEditingPost({ text: '', scheduledTime: '' });
+    } catch (err: any) { showToast(err.response?.data?.error || 'Operation failed', 'error'); }
+    finally { setSaving(false); }
   }
 
   async function handleExecuteSkill(skill: MarketingSkill) {
@@ -337,12 +499,12 @@ export default function Marketing() {
   return (
     <PageShell
       title="Marketing"
-      subtitle="LinkedIn, Campaigns & Content"
+      subtitle="Teacher free-trial funnel, LinkedIn outreach, spring budget window (Mar–Apr)"
       actions={
         <div className="flex gap-2 flex-wrap">
-          <AgentTriggerButton agentId="content" label="Draft LTVR LinkedIn Post" prompt="Draft a LinkedIn post promoting Learning Time VR for K-12 education. Reference specific products: VR Classroom Pack (Pico 4 headsets + VictoryXR, $5K-$15K/yr) or Tablet Subscription (WebXR on Chromebooks, $1.5K-$5K/yr). Use 'Learn Beyond Limits' tagline. Target superintendents and tech directors. Use LTVR brand voice — approachable, outcome-focused." businessArea="marketing" />
-          <AgentTriggerButton agentId="content" label="Plan LTVR Content Week" prompt="Plan next week's Learning Time VR content calendar. Cover 5 pillars: (1) LTVR product benefits, (2) Student outcome case studies, (3) District ROI, (4) Teacher success stories, (5) EdTech innovation. Target mix: 3 LinkedIn posts, 1 blog/case study, 1 email outreach. Use LTVR brand voice and reference specific products." businessArea="marketing" />
-          <AgentTriggerButton agentId="analytics" label="Analyze Campaign" prompt="Analyze our active Learning Time VR marketing campaigns and suggest optimizations. Compare VR Headset Pack messaging vs Tablet Subscription messaging performance. Review LinkedIn engagement, email open rates, and lead conversion. Recommend A/B tests." businessArea="marketing" />
+          <AgentTriggerButton agentId="content" label="Draft LT LinkedIn Post" prompt="Draft a LinkedIn post promoting Learning Time for K-12 education. Learning Time is device-agnostic spatial learning — VR headsets, tablets (WebAR holograms in real classrooms via 8th Wall), and computers all join the same live teacher-controlled session. Use 'Learn Beyond Limits' tagline. Target teachers, principals, and superintendents. Highlight the free tier (1 lesson, 30 students, no card needed) as entry point. Spring budget window is open now. Brand: Learning Time (never 'Learning Time VR')." businessArea="marketing" />
+          <AgentTriggerButton agentId="content" label="Plan LT Content Week" prompt="Plan next week's Learning Time content calendar. Cover 5 pillars: (1) Device-agnostic spatial learning benefits (VR, tablet WebAR, computer), (2) Student outcome case studies, (3) School/District ROI and Title IV-A funding, (4) Teacher success stories and free trial funnel, (5) EdTech innovation. Target mix: 3 LinkedIn posts, 1 blog/case study, 1 teacher email outreach. Brand: Learning Time (not 'Learning Time VR')." businessArea="marketing" />
+          <AgentTriggerButton agentId="analytics" label="Analyze Campaign" prompt="Analyze our active Learning Time marketing campaigns and suggest optimizations. Focus on the teacher free trial funnel (Free → Teacher Pro → School Plan), LinkedIn superintendent outreach performance, and DonorsChoose channel effectiveness. Review spring budget window urgency (March-April). Recommend A/B tests and prioritize actions that drive toward $300K by June 30, 2026." businessArea="marketing" />
         </div>
       }
     >
@@ -350,6 +512,9 @@ export default function Marketing() {
 
       {primaryError && <ErrorState error={primaryError} onRetry={calendarError ? refetchCalendar : refetchCampaigns} />}
       {!primaryError && <>
+
+      {/* Strategy Tab */}
+      {tab === 'Strategy' && <MarketingStrategyTab />}
 
       {/* Plan Calendar Tab */}
       {tab === 'Plan Calendar' && (
@@ -380,7 +545,7 @@ export default function Marketing() {
                 <span className="text-sm text-[#2563EB] font-bold">{planStats.progress}%</span>
               </div>
               <ProgressBar value={planStats.progress} color="blue" />
-              {planStats.phases.length > 0 && (
+              {planStats.phases?.length > 0 && (
                 <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2">
                   {planStats.phases.map(p => (
                     <div key={p.phase} className="p-2 bg-navy-700/50 rounded-lg">
@@ -483,13 +648,177 @@ export default function Marketing() {
           <div className="flex justify-end">
             <button onClick={() => { setEditingCampaign({}); setModalType('campaign'); setShowModal(true); }} className="px-4 py-2 bg-[#2563EB] text-white text-sm rounded-lg hover:bg-[#2563EB]/80">+ New Campaign</button>
           </div>
-          <DataTable columns={campaignColumns} data={campaigns} loading={campaignsLoading} searchable pagination onRowClick={(c) => { setEditingCampaign(c); setModalType('campaign'); setShowModal(true); }} />
+          <DataTable columns={campaignColumns} data={campaigns} loading={campaignsLoading} searchable pagination emptyMessage="No campaigns yet. Create your first campaign to get started." onRowClick={(c) => { setEditingCampaign(c); setModalType('campaign'); setShowModal(true); }} />
         </div>
       )}
 
       {tab === 'LinkedIn Posts' && (
-        <DataTable columns={postColumns} data={posts} loading={postsLoading} searchable pagination />
+        <div className="space-y-6">
+          <div className="flex justify-end">
+            <button onClick={() => { setEditingPost({ text: '', scheduledTime: '' }); setModalType('linkedin'); setShowModal(true); }} className="px-4 py-2 bg-[#2563EB] text-white text-sm rounded-lg hover:bg-[#2563EB]/80">+ Draft Post</button>
+          </div>
+          {/* Ready to Post Queue - Agent-drafted posts awaiting approval */}
+          {(readyToPosts.length > 0 || readyToPostsLoading) && (
+            <div className="bg-navy-800/60 backdrop-blur-md border border-emerald-500/30 rounded-xl p-5">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-medium text-white flex items-center gap-2">
+                  <span className="text-emerald-400">AI</span> Ready to Post
+                  {readyToPosts.length > 0 && (
+                    <span className="px-1.5 py-0.5 bg-emerald-500 text-navy-900 text-xs font-bold rounded-full">{readyToPosts.length}</span>
+                  )}
+                </h3>
+                <Link to="/dashboard/agents?tab=Daily+Tasks&status=review" className="text-xs text-emerald-400 hover:underline">View all</Link>
+              </div>
+              {readyToPostsLoading ? (
+                <div className="space-y-2 animate-pulse">{[1, 2].map(i => <div key={i} className="h-20 bg-navy-700 rounded-lg" />)}</div>
+              ) : (
+                <div className="space-y-3">
+                  {readyToPosts.map((task: any) => (
+                    <div key={task.id} className="p-4 rounded-lg bg-navy-700/50 hover:bg-navy-700 transition-colors">
+                      <p className="text-sm font-medium text-white mb-1">{task.title}</p>
+                      {task.result && (
+                        <p className="text-xs text-gray-400 line-clamp-3 mb-2 whitespace-pre-line">{task.result.slice(0, 200)}...</p>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500">{task.agent_id?.replace(/-/g, ' ')}</span>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={async () => {
+                              try {
+                                await agentsApi.reviewTask(task.id, 'approved');
+                                setReadyToPosts(prev => prev.filter(r => r.id !== task.id));
+                                showToast('Post approved and scheduled', 'success');
+                              } catch { showToast('Failed to approve', 'error'); }
+                            }}
+                            className="px-3 py-1 text-xs bg-emerald-600 text-white rounded-lg hover:bg-emerald-500"
+                          >Approve & Schedule</button>
+                          <button
+                            onClick={async () => {
+                              try {
+                                await agentsApi.reviewTask(task.id, 'rejected');
+                                setReadyToPosts(prev => prev.filter(r => r.id !== task.id));
+                                showToast('Post rejected', 'info');
+                              } catch { showToast('Failed to reject', 'error'); }
+                            }}
+                            className="px-3 py-1 text-xs bg-navy-600 text-gray-300 rounded-lg hover:bg-navy-500"
+                          >Reject</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* LinkedIn Posts Preview Cards */}
+          {postsLoading ? (
+            <div className="space-y-4 animate-pulse">{[1,2,3].map(i => <div key={i} className="h-48 bg-navy-800 rounded-xl" />)}</div>
+          ) : posts.length === 0 ? (
+            <div className="text-center py-12 text-gray-500">No LinkedIn posts yet. Click "+ Draft Post" to create one.</div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              {posts.map((post: any) => {
+                const isVideo = post.text?.includes('👇') || post.text?.toLowerCase().includes('watch');
+                const scheduled = post.scheduled_time ? new Date(post.scheduled_time) : null;
+                return (
+                  <div key={post.id} className="bg-navy-800/60 border border-navy-700/50 rounded-xl overflow-hidden hover:border-navy-600 transition-colors">
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-5 pt-4 pb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#0A66C2] flex items-center justify-center text-white font-bold text-sm">in</div>
+                        <div>
+                          <p className="text-sm font-medium text-white">Jim — Ascent XR</p>
+                          <p className="text-xs text-gray-500">
+                            {scheduled ? scheduled.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : 'Not scheduled'}
+                            {scheduled ? ` at ${scheduled.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}` : ''}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {isVideo && <span className="px-2 py-0.5 text-xs rounded bg-purple-500/20 text-purple-400 border border-purple-500/30">Video</span>}
+                        {!isVideo && <span className="px-2 py-0.5 text-xs rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">Image</span>}
+                        <StatusBadge status={post.status} />
+                      </div>
+                    </div>
+                    {/* Post body */}
+                    <div className="px-5 py-3 cursor-pointer" onClick={() => setSelectedPost(post)}>
+                      <p className="text-sm text-gray-300 whitespace-pre-line leading-relaxed line-clamp-4">{post.text}</p>
+                      {post.text && post.text.length > 200 && (
+                        <button className="text-xs text-[#2563EB] mt-1 hover:underline">View full post</button>
+                      )}
+                    </div>
+                    {/* Action buttons */}
+                    <div className="px-5 py-2 border-t border-navy-700/50 flex items-center gap-2 flex-wrap">
+                      <button
+                        onClick={() => setSelectedPost(post)}
+                        className="px-3 py-1 text-xs bg-navy-700 text-gray-300 rounded-lg hover:bg-navy-600"
+                      >View</button>
+                      {(post.status === 'draft' || post.status === 'scheduled') && (
+                        <button
+                          disabled={postActionLoading[post.id] === 'approving'}
+                          onClick={async () => {
+                            setPostActionLoading(prev => ({ ...prev, [post.id]: 'approving' }));
+                            try {
+                              await linkedin.approvePost(post.id);
+                              showToast('Post approved', 'success');
+                              refetchPosts();
+                            } catch (err: any) {
+                              showToast(err.response?.data?.error || 'Failed to approve', 'error');
+                            } finally {
+                              setPostActionLoading(prev => ({ ...prev, [post.id]: null }));
+                            }
+                          }}
+                          className="px-3 py-1 text-xs bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 disabled:opacity-50"
+                        >{postActionLoading[post.id] === 'approving' ? 'Approving...' : 'Approve'}</button>
+                      )}
+                      {post.status === 'approved' && (
+                        <button
+                          disabled={postActionLoading[post.id] === 'publishing'}
+                          onClick={async () => {
+                            setPostActionLoading(prev => ({ ...prev, [post.id]: 'publishing' }));
+                            try {
+                              await linkedin.publishPost(post.id);
+                              showToast('Post published to LinkedIn', 'success');
+                              refetchPosts();
+                            } catch (err: any) {
+                              showToast(err.response?.data?.error || 'Failed to publish', 'error');
+                            } finally {
+                              setPostActionLoading(prev => ({ ...prev, [post.id]: null }));
+                            }
+                          }}
+                          className="px-3 py-1 text-xs bg-[#0A66C2] text-white rounded-lg hover:bg-[#0A66C2]/80 disabled:opacity-50"
+                        >{postActionLoading[post.id] === 'publishing' ? 'Publishing...' : 'Post to LinkedIn'}</button>
+                      )}
+                    </div>
+                    {/* Engagement stats */}
+                    <div className="px-5 py-2 border-t border-navy-700/50 flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex gap-4">
+                        <span>{post.impressions?.toLocaleString() || 0} impressions</span>
+                        <span>{post.engagements || 0} engagements</span>
+                        <span>{post.clicks || 0} clicks</span>
+                        <span>{post.shares || 0} shares</span>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          try {
+                            await linkedin.deletePost(post.id);
+                            showToast('Post deleted', 'info');
+                            refetchPosts();
+                          } catch { showToast('Failed to delete', 'error'); }
+                        }}
+                        className="text-red-500/50 hover:text-red-400 text-xs"
+                      >Delete</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       )}
+
+      {tab === 'Media Queue' && <MediaQueueTab />}
 
       {tab === 'Skills & Workflows' && (
         <div className="space-y-8">
@@ -753,6 +1082,125 @@ export default function Marketing() {
             <button onClick={handleSaveCampaign} disabled={saving} className="px-4 py-2 bg-[#2563EB] text-white text-sm rounded-lg disabled:opacity-50">{saving ? 'Saving...' : 'Save'}</button>
           </div>
         </div>
+      </Modal>
+
+      <Modal isOpen={showModal && modalType === 'linkedin'} onClose={() => setShowModal(false)} title="Draft LinkedIn Post">
+        <div className="space-y-4">
+          <div className="text-xs text-gray-500 bg-navy-700/50 rounded-lg p-3">
+            <p className="font-medium text-gray-400 mb-1">Content Pillar Mix</p>
+            <p>Student outcomes (40%) | Teacher support (30%) | Admin/ROI (20%) | Culture (10%)</p>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Post Content</label>
+            <textarea value={editingPost.text} onChange={(e) => setEditingPost({ ...editingPost, text: e.target.value })} rows={6} placeholder="Write your LinkedIn post..." className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#2563EB]" />
+            <p className="text-xs text-gray-500 mt-1">{editingPost.text.length} characters</p>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Schedule Time</label>
+            <input type="datetime-local" value={editingPost.scheduledTime} onChange={(e) => setEditingPost({ ...editingPost, scheduledTime: e.target.value })} className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-[#2563EB]" />
+          </div>
+          <div className="flex justify-end gap-3 pt-2">
+            <button onClick={() => setShowModal(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Cancel</button>
+            <button onClick={handleSaveLinkedInPost} disabled={saving || !editingPost.text} className="px-4 py-2 bg-[#2563EB] text-white text-sm rounded-lg disabled:opacity-50">{saving ? 'Scheduling...' : 'Schedule Post'}</button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* LinkedIn Post Preview Modal */}
+      <Modal isOpen={!!selectedPost} onClose={() => setSelectedPost(null)} title="LinkedIn Post" size="lg">
+        {selectedPost && (
+          <div className="space-y-4">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#0A66C2] flex items-center justify-center text-white font-bold text-sm">in</div>
+                <div>
+                  <p className="text-sm font-medium text-white">Jim — Ascent XR</p>
+                  <p className="text-xs text-gray-500">
+                    {selectedPost.scheduled_time
+                      ? new Date(selectedPost.scheduled_time).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) +
+                        ' at ' + new Date(selectedPost.scheduled_time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+                      : 'Not scheduled'}
+                  </p>
+                </div>
+              </div>
+              <StatusBadge status={selectedPost.status} />
+            </div>
+            {/* Full text */}
+            <div className="bg-navy-900/60 rounded-lg p-4">
+              <p className="text-sm text-gray-200 whitespace-pre-line leading-relaxed">{selectedPost.text}</p>
+            </div>
+            {/* Media URLs */}
+            {selectedPost.media_urls && Array.isArray(selectedPost.media_urls) && selectedPost.media_urls.length > 0 && (
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Media</p>
+                <ul className="space-y-1">
+                  {selectedPost.media_urls.map((url: string, i: number) => (
+                    <li key={i}><a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-[#2563EB] hover:underline break-all">{url}</a></li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {/* Metrics */}
+            <div className="grid grid-cols-4 gap-3">
+              {[
+                { label: 'Impressions', value: selectedPost.impressions?.toLocaleString() || '0' },
+                { label: 'Engagements', value: selectedPost.engagements || '0' },
+                { label: 'Clicks', value: selectedPost.clicks || '0' },
+                { label: 'Shares', value: selectedPost.shares || '0' },
+              ].map(m => (
+                <div key={m.label} className="bg-navy-800 rounded-lg p-3 text-center">
+                  <p className="text-lg font-bold text-white">{m.value}</p>
+                  <p className="text-xs text-gray-500">{m.label}</p>
+                </div>
+              ))}
+            </div>
+            {/* Actions */}
+            <div className="flex gap-3 pt-2">
+              {(selectedPost.status === 'draft' || selectedPost.status === 'scheduled') && (
+                <button
+                  disabled={postActionLoading[selectedPost.id] === 'approving'}
+                  onClick={async () => {
+                    if (!selectedPost) return;
+                    setPostActionLoading(prev => ({ ...prev, [selectedPost.id]: 'approving' }));
+                    try {
+                      await linkedin.approvePost(selectedPost.id);
+                      showToast('Post approved', 'success');
+                      setSelectedPost(null);
+                      refetchPosts();
+                    } catch (err: any) {
+                      showToast(err.response?.data?.error || 'Failed to approve', 'error');
+                    } finally {
+                      setPostActionLoading(prev => ({ ...prev, [selectedPost.id]: null }));
+                    }
+                  }}
+                  className="px-4 py-2 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-500 disabled:opacity-50"
+                >{postActionLoading[selectedPost.id] === 'approving' ? 'Approving...' : 'Approve'}</button>
+              )}
+              {selectedPost.status === 'approved' && (
+                <button
+                  disabled={postActionLoading[selectedPost.id] === 'publishing'}
+                  onClick={async () => {
+                    if (!selectedPost) return;
+                    setPostActionLoading(prev => ({ ...prev, [selectedPost.id]: 'publishing' }));
+                    try {
+                      await linkedin.publishPost(selectedPost.id);
+                      showToast('Post published to LinkedIn', 'success');
+                      setSelectedPost(null);
+                      refetchPosts();
+                    } catch (err: any) {
+                      showToast(err.response?.data?.error || 'Failed to publish', 'error');
+                    } finally {
+                      setPostActionLoading(prev => ({ ...prev, [selectedPost.id]: null }));
+                    }
+                  }}
+                  className="px-4 py-2 bg-[#0A66C2] text-white text-sm rounded-lg hover:bg-[#0A66C2]/80 disabled:opacity-50"
+                >{postActionLoading[selectedPost.id] === 'publishing' ? 'Publishing...' : 'Post to LinkedIn'}</button>
+              )}
+              <button onClick={() => setSelectedPost(null)} className="px-4 py-2 text-sm text-gray-400 hover:text-white">Close</button>
+            </div>
+          </div>
+        )}
       </Modal>
 
       {/* Article Modal */}

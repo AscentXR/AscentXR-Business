@@ -13,6 +13,7 @@ import type {
   AgentTeam, RecurringSchedule, DailyTaskRun, DailyBriefing,
   BackupInfo, RestoreResult,
   ExecutionPlan, SkillCalendarEntry, PlanStats,
+  DailyJournal,
 } from '../types';
 
 // Auth
@@ -194,11 +195,39 @@ export const agents = {
   control: (id: string, action: string) => api.post(`/agents/${id}/control`, { action }),
   execute: (data: { agent_id: string; title: string; prompt: string; business_area?: string; context?: any }) =>
     api.post<ApiResponse<AgentTask>>('/agents/execute', data),
-  getTasks: (params?: { status?: string; agent_id?: string }) =>
-    api.get<ApiResponse<AgentTask[]>>('/agents/tasks', { params }),
+  getTasks: (params?: { status?: string; agent_id?: string; run_date?: string; limit?: number; page?: number }) =>
+    api.get<ApiResponse<{ tasks: AgentTask[]; total: number }>>('/agents/tasks', { params }),
   getTask: (id: string) => api.get<ApiResponse<AgentTask>>(`/agents/tasks/${id}`),
   reviewTask: (id: string, action: 'approved' | 'rejected') =>
     api.put<ApiResponse<AgentTask>>(`/agents/tasks/${id}/review`, { action }),
+  updateStatus: (id: string, status: string) =>
+    api.put<ApiResponse<AgentTask>>(`/agents/tasks/${id}/status`, { status }),
+  getMetrics: (period?: string) =>
+    api.get('/agents/metrics', { params: { period } }),
+  getCostSummary: (days?: number) =>
+    api.get('/agents/cost-summary', { params: { days } }),
+};
+
+// Morning Briefing
+export const morningBriefing = {
+  getState: () => api.get('/morning-briefing/state'),
+  createActionItems: (items: Array<{ assigned_to: string; title: string; description?: string; priority?: string; due_date?: string; business_area?: string }>) =>
+    api.post('/morning-briefing/action-items', { items }),
+  createContent: (content: { title: string; content_type: string; body: string; scheduled_date?: string; business_area?: string }) =>
+    api.post('/morning-briefing/content', content),
+};
+
+// Action Items
+export const actionItems = {
+  list: (params?: { assigned_to?: string; status?: string; business_area?: string; due_date?: string }) =>
+    api.get('/action-items', { params }),
+  today: () => api.get('/action-items/today'),
+  get: (id: string) => api.get(`/action-items/${id}`),
+  create: (data: { assigned_to: string; title: string; description?: string; priority?: string; due_date?: string; business_area?: string; source_task_id?: string }) =>
+    api.post('/action-items', data),
+  update: (id: string, data: { status?: string; title?: string; description?: string; priority?: string; due_date?: string }) =>
+    api.put(`/action-items/${id}`, data),
+  delete: (id: string) => api.delete(`/action-items/${id}`),
 };
 
 // Notifications
@@ -229,6 +258,8 @@ export const linkedin = {
   getPosts: () => api.get<ApiResponse<LinkedInPost[]>>('/linkedin/posts'),
   schedulePost: (data: { text: string; scheduledTime: string }) => api.post('/linkedin/schedule', data),
   deletePost: (id: string) => api.delete(`/linkedin/posts/${id}`),
+  approvePost: (id: string) => api.patch(`/linkedin/posts/${id}/status`, { status: 'approved' }),
+  publishPost: (id: string) => api.post(`/linkedin/posts/${id}/publish`, {}),
 };
 
 // Knowledge Base
@@ -373,10 +404,51 @@ export const marketingDashboard = {
     api.get(`/marketing-dashboard/export/${section}`, { params, responseType: 'blob' }),
 };
 
-// Documents (existing)
+// Media Queue (Flux/LTX generation)
+export const mediaQueue = {
+  getQueue: () => api.get('/media/queue'),
+  getStatus: (id: string) => api.get(`/media/queue/status/${id}`),
+  addJob: (data: { type: string; params: Record<string, unknown>; label?: string; lesson_id?: string }) =>
+    api.post('/media/queue/add', data),
+};
+
+// COO Chat
+export const coo = {
+  chat: (data: { message: string; history: Array<{ role: string; content: string }>; include_state?: boolean }) =>
+    fetch(`/api/coo/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(localStorage.getItem('dev-token')
+          ? { Authorization: `Bearer ${localStorage.getItem('dev-token')}` }
+          : {}),
+      },
+      body: JSON.stringify(data),
+    }),
+  context: () => api.get('/coo/context'),
+};
+
+// Daily Journals
+export const journals = {
+  list: (params?: { limit?: number; offset?: number; search?: string }) =>
+    api.get<ApiResponse<{ journals: DailyJournal[]; total: number }>>('/journals', { params }),
+  get: (date: string) => api.get<ApiResponse<DailyJournal>>(`/journals/${date}`),
+  create: (data: Partial<DailyJournal>) => api.post<ApiResponse<DailyJournal>>('/journals', data),
+  update: (date: string, data: Partial<DailyJournal>) => api.put<ApiResponse<DailyJournal>>(`/journals/${date}`, data),
+  delete: (date: string) => api.delete(`/journals/${date}`),
+};
+
+// Documents
 export const documents = {
   list: (params?: { category?: string; search?: string }) => api.get<ApiResponse<Document[]>>('/documents', { params }),
   get: (id: string) => api.get<ApiResponse<Document>>(`/documents/${id}`),
   getCategories: () => api.get('/documents/categories'),
   delete: (id: string) => api.delete(`/documents/${id}`),
+  upload: (file: File) => {
+    const formData = new FormData();
+    formData.append('document', file);
+    return api.post<ApiResponse<Document>>('/documents/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
 };
