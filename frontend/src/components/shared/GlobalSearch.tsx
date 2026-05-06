@@ -25,8 +25,9 @@ export default function GlobalSearch() {
     setLoading(true);
     try {
       const response = await searchApi.query(q);
-      const raw = response.data.data;
-      setResults(Array.isArray(raw) ? raw : Array.isArray(raw?.results) ? raw.results : []);
+      // Backend wraps results as { results: [...], grouped: {...}, total, query }
+      const raw = response.data.data as unknown;
+      setResults(Array.isArray(raw) ? raw : Array.isArray((raw as Record<string, unknown>)?.results) ? (raw as Record<string, unknown>).results as SearchResult[] : []);
     } catch {
       setResults([]);
     } finally {

@@ -77,7 +77,7 @@ export interface Product {
   id: string;
   name: string;
   description: string;
-  category: 'custom_experience' | 'subscription' | 'professional_services' | 'pilot';
+  category: 'custom_experience' | 'subscription' | 'professional_services' | 'pilot' | 'career_exploration';
   pricing_model: 'one_time' | 'recurring' | 'hourly';
   base_price: number;
   price_max?: number;
@@ -85,7 +85,7 @@ export interface Product {
   status: 'active' | 'draft' | 'discontinued';
   features: any[];
   target_audience?: string;
-  brand_entity?: 'ascent_xr' | 'learning_time_vr';
+  brand_entity?: 'ascent_xr' | 'learning_time_vr' | 'career_time';
 }
 
 export interface ProductFeature {
@@ -154,8 +154,9 @@ export interface TaxEvent {
   event_type: string;
   due_date: string;
   amount?: number;
-  status: 'upcoming' | 'completed' | 'overdue';
+  status: 'upcoming' | 'pending' | 'completed' | 'overdue';
   state?: string;
+  description?: string;
 }
 
 export interface TaxDeduction {
@@ -166,6 +167,7 @@ export interface TaxDeduction {
   tax_year: number;
   is_r_and_d: boolean;
   status: 'pending' | 'verified' | 'claimed';
+  documentation_url?: string;
 }
 
 // ============================================================
@@ -363,8 +365,13 @@ export interface Agent {
   progress: number;
   tasks_completed: number;
   total_tasks: number;
+  tasks_pending_review?: number;
+  tasks_running?: number;
+  tasks_failed?: number;
+  last_active?: string;
   current_task?: string;
   capabilities: string[];
+  team_id?: string;
 }
 
 export interface AgentTask {
@@ -493,6 +500,18 @@ export interface DailyBriefing {
     completed: number;
     pending_review: number;
   }[];
+  revenue_gap?: {
+    target: number;
+    current_revenue: number;
+    remaining: number;
+    percentage: number;
+    days_remaining: number;
+    required_monthly_rate: number;
+  } | null;
+  yesterday_highlights?: { title: string; agent_id: string; status: string; agent_name: string }[];
+  upcoming_deadlines?: { type: string; title: string; deadline: string }[];
+  action_items?: any[];
+  weekly_summary?: string | null;
 }
 
 // ============================================================
@@ -1033,4 +1052,23 @@ export interface LinkedInTrendPoint {
   clicks: number;
   shares: number;
   engagement_rate: number;
+}
+
+// ============================================================
+// Daily Journals
+// ============================================================
+
+export interface DailyJournal {
+  id: string;
+  journal_date: string;
+  title: string;
+  summary?: string;
+  key_decisions: string[];
+  action_items: string[];
+  topics_discussed: string[];
+  agent_activity: Array<{ agent: string; task: string; status: string }>;
+  mood?: string;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
 }
