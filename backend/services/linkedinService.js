@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const { query } = require('../db/connection');
 
 const LINKEDIN_CLIENT_ID = process.env.LINKEDIN_CLIENT_ID;
@@ -30,24 +31,38 @@ class LinkedInService {
     return { success: result.rowCount > 0 };
   }
 
-  getAuthorizationUrl() {
+  // `state` must be a cryptographically-random value generated and stored by the
+  // caller (in the session) so it can be validated on the OAuth callback (CSRF protection).
+  getAuthorizationUrl(state) {
     const scopes = 'r_liteprofile r_emailaddress w_member_social';
-    const state = Math.random().toString(36).substring(7);
-    return `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${encodeURIComponent(LINKEDIN_CALLBACK_URL)}&state=${state}&scope=${encodeURIComponent(scopes)}`;
+    return `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${LINKEDIN_CLIENT_ID}&redirect_uri=${encodeURIComponent(LINKEDIN_CALLBACK_URL)}&state=${encodeURIComponent(state)}&scope=${encodeURIComponent(scopes)}`;
   }
 
   async handleOAuthCallback(code) {
-    // Exchange code for access token
-    // In production, use axios to call LinkedIn's token endpoint
+    // NOTE: real token exchange is not yet implemented. This returns a placeholder
+    // token so the UI flow can be exercised without live LinkedIn credentials.
+    // TODO: POST to https://www.linkedin.com/oauth/v2/accessToken with code + client secret.
+    console.warn('[LinkedIn] handleOAuthCallback is a stub — returning a placeholder token, not a real LinkedIn token.');
     return {
       access_token: 'mock-token-' + Date.now(),
       expires_in: 5184000 // 60 days
     };
   }
 
-  verifyWebhookSignature(body, signature) {
-    // Verify LinkedIn webhook signature using client secret
-    return !!signature;
+  // Verify LinkedIn webhook signature via HMAC-SHA256 of the payload with the client
+  // secret. Fails closed when the secret or signature is missing. NOTE: for byte-exact
+  // correctness this should run against the RAW request body, not the re-serialized JSON.
+  verifyWebhookSignature(rawBody, signature) {
+    if (!LINKEDIN_CLIENT_SECRET || !signature) return false;
+    try {
+      const payload = typeof rawBody === 'string' ? rawBody : JSON.stringify(rawBody);
+      const expected = crypto.createHmac('sha256', LINKEDIN_CLIENT_SECRET).update(payload).digest('hex');
+      const sigBuf = Buffer.from(String(signature));
+      const expBuf = Buffer.from(expected);
+      return sigBuf.length === expBuf.length && crypto.timingSafeEqual(sigBuf, expBuf);
+    } catch {
+      return false;
+    }
   }
 
   async processWebhookEvent(event) {

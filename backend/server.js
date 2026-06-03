@@ -33,8 +33,8 @@ initWebSocket(server);
 if (process.env.NODE_ENV === 'production') {
   const warnings = [];
   if (!process.env.CORS_ALLOWED_ORIGINS) warnings.push('CORS_ALLOWED_ORIGINS not set - using defaults');
-  if (process.env.DEV_PASSWORD) {
-    console.error('FATAL: DEV_PASSWORD must not be set in production');
+  if (process.env.DEV_PASSWORD || process.env.ALLOW_INSECURE_AUTH === 'true' || process.env.DISABLE_RATE_LIMIT === 'true') {
+    console.error('FATAL: DEV_PASSWORD / ALLOW_INSECURE_AUTH / DISABLE_RATE_LIMIT must not be set in production');
     process.exit(1);
   }
   if (!process.env.GOOGLE_APPLICATION_CREDENTIALS && !process.env.FIREBASE_PROJECT_ID) {
@@ -105,8 +105,26 @@ app.use(cors({
 
 // Body parsing with size limit
 app.use(express.json({ limit: '1mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(morgan('dev'));
+
+// Session support (used by CRM/LinkedIn OAuth token storage)
+const session = require('express-session');
+if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
+  console.error('FATAL: SESSION_SECRET must be set in production');
+  process.exit(1);
+}
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'dev-only-insecure-session-secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000
+  }
+}));
 
 // Global rate limiter
 app.use('/api/', apiLimiter);
@@ -156,14 +174,15 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Temporary migration endpoint - run migrations on demand
-app.post('/api/run-migrations', async (req, res) => {
+// Migration endpoint - admin only, on demand
+app.post('/api/run-migrations', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { runMigrations } = require('./db/connection');
     await runMigrations();
     res.json({ success: true, message: 'Migrations complete' });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    console.error('[Migrations] failed:', err);
+    res.status(500).json({ success: false, error: 'Migration failed' });
   }
 });
 

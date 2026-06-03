@@ -7,7 +7,10 @@ jest.mock('../../db/connection', () => ({
 }));
 
 jest.mock('../../services/agentPrompts', () => ({
-  buildPrompt: jest.fn().mockReturnValue('You are a helpful AI agent for AscentXR.')
+  buildPrompt: jest.fn().mockReturnValue('You are a helpful AI agent for AscentXR.'),
+  buildEnhancedPrompt: jest.fn().mockReturnValue('You are a helpful AI agent for AscentXR.'),
+  // Return null so executeTask skips the optional knowledge-base context fetch
+  mapAgentToBusinessArea: jest.fn().mockReturnValue(null)
 }));
 
 // Mock the websocket module so _emitUpdate doesn't fail
@@ -116,7 +119,7 @@ describe('Agent Execution Service', () => {
 
     await agentExecutionService.executeTask('task-uuid-1');
 
-    expect(agentPrompts.buildPrompt).toHaveBeenCalledWith('content-creator', { tone: 'professional' });
+    expect(agentPrompts.buildEnhancedPrompt).toHaveBeenCalledWith('content-creator', { tone: 'professional' }, {});
   });
 
   // 6. executeTask saves result
@@ -175,9 +178,9 @@ describe('Agent Execution Service', () => {
     mockQuery.mockResolvedValueOnce({ rows: [task] });
     // UPDATE to running
     mockQuery.mockResolvedValueOnce({ rows: [], rowCount: 1 });
-    // Simulate the agentPrompts.buildPrompt throwing an error
+    // Simulate the agentPrompts.buildEnhancedPrompt throwing an error
     const agentPrompts = require('../../services/agentPrompts');
-    agentPrompts.buildPrompt.mockImplementationOnce(() => {
+    agentPrompts.buildEnhancedPrompt.mockImplementationOnce(() => {
       throw new Error('Agent prompt template not found');
     });
     // UPDATE to failed
@@ -191,7 +194,7 @@ describe('Agent Execution Service', () => {
     expect(failedCall[1][0]).toBe('Agent prompt template not found');
 
     // Restore the mock
-    agentPrompts.buildPrompt.mockReturnValue('You are a helpful AI agent for AscentXR.');
+    agentPrompts.buildEnhancedPrompt.mockReturnValue('You are a helpful AI agent for AscentXR.');
   });
 
   // 9. reviewTask approved

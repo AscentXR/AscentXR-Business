@@ -199,7 +199,7 @@ class AgentExecutionService {
             activities: (actResult.activities || []),
             goals: goalsResult.rows || []
           };
-        } catch (e) { /* KB context is optional, continue without it */ }
+        } catch (e) { console.warn('[agentExecution] KB context fetch failed, continuing without it:', e.message); }
       }
       const systemPrompt = agentPrompts.buildEnhancedPrompt(task.agent_id, context, kbContext);
 
@@ -304,6 +304,8 @@ class AgentExecutionService {
       [taskId]
     );
 
+    let stream;
+    let completed = false;
     try {
       const context = typeof task.context === 'string' ? JSON.parse(task.context) : (task.context || {});
       const businessArea = agentPrompts.mapAgentToBusinessArea(task.agent_id);
@@ -320,7 +322,7 @@ class AgentExecutionService {
             activities: (actResult.activities || []),
             goals: goalsResult.rows || []
           };
-        } catch (e) { /* KB context is optional */ }
+        } catch (e) { console.warn('[agentExecution] KB context fetch failed (stream), continuing without it:', e.message); }
       }
       const systemPrompt = agentPrompts.buildEnhancedPrompt(task.agent_id, context, kbContext);
       const userMessage = task.prompt || task.description || task.title;
@@ -342,7 +344,7 @@ class AgentExecutionService {
       // Use higher token limit for proposal-agent (needs longer output for proposals/RFPs)
       const maxTokens = task.agent_id === 'proposal-agent' ? 8192 : 4096;
 
-      const stream = await this.client.messages.stream({
+      stream = await this.client.messages.stream({
         model: 'claude-sonnet-4-20250514',
         max_tokens: maxTokens,
         system: systemPrompt,
@@ -379,6 +381,7 @@ class AgentExecutionService {
         );
       }
 
+      completed = true;
       yield { type: 'done', task_id: taskId, tokens_used: tokensUsed, execution_time_ms: executionTime };
     } catch (error) {
       const executionTime = Date.now() - startTime;
@@ -392,6 +395,21 @@ class AgentExecutionService {
 
       yield { type: 'error', error: error.message };
       throw error;
+    } finally {
+      // If the consumer abandoned the generator early (e.g. client disconnect), the
+      // for-await never finished: abort the upstream Anthropic stream and make sure the
+      // task isn't left stuck in 'streaming'.
+      if (!completed) {
+        try { if (stream && typeof stream.abort === 'function') stream.abort(); } catch { /* ignore */ }
+        try {
+          await query(
+            `UPDATE agent_tasks
+             SET status = 'failed', error = COALESCE(error, 'Stream aborted before completion'), completed_at = NOW()
+             WHERE id = $1 AND status = 'streaming'`,
+            [taskId]
+          );
+        } catch (e) { console.warn('[agentExecution] failed to reconcile aborted stream task:', e.message); }
+      }
     }
   }
 

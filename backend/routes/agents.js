@@ -73,11 +73,20 @@ router.get('/progress', async (req, res, next) => {
 router.post('/progress', async (req, res, next) => {
   try {
     const { agentId, progress, status, currentTask } = req.body;
-    
-    if (!agentId) {
+
+    if (!agentId || typeof agentId !== 'string' || agentId.length > 200) {
       return res.status(400).json({
-        error: 'agentId is required'
+        error: 'agentId is required and must be a string (max 200 chars)'
       });
+    }
+    if (progress !== undefined && (typeof progress !== 'number' || progress < 0 || progress > 100)) {
+      return res.status(400).json({ error: 'progress must be a number between 0 and 100' });
+    }
+    if (status !== undefined && !['active', 'paused', 'stopped', 'error'].includes(status)) {
+      return res.status(400).json({ error: 'invalid status' });
+    }
+    if (currentTask !== undefined && (typeof currentTask !== 'string' || currentTask.length > 1000)) {
+      return res.status(400).json({ error: 'currentTask must be a string (max 1000 chars)' });
     }
 
     const progressDataPath = path.join(__dirname, '../../agent_progress_data.json');
@@ -138,6 +147,34 @@ router.post('/progress', async (req, res, next) => {
       message: 'Agent progress updated',
       data: progressData.agents[agentIndex]
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// GET /api/agents/metrics - Get agent performance metrics
+// NOTE: must be declared BEFORE /:id, otherwise the param route shadows it.
+router.get('/metrics', async (req, res, next) => {
+  try {
+    const { period = '7d' } = req.query;
+
+    // Sample metrics data
+    const metrics = {
+      performanceOverTime: [
+        { date: '2024-01-25', accuracy: 89, speed: 82, quality: 91 },
+        { date: '2024-01-26', accuracy: 92, speed: 85, quality: 93 },
+        { date: '2024-01-27', accuracy: 91, speed: 80, quality: 90 },
+        { date: '2024-01-28', accuracy: 94, speed: 88, quality: 95 },
+        { date: '2024-01-29', accuracy: 93, speed: 87, quality: 94 },
+        { date: '2024-01-30', accuracy: 95, speed: 90, quality: 96 },
+        { date: '2024-01-31', accuracy: 96, speed: 92, quality: 97 }
+      ],
+      taskCompletion: { completed: 235, inProgress: 18, failed: 7, successRate: 97.1 },
+      agentActivity: { active: 3, idle: 1, error: 0, total: 4 },
+      resourceUsage: { cpu: 42.5, memory: 67.3, disk: 23.8, network: 15.2 }
+    };
+
+    res.json({ success: true, period, data: metrics });
   } catch (error) {
     next(error);
   }
@@ -279,52 +316,6 @@ router.post('/:id/control', async (req, res, next) => {
         newStatus: statusMap[action],
         timestamp: new Date().toISOString()
       }
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// GET /api/agents/metrics - Get agent performance metrics
-router.get('/metrics', async (req, res, next) => {
-  try {
-    const { period = '7d' } = req.query;
-    
-    // Sample metrics data
-    const metrics = {
-      performanceOverTime: [
-        { date: '2024-01-25', accuracy: 89, speed: 82, quality: 91 },
-        { date: '2024-01-26', accuracy: 92, speed: 85, quality: 93 },
-        { date: '2024-01-27', accuracy: 91, speed: 80, quality: 90 },
-        { date: '2024-01-28', accuracy: 94, speed: 88, quality: 95 },
-        { date: '2024-01-29', accuracy: 93, speed: 87, quality: 94 },
-        { date: '2024-01-30', accuracy: 95, speed: 90, quality: 96 },
-        { date: '2024-01-31', accuracy: 96, speed: 92, quality: 97 }
-      ],
-      taskCompletion: {
-        completed: 235,
-        inProgress: 18,
-        failed: 7,
-        successRate: 97.1
-      },
-      agentActivity: {
-        active: 3,
-        idle: 1,
-        error: 0,
-        total: 4
-      },
-      resourceUsage: {
-        cpu: 42.5,
-        memory: 67.3,
-        disk: 23.8,
-        network: 15.2
-      }
-    };
-
-    res.json({
-      success: true,
-      period: period,
-      data: metrics
     });
   } catch (error) {
     next(error);

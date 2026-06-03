@@ -1,5 +1,11 @@
 const { Pool } = require('pg');
 
+// In production we must never silently fall back to default local credentials.
+if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+  console.error('FATAL: DATABASE_URL must be set in production');
+  process.exit(1);
+}
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgresql://ascentxr_user:password@localhost:5432/ascentxr',
   max: 20,

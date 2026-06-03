@@ -1,7 +1,37 @@
 const { getAuth } = require('../config/firebase');
 const db = require('../db/connection');
 
+const VALID_ROLES = ['admin', 'viewer'];
+
+// Count enabled, non-deleted admins. Used to enforce the "at least one admin" invariant.
+async function countActiveAdmins() {
+  const result = await db.query(
+    `SELECT COUNT(*)::int as count FROM app_users
+     WHERE role = 'admin' AND is_enabled = true AND deleted_at IS NULL`
+  );
+  return result.rows[0].count;
+}
+
+// Throw if the given uid is the last remaining active admin (for demote/disable/delete).
+async function assertNotLastAdmin(uid) {
+  const target = await getUserByUid(uid);
+  if (target && target.role === 'admin' && target.is_enabled) {
+    const admins = await countActiveAdmins();
+    if (admins <= 1) {
+      const err = new Error('Cannot remove the last remaining admin');
+      err.status = 409;
+      throw err;
+    }
+  }
+}
+
 async function createUser({ email, displayName, password, role = 'viewer' }) {
+  if (!VALID_ROLES.includes(role)) {
+    const err = new Error('Invalid role. Must be admin or viewer.');
+    err.status = 400;
+    throw err;
+  }
+
   // Create in Firebase
   const firebaseUser = await getAuth().createUser({
     email,
@@ -12,13 +42,24 @@ async function createUser({ email, displayName, password, role = 'viewer' }) {
   // Set custom claims for role
   await getAuth().setCustomUserClaims(firebaseUser.uid, { role });
 
-  // Insert into PostgreSQL
-  const result = await db.query(
-    `INSERT INTO app_users (firebase_uid, email, display_name, role)
-     VALUES ($1, $2, $3, $4)
-     RETURNING *`,
-    [firebaseUser.uid, email, displayName, role]
-  );
+  // Insert into PostgreSQL. If this fails, roll back the Firebase user we just
+  // created so we don't leave an orphaned Firebase account with no app_users row.
+  let result;
+  try {
+    result = await db.query(
+      `INSERT INTO app_users (firebase_uid, email, display_name, role)
+       VALUES ($1, $2, $3, $4)
+       RETURNING *`,
+      [firebaseUser.uid, email, displayName, role]
+    );
+  } catch (err) {
+    try {
+      await getAuth().deleteUser(firebaseUser.uid);
+    } catch (cleanupErr) {
+      console.error('[userService] Failed to roll back orphaned Firebase user:', firebaseUser.uid, cleanupErr.message);
+    }
+    throw err;
+  }
 
   return result.rows[0];
 }
@@ -42,8 +83,15 @@ async function getUserByUid(uid) {
 }
 
 async function updateRole(uid, role) {
-  if (!['admin', 'viewer'].includes(role)) {
-    throw new Error('Invalid role. Must be admin or viewer.');
+  if (!VALID_ROLES.includes(role)) {
+    const err = new Error('Invalid role. Must be admin or viewer.');
+    err.status = 400;
+    throw err;
+  }
+
+  // Block demoting the last admin away from the admin role
+  if (role !== 'admin') {
+    await assertNotLastAdmin(uid);
   }
 
   // Update Firebase custom claims
@@ -64,6 +112,7 @@ async function updateRole(uid, role) {
 }
 
 async function disableUser(uid) {
+  await assertNotLastAdmin(uid);
   await getAuth().updateUser(uid, { disabled: true });
   await getAuth().revokeRefreshTokens(uid);
 
@@ -97,6 +146,7 @@ async function resetPassword(uid) {
 }
 
 async function deleteUser(uid) {
+  await assertNotLastAdmin(uid);
   // Delete from Firebase
   await getAuth().deleteUser(uid);
 

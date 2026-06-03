@@ -2,6 +2,15 @@ const express = require('express');
 const router = express.Router();
 const userService = require('../../services/userService');
 
+// Reject an admin acting destructively on their own account (lockout protection)
+function blockSelfAction(req, res) {
+  if (req.user && req.params.uid === req.user.uid) {
+    res.status(409).json({ success: false, error: 'You cannot perform this action on your own account' });
+    return true;
+  }
+  return false;
+}
+
 // GET /api/admin/users - List all users
 router.get('/', async (req, res, next) => {
   try {
@@ -16,6 +25,9 @@ router.post('/', async (req, res, next) => {
     const { email, displayName, password, role } = req.body;
     if (!email || !password) {
       return res.status(400).json({ success: false, error: 'Email and password are required' });
+    }
+    if (role !== undefined && !['admin', 'viewer'].includes(role)) {
+      return res.status(400).json({ success: false, error: 'Role must be admin or viewer' });
     }
     const user = await userService.createUser({ email, displayName, password, role });
     res.status(201).json({ success: true, data: user });
@@ -40,6 +52,11 @@ router.put('/:uid', async (req, res, next) => {
     if (!role) {
       return res.status(400).json({ success: false, error: 'Role is required' });
     }
+    if (!['admin', 'viewer'].includes(role)) {
+      return res.status(400).json({ success: false, error: 'Role must be admin or viewer' });
+    }
+    // Prevent an admin from demoting themselves (lockout protection)
+    if (role !== 'admin' && blockSelfAction(req, res)) return;
     const user = await userService.updateRole(req.params.uid, role);
     if (!user) {
       return res.status(404).json({ success: false, error: 'User not found' });
@@ -51,6 +68,7 @@ router.put('/:uid', async (req, res, next) => {
 // PUT /api/admin/users/:uid/disable - Disable user account
 router.put('/:uid/disable', async (req, res, next) => {
   try {
+    if (blockSelfAction(req, res)) return;
     const user = await userService.disableUser(req.params.uid);
     if (!user) {
       return res.status(404).json({ success: false, error: 'User not found' });
@@ -81,6 +99,7 @@ router.post('/:uid/reset-password', async (req, res, next) => {
 // DELETE /api/admin/users/:uid - Delete user
 router.delete('/:uid', async (req, res, next) => {
   try {
+    if (blockSelfAction(req, res)) return;
     const user = await userService.deleteUser(req.params.uid);
     if (!user) {
       return res.status(404).json({ success: false, error: 'User not found' });

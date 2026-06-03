@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface UseApiState<T> {
   data: T | null;
@@ -16,10 +16,15 @@ export function useApi<T>(
     error: null,
   });
 
+  // Monotonic request id: a slow earlier request must not overwrite a newer one's result.
+  const requestIdRef = useRef(0);
+
   const fetchData = useCallback(async () => {
+    const requestId = ++requestIdRef.current;
     setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const response = await fetcher();
+      if (requestId !== requestIdRef.current) return; // superseded by a newer request
       let result = response.data.data;
       // Many endpoints wrap arrays as { items: [], total } — auto-unwrap
       if (result && typeof result === 'object' && !Array.isArray(result)) {
@@ -29,6 +34,7 @@ export function useApi<T>(
       }
       setState({ data: result, loading: false, error: null });
     } catch (err: any) {
+      if (requestId !== requestIdRef.current) return; // superseded by a newer request
       const rawError = err.response?.data?.error;
       const errorMsg =
         typeof rawError === 'string'

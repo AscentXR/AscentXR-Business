@@ -1,6 +1,10 @@
 const rateLimit = require('express-rate-limit');
 
-const skip = () => process.env.NODE_ENV === 'test';
+// Rate limiting is always active except in the test suite, or when explicitly
+// disabled for local development via DISABLE_RATE_LIMIT=true (never set in deploys).
+// This fails secure: an unset/unknown NODE_ENV keeps limiting ON.
+const skip = () =>
+  process.env.NODE_ENV === 'test' || process.env.DISABLE_RATE_LIMIT === 'true';
 
 const apiLimiter = rateLimit({
   windowMs: 60 * 1000,

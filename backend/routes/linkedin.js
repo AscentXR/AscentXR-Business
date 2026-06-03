@@ -67,7 +67,10 @@ router.delete('/posts/:id', async (req, res, next) => {
 
 // GET /api/linkedin/oauth - Start LinkedIn OAuth flow
 router.get('/oauth', (req, res) => {
-  const authUrl = linkedinService.getAuthorizationUrl();
+  // Generate a random state and persist it in the session for CSRF validation on callback
+  const state = require('crypto').randomBytes(16).toString('hex');
+  req.session.linkedinOAuthState = state;
+  const authUrl = linkedinService.getAuthorizationUrl(state);
   res.redirect(authUrl);
 });
 
@@ -88,6 +91,12 @@ router.get('/callback', async (req, res, next) => {
         error: 'Authorization code is missing'
       });
     }
+
+    // CSRF protection: the returned state must match the one we stored at /oauth start
+    if (!state || state !== req.session.linkedinOAuthState) {
+      return res.status(400).json({ error: 'Invalid OAuth state' });
+    }
+    delete req.session.linkedinOAuthState;
 
     const tokenData = await linkedinService.handleOAuthCallback(code);
     

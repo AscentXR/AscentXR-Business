@@ -48,7 +48,12 @@ class ExportService {
       const values = headers.map(h => {
         const val = row[h];
         if (val === null || val === undefined) return '';
-        const str = String(val);
+        let str = String(val);
+        // Neutralize CSV/formula injection: cells starting with =, +, -, @, or a
+        // leading tab/CR are treated as formulas by Excel/Sheets. Prefix with '.
+        if (/^[=+\-@\t\r]/.test(str)) {
+          str = `'${str}`;
+        }
         if (str.includes(',') || str.includes('"') || str.includes('\n')) {
           return `"${str.replace(/"/g, '""')}"`;
         }

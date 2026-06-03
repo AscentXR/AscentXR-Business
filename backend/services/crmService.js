@@ -2,11 +2,15 @@ const { query } = require('../db/connection');
 
 class CRMService {
   async connect({ username, password, apiKey }) {
-    // Validate CRM connection credentials
+    // STUB: this does NOT validate credentials against any real CRM. It returns a
+    // synthetic session token so the UI flow works. Callers must not treat
+    // `connected: true` as proof the credentials were authenticated.
+    // TODO: implement real CRM authentication (HubSpot/Salesforce).
     return {
       token: 'crm-session-' + Date.now(),
       userId: username,
-      connected: true
+      connected: true,
+      stub: true
     };
   }
 
@@ -21,7 +25,7 @@ class CRMService {
     let paramIndex = 1;
 
     if (search) {
-      sql += ` WHERE c.first_name ILIKE $${paramIndex} OR c.last_name ILIKE $${paramIndex} OR c.email ILIKE $${paramIndex} OR sd.name ILIKE $${paramIndex}`;
+      sql += ` WHERE (c.first_name ILIKE $${paramIndex} OR c.last_name ILIKE $${paramIndex} OR c.email ILIKE $${paramIndex} OR sd.name ILIKE $${paramIndex})`;
       params.push(`%${search}%`);
       paramIndex++;
     }
@@ -35,7 +39,7 @@ class CRMService {
     let countSql = 'SELECT COUNT(*) FROM contacts c LEFT JOIN school_districts sd ON c.school_district_id = sd.id';
     const countParams = [];
     if (search) {
-      countSql += ` WHERE c.first_name ILIKE $1 OR c.last_name ILIKE $1 OR c.email ILIKE $1 OR sd.name ILIKE $1`;
+      countSql += ` WHERE (c.first_name ILIKE $1 OR c.last_name ILIKE $1 OR c.email ILIKE $1 OR sd.name ILIKE $1)`;
       countParams.push(`%${search}%`);
     }
     const countResult = await query(countSql, countParams);

@@ -2,7 +2,7 @@
 # Multi-stage build: frontend + backend
 
 # Stage 1: Build frontend
-FROM node:18-alpine AS frontend-builder
+FROM node:20-alpine AS frontend-builder
 
 WORKDIR /frontend
 
@@ -19,7 +19,7 @@ COPY frontend/ ./
 RUN npm run build
 
 # Stage 2: Build backend
-FROM node:18-alpine AS backend-builder
+FROM node:20-alpine AS backend-builder
 
 WORKDIR /app
 
@@ -27,13 +27,13 @@ WORKDIR /app
 COPY backend/package*.json ./
 
 # Install production dependencies only
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Bust Docker cache for backend source (updated: 2026-02-10T14:00)
 COPY backend/ ./
 
 # Stage 3: Production
-FROM node:18-alpine AS production
+FROM node:20-alpine AS production
 
 WORKDIR /app
 

@@ -11,7 +11,7 @@ services:
     environment:
       POSTGRES_DB: ascentxr
       POSTGRES_USER: ascentxr_user
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-ChangeMe123!}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./backend/db/migrations/001_create_tables.sql:/docker-entrypoint-initdb.d/001_create_tables.sql
@@ -19,7 +19,8 @@ services:
       - ./backend/db/seeds/001_sample_data.sql:/docker-entrypoint-initdb.d/003_seed_data.sql
       - ./backend/db/seeds/002_control_center_seed.sql:/docker-entrypoint-initdb.d/004_control_center_seed.sql
     ports:
-      - "5432:5432"
+      # Bind to loopback only — do not expose the database to the host network
+      - "127.0.0.1:5432:5432"
     networks:
       - ascent-network
     restart: unless-stopped
@@ -34,11 +35,12 @@ services:
   redis:
     image: redis:7-alpine
     container_name: ascent-xr-redis
-    command: redis-server --requirepass ${REDIS_PASSWORD:-ChangeMe123!} --appendonly yes
+    command: redis-server --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD must be set} --appendonly yes
     volumes:
       - redis_data:/data
     ports:
-      - "6379:6379"
+      # Bind to loopback only — do not expose Redis to the host network
+      - "127.0.0.1:6379:6379"
     networks:
       - ascent-network
     restart: unless-stopped
@@ -57,9 +59,9 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://ascentxr_user:${DB_PASSWORD:-ChangeMe123!}@postgres:5432/ascentxr
-      REDIS_URL: redis://:${REDIS_PASSWORD:-ChangeMe123!}@redis:6379
-      JWT_SECRET: ${JWT_SECRET:-ChangeMe123!}
+      DATABASE_URL: postgresql://ascentxr_user:${DB_PASSWORD:?DB_PASSWORD must be set}@postgres:5432/ascentxr
+      REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD must be set}@redis:6379
+      SESSION_SECRET: ${SESSION_SECRET:?SESSION_SECRET must be set}
       LINKEDIN_CLIENT_ID: ${LINKEDIN_CLIENT_ID}
       LINKEDIN_CLIENT_SECRET: ${LINKEDIN_CLIENT_SECRET}
       CRM_API_KEY: ${CRM_API_KEY}
@@ -80,7 +82,8 @@ services:
       - ascent-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      # node:18-alpine has no curl; use a node one-liner to hit the health endpoint
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -145,7 +148,7 @@ services:
     image: grafana/grafana:latest
     container_name: ascent-xr-grafana
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-ChangeMe123!}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:?GRAFANA_PASSWORD must be set}
       GF_INSTALL_PLUGINS: grafana-piechart-panel
     volumes:
       - grafana_data:/var/lib/grafana
@@ -167,7 +170,7 @@ services:
       - ./deploy/backup:/backup
       - ./deploy/backup/scripts:/scripts:ro
     environment:
-      PGPASSWORD: ${DB_PASSWORD:-ChangeMe123!}
+      PGPASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
     networks:
       - ascent-network
     command: >

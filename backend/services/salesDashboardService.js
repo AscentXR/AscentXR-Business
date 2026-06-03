@@ -14,7 +14,8 @@ class SalesDashboardService {
        FROM pipeline`),
 
       query(`SELECT
-        COUNT(*) FILTER (WHERE stage = 'contract_review') as wins,
+        COUNT(*) FILTER (WHERE stage = 'closed_won') as wins,
+        COUNT(*) FILTER (WHERE stage = 'closed_lost') as losses,
         COUNT(*) as total
        FROM pipeline`),
 
@@ -68,7 +69,9 @@ class SalesDashboardService {
       weightedPipeline: parseFloat(p.weighted_pipeline),
       totalDeals: parseInt(p.total_deals),
       avgDealSize: parseFloat(p.avg_deal_size),
-      winRate: parseInt(w.total) > 0 ? (parseInt(w.wins) / parseInt(w.total) * 100) : 0,
+      winRate: (parseInt(w.wins) + parseInt(w.losses)) > 0
+        ? (parseInt(w.wins) / (parseInt(w.wins) + parseInt(w.losses)) * 100)
+        : 0,
       activeDistricts: parseInt(d.active_districts),
       avgAdoption: parseFloat(d.avg_adoption),
       communicationsLast30: currentComms,

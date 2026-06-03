@@ -5,15 +5,25 @@ const path = require('path');
 const fs = require('fs');
 const documentsService = require('../services/documentsService');
 
+// Single source of truth for the upload directory (used by both upload and download)
+const UPLOAD_DIR = path.resolve(process.env.UPLOAD_DIR || path.join(__dirname, '..', 'uploads'));
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
+
+const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.txt', '.xls', '.xlsx', '.jpg', '.jpeg', '.png', '.gif'];
+
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadDir = process.env.UPLOAD_DIR || '/tmp/uploads';
-    cb(null, uploadDir);
+    cb(null, UPLOAD_DIR);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    // Derive a safe extension from the original name; reject anything unexpected
+    const ext = path.extname(file.originalname).toLowerCase();
+    const safeExt = ALLOWED_EXTENSIONS.includes(ext) ? ext : '';
+    cb(null, file.fieldname + '-' + uniqueSuffix + safeExt);
   }
 });
 
@@ -46,21 +56,23 @@ const upload = multer({
 // GET /api/documents - List all documents
 router.get('/', async (req, res, next) => {
   try {
-    const { category, search = '', page = 1, limit = 20 } = req.query;
-    
+    const { category, search = '' } = req.query;
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(req.query.limit) || 20, 1), 100);
+
     const documents = await documentsService.listDocuments({
       category,
       search,
-      page: parseInt(page),
-      limit: parseInt(limit)
+      page,
+      limit
     });
 
     res.json({
       success: true,
       data: documents,
       pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
+        page,
+        limit,
         total: documents.total || documents.length
       }
     });
@@ -147,8 +159,12 @@ router.get('/:id/download', async (req, res, next) => {
       });
     }
 
-    const filePath = path.join(process.env.UPLOAD_DIR || './uploads', document.filename);
-    
+    // Resolve within UPLOAD_DIR and verify containment (path-traversal defense)
+    const filePath = path.resolve(UPLOAD_DIR, document.filename);
+    if (!filePath.startsWith(UPLOAD_DIR + path.sep)) {
+      return res.status(400).json({ success: false, error: 'Invalid file path' });
+    }
+
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({
         success: false,

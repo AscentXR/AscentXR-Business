@@ -413,18 +413,21 @@ export const mediaQueue = {
 };
 
 // COO Chat
+// NOTE: uses raw fetch (not the axios `api` client) because the response is streamed.
+// The localStorage 'dev-token' fallback is a local-development convenience only and is
+// compiled out of production builds — tokens in localStorage are XSS-exfiltratable.
 export const coo = {
-  chat: (data: { message: string; history: Array<{ role: string; content: string }>; include_state?: boolean }) =>
-    fetch(`/api/coo/chat`, {
+  chat: (data: { message: string; history: Array<{ role: string; content: string }>; include_state?: boolean }) => {
+    const devToken = import.meta.env.DEV ? localStorage.getItem('dev-token') : null;
+    return fetch(`/api/coo/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(localStorage.getItem('dev-token')
-          ? { Authorization: `Bearer ${localStorage.getItem('dev-token')}` }
-          : {}),
+        ...(devToken ? { Authorization: `Bearer ${devToken}` } : {}),
       },
       body: JSON.stringify(data),
-    }),
+    });
+  },
   context: () => api.get('/coo/context'),
 };
 

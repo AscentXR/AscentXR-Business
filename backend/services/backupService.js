@@ -369,6 +369,18 @@ async function restoreFromBackup(filename, { createdBy } = {}) {
     }
 
     const tablesToRestore = Object.keys(tableData);
+
+    // SECURITY: table names come from (potentially attacker-crafted) ZIP entry
+    // filenames and are interpolated into TRUNCATE/INSERT SQL. Validate every name
+    // against the live schema and a strict identifier pattern before touching the DB.
+    const liveTables = new Set(await discoverTables());
+    const safeIdentifier = /^[a-zA-Z0-9_]+$/;
+    for (const t of tablesToRestore) {
+      if (!safeIdentifier.test(t) || !liveTables.has(t)) {
+        throw new Error(`Refusing to restore unknown or invalid table: ${t}`);
+      }
+    }
+
     const totalSteps = tablesToRestore.length * 2 + 1;
     let currentStep = 0;
 

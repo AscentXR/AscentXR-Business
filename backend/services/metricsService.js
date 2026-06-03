@@ -23,14 +23,14 @@ class MetricsService {
     const mrr = parseFloat(active.active_revenue || 0) / 12;
     const arr = mrr * 12;
 
-    // CAC: estimated based on marketing spend / new customers
-    const marketingSpendMonthly = 5000; // configurable
-    const newCustomersPerMonth = 1.5;
+    // CAC: estimated based on marketing spend / new customers (configurable via env)
+    const marketingSpendMonthly = parseFloat(process.env.MARKETING_SPEND_MONTHLY) || 5000;
+    const newCustomersPerMonth = parseFloat(process.env.NEW_CUSTOMERS_PER_MONTH) || 1.5;
     const cac = marketingSpendMonthly / newCustomersPerMonth;
 
-    // LTV: average contract value * expected lifetime (3 years)
+    // LTV: average contract value * expected lifetime
     const avgContractValue = parseFloat(pipeline.total_pipeline || 0) / Math.max(parseInt(pipeline.deal_count || 1), 1);
-    const expectedLifetimeYears = 3;
+    const expectedLifetimeYears = parseFloat(process.env.EXPECTED_LIFETIME_YEARS) || 3;
     const ltv = avgContractValue * expectedLifetimeYears;
 
     // Churn: based on relationships
@@ -71,6 +71,8 @@ class MetricsService {
        GROUP BY stage
        ORDER BY AVG(probability)`),
       query(`SELECT
+        COUNT(*) FILTER (WHERE stage = 'closed_won') as wins,
+        COUNT(*) FILTER (WHERE stage = 'closed_lost') as losses,
         COUNT(*) FILTER (WHERE stage = 'contract_review') as closing,
         COUNT(*) FILTER (WHERE stage = 'discovery') as discovery,
         COUNT(*) as total
@@ -82,17 +84,20 @@ class MetricsService {
     ]);
 
     const conv = conversions.rows[0];
-    const total = parseInt(conv.total) || 1;
-    const winRate = (parseInt(conv.closing) / total * 100);
+    // Win rate = won / (won + lost) among closed deals (not deals still in contract_review)
+    const wins = parseInt(conv.wins) || 0;
+    const losses = parseInt(conv.losses) || 0;
+    const closedDeals = wins + losses;
+    const winRate = closedDeals > 0 ? (wins / closedDeals * 100) : 0;
 
     // Pipeline coverage: weighted pipeline / target revenue
-    const targetRevenue = 500000; // quarterly target
+    const targetRevenue = parseFloat(process.env.QUARTERLY_REVENUE_TARGET) || 500000;
     const weightedTotal = stages.rows.reduce((sum, s) =>
       sum + (parseFloat(s.total_value) * parseFloat(s.avg_probability) / 100), 0);
     const pipelineCoverage = (weightedTotal / targetRevenue * 100);
 
-    // Velocity: average days in pipeline (estimated)
-    const avgCycleLength = 45; // days
+    // Velocity: average days in pipeline (estimated; configurable)
+    const avgCycleLength = parseInt(process.env.AVG_SALES_CYCLE_DAYS) || 45;
 
     return {
       stages: stages.rows,

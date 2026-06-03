@@ -37,10 +37,10 @@ router.post('/connect', async (req, res, next) => {
 router.get('/contacts', async (req, res, next) => {
   try {
     const { page = 1, limit = 50, search = '' } = req.query;
-    
+
     const contacts = await crmService.getContacts({
-      page: parseInt(page),
-      limit: parseInt(limit),
+      page: Math.max(parseInt(page) || 1, 1),
+      limit: Math.min(Math.max(parseInt(limit) || 50, 1), 100),
       search
     });
 

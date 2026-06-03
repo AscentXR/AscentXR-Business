@@ -11,35 +11,32 @@ export function useWebSocket() {
   useEffect(() => {
     if (!isAuthenticated || !auth.currentUser) return;
 
-    let socket: Socket;
+    // socket.io's `auth` function form runs on every (re)connect, so each connection
+    // attempt fetches a fresh Firebase ID token rather than reusing a possibly-expired one.
+    const socket = io(window.location.origin, {
+      auth: (cb) => {
+        auth.currentUser?.getIdToken()
+          .then((token) => cb({ token: token || '' }))
+          .catch(() => cb({ token: '' }));
+      },
+      transports: ['websocket', 'polling'],
+    });
 
-    async function connect() {
-      try {
-        const token = await auth.currentUser?.getIdToken();
-        if (!token) return;
+    socket.on('connect', () => setConnected(true));
+    socket.on('disconnect', () => setConnected(false));
 
-        socket = io(window.location.origin, {
-          auth: { token },
-          transports: ['websocket', 'polling'],
-        });
-
-        socket.on('connect', () => setConnected(true));
-        socket.on('disconnect', () => setConnected(false));
-
-        socketRef.current = socket;
-      } catch {
-        // Token retrieval failed
-      }
-    }
-
-    connect();
+    socketRef.current = socket;
 
     return () => {
-      if (socket) socket.disconnect();
+      socket.disconnect();
       socketRef.current = null;
+      setConnected(false);
     };
   }, [isAuthenticated]);
 
+  // `connected` is intentionally in the dependency list: the socket is created
+  // asynchronously, so subscribers that ran while socketRef was still null must
+  // re-run (and actually attach their handlers) once the connection is established.
   const subscribe = useCallback(
     (event: string, handler: (data: any) => void) => {
       socketRef.current?.on(event, handler);
@@ -47,7 +44,8 @@ export function useWebSocket() {
         socketRef.current?.off(event, handler);
       };
     },
-    []
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [connected]
   );
 
   return { socket: socketRef.current, connected, subscribe };
