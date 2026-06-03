@@ -110,12 +110,19 @@ app.use(morgan('dev'));
 
 // Session support (used by CRM/LinkedIn OAuth token storage)
 const session = require('express-session');
-if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
-  console.error('FATAL: SESSION_SECRET must be set in production');
-  process.exit(1);
+let sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret) {
+  // Don't crash the deploy on a missing secret — fall back to an ephemeral generated
+  // one and warn loudly. Sessions won't survive restarts/redeploys until SESSION_SECRET
+  // is configured, so it should still be set in any real environment.
+  sessionSecret = require('crypto').randomBytes(48).toString('base64url');
+  console.warn(
+    `[Session] SESSION_SECRET is not set${process.env.NODE_ENV === 'production' ? ' in PRODUCTION' : ''} — ` +
+    'using an ephemeral generated secret. Sessions will reset on every restart. Set SESSION_SECRET to fix.'
+  );
 }
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'dev-only-insecure-session-secret',
+  secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
   cookie: {
